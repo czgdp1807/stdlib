@@ -452,7 +452,7 @@ contains
         character(len=last-start+1) :: character_string
 
         ! character_string = merge(string%raw(int(start, long):int(last, long)), &
-            repeat(' ', int(len(character_string), long)), allocated(string%raw))
+        !    repeat(' ', int(len(character_string), long)), allocated(string%raw))
 
     end function char_string_range
 
