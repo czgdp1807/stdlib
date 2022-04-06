@@ -18,7 +18,7 @@ contains
                 x = 0
                 w = 2
             case (1)
-                x(1) = -sqrt(1._dp/3._dp)
+                ! x(1) = -sqrt(1._dp/3._dp)
                 x(2) = -x(1)
                 w = 1
             case default
@@ -39,7 +39,7 @@ contains
                     x(n-i+1) = -x(i+1)
 
                     dleg = dlegendre(n+1,x(i+1))
-                    w(i+1)   = 2._dp/((1-x(i+1)**2)*dleg**2) 
+                    w(i+1)   = 2._dp/((1-x(i+1)**2)*dleg**2)
                     w(n-i+1) = w(i+1)
                 end do
 
@@ -47,7 +47,7 @@ contains
                     x(n/2+1) = 0
 
                     dleg = dlegendre(n+1, 0.0_dp)
-                    w(n/2+1) = 2._dp/(dleg**2) 
+                    w(n/2+1) = 2._dp/(dleg**2)
                 end if
                 end block
         end select
@@ -96,7 +96,7 @@ contains
                     x(n-i+1) = -x(i+1)
 
                     leg = legendre(n, x(i+1))
-                    w(i+1)   = 2._dp/(n*(n+1._dp)*leg**2) 
+                    w(i+1)   = 2._dp/(n*(n+1._dp)*leg**2)
                     w(n-i+1) = w(i+1)
                 end do
 
@@ -104,12 +104,12 @@ contains
                     x(n/2+1) = 0
 
                     leg = legendre(n, 0.0_dp)
-                    w(n/2+1)   = 2._dp/(n*(n+1._dp)*leg**2) 
+                    w(n/2+1)   = 2._dp/(n*(n+1._dp)*leg**2)
                 end if
                 end block
         end select
         end associate
-        
+
         if (present(interval)) then
             associate ( a => interval(1) , b => interval(2) )
             x = 0.5_dp*(b-a)*x+0.5_dp*(b+a)
@@ -119,4 +119,4 @@ contains
             end associate
         end if
     end subroutine
-end submodule    
+end submodule

@@ -67,7 +67,7 @@ module stdlib_string_type
             type(string_type) :: new
         end function new_string_from_logical_${kind}$
         #:endfor
-    end interface string_type        
+    end interface string_type
 
     !> Returns the length of the character sequence without trailing spaces
     !> represented by the string.
@@ -141,7 +141,7 @@ module stdlib_string_type
     end interface to_sentence
 
     !> Reverses the character sequence hold by the input string
-    !> 
+    !>
     !> This method is elemental and returns a new string_type instance which holds this
     !> reverse character sequence
     interface reverse
@@ -451,7 +451,7 @@ contains
         integer, intent(in) :: last
         character(len=last-start+1) :: character_string
 
-        character_string = merge(string%raw(int(start, long):int(last, long)), &
+        ! character_string = merge(string%raw(int(start, long):int(last, long)), &
             repeat(' ', int(len(character_string), long)), allocated(string%raw))
 
     end function char_string_range
