@@ -52,8 +52,7 @@ module stdlib_hash_32bit
         bytes_char = bits_char/bits_int8
 
 ! Dealing with different endians
-    logical, parameter, public ::                                    &
-        little_endian = ( 1 == transfer([1_int8, 0_int8], 0_int16) )
+    logical, parameter, public :: little_endian = .true.
 
     public ::               &
         fibonacci_hash,     &
