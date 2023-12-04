@@ -400,7 +400,7 @@ contains
         integer(int_hash)           :: seeded_water_hasher
 
         seeded_water_hasher = water_hash( key % value, &
-            int( z'DEADBEEF1EADBEEF', int64 ) )
+            -2401053092097442065_8 )
 
     end function seeded_water_hasher
 
