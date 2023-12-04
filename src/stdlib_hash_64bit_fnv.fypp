@@ -19,8 +19,8 @@ submodule(stdlib_hash_64bit) stdlib_hash_64bit_fnv
     implicit none
 
     integer(int_hash), parameter ::                          &
-        offset_basis = int( z'CBF29CE484222325', int_hash ), &
-        prime        = int( z'100000001B3', int_hash )
+        offset_basis = -3750763034362895579, &
+        prime        = 1099511628211
 
 contains
 
