@@ -64,7 +64,7 @@ module stdlib_hash_64bit
 ! pow64_over_phi is the odd number that most closely approximates 2**64/phi,
 ! where phi is the golden ratio 1.618...
     integer(int64), parameter ::                        &
-        pow64_over_phi = int(z'9E3779B97F4A7C15', int64)
+        pow64_over_phi = -7046029254386353131
 
     integer(int_hash), parameter :: &
         two_32 = 2_int_hash**32
@@ -78,7 +78,7 @@ module stdlib_hash_64bit
         ! twos complement "deadbeef"
 
     integer(int64), parameter ::                                  &
-        sc_const = transfer( [sc_constsub, sc_constsub], 0_int64 )
+        sc_const = -2401053088876216593
 
     type :: spooky_subhash
         integer(int8)  :: data(0:2*sc_blocksize-1)
