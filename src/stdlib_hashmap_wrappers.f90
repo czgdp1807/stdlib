@@ -88,7 +88,7 @@ module stdlib_hashmap_wrappers
 
         module procedure get_char_key,   &
                          get_int8_key,   &
-                         get_other
+                         get_other_key
 
     end interface get
 
@@ -101,7 +101,7 @@ module stdlib_hashmap_wrappers
 
         module procedure set_char_key,   &
                          set_int8_key,   &
-                         set_other
+                         set_other_key
 
     end interface set
 
@@ -247,7 +247,7 @@ contains
 
     end subroutine get_char_key
 
-    subroutine get_other( other, value )
+    subroutine get_other_key( other, value )
 !! Version: Experimental
 !!
 !! Gets the contents of the other as a CLASS(*) string
@@ -259,7 +259,7 @@ contains
 
         allocate(value, source=other % value)
 
-    end subroutine get_other
+    end subroutine get_other_key
 
 
     subroutine get_int8_key( key, value )
@@ -293,7 +293,7 @@ contains
     end subroutine set_char_key
 
 
-    subroutine set_other( other, value )
+    subroutine set_other_key( other, value )
 !! Version: Experimental
 !!
 !! Sets the contents of the other data from a CLASS(*) variable
@@ -305,7 +305,7 @@ contains
 
         allocate(other % value, source=value)
 
-    end subroutine set_other
+    end subroutine set_other_key
 
 
     subroutine set_int8_key( key, value )
