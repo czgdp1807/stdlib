@@ -40,10 +40,10 @@ module stdlib_hashmaps
 
 !! KIND values used to parameterixe the hash map and its procedures
     integer, parameter, public :: &
-        int_calls  = int64,       &
-        int_depth  = int64,       &
-        int_index  = int32,       &
-        int_probes = int64
+        int_calls  = 8,       &
+        int_depth  = 8,       &
+        int_index  = 4,       &
+        int_probes = 8
 
 !! Error codes returned by the hash map procedures
     integer, parameter, public ::  &
@@ -55,7 +55,7 @@ module stdlib_hashmaps
     integer, parameter ::             &
 ! Should be 8
         int8_bits = bit_size(0_int8), &
-        char_bits = character_storage_size
+        char_bits = 8
 
 !! The hash map load factor
     real, parameter, public ::      &
