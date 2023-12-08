@@ -119,7 +119,7 @@ module stdlib_io_npy
         type_csp = "<c8", type_cdp = "<c16", type_cxdp = "<c20", type_cqp = "<c32"
 
     character(len=*), parameter :: &
-        & magic_number = char(int(z"93")), &
+        & magic_number = char(147), &
         & magic_string = "NUMPY"
 
 
