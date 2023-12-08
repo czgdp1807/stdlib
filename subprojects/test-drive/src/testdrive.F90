@@ -441,7 +441,7 @@ contains
     type(error_type), intent(in), optional :: error
 
     character(len=:), allocatable :: label
-    character(len=*), parameter :: indent = repeat(" ", 7) // repeat(".", 3) // " "
+    character(len=*), parameter :: indent = "       " // "..." // " "
 
     if (test_skipped(error)) then
       output = indent // test%name // " [SKIPPED]" &
