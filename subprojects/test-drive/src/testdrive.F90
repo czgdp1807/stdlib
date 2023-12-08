@@ -1577,7 +1577,7 @@ contains
     !> Another line of error message
     character(len=*), intent(in), optional :: and_more
 
-    character(len=*), parameter :: skip = new_line("a") // repeat(" ", 11)
+    character(len=*), parameter :: skip = new_line("a") // "           "
 
     allocate(error)
     error%stat = fatal
