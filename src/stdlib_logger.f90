@@ -95,7 +95,7 @@ module stdlib_logger
 
     type :: logger_type
         !! version: experimental
-        
+
         !! Public derived type ([Specification](../page/specs/stdlib_logger.html#the-derived-type-logger_type))
         private
 
@@ -715,7 +715,7 @@ contains
 
                 if ( index_ == count ) then
                     new_len_buffer = len_buffer + self % max_width &
-                        + new_len 
+                        + new_len
                     if ( new_len_buffer > len( buffer ) ) then
                         allocate( character( 2*len( buffer ) ) :: dummy )
                         dummy = buffer
