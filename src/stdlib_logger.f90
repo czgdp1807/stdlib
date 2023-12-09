@@ -564,7 +564,7 @@ contains
         character(len=:), allocatable, intent(out) :: buffer
 
         integer :: count, indent_len, index_, length, remain
-        integer, parameter :: new_len = len(new_line('a'))
+        integer, parameter :: new_len = 1 ! len(new_line('a'))
 
         length = len_trim(string)
         allocate( character(2*length) :: buffer )
