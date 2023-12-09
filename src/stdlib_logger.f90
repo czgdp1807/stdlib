@@ -82,13 +82,14 @@ module stdlib_logger
             error_level,        &
             io_error_level,     &
             text_error_level),  &
-        none_level = 10 + max(  &
-            debug_level,        &
-            information_level,  &
-            warning_level,      &
-            error_level,        &
-            io_error_level,     &
-            text_error_level)
+        ! none_level = 10 + max(  &
+        !     debug_level,        &
+        !     information_level,  &
+        !     warning_level,      &
+        !     error_level,        &
+        !     io_error_level,     &
+        !     text_error_level)
+        none_level = 60
 
     character(*), parameter :: module_name = 'stdlib_logger'
 
