@@ -321,7 +321,7 @@ module stdlib_stats
         end function ${name}$
       #:endfor
     #:endfor
-  
+
     #:for k1, t1, o1 in IR_KINDS_TYPES_OUTPUT
       #:for rank in RANKS
         #:set name = rname("median",rank, t1, k1, o1)
@@ -333,7 +333,7 @@ module stdlib_stats
         end function ${name}$
       #:endfor
     #:endfor
-  
+
     #:for k1, t1, o1 in IR_KINDS_TYPES_OUTPUT
       #:for rank in RANKS
         #:set name = rname('median_all_mask',rank, t1, k1, o1)
@@ -344,7 +344,7 @@ module stdlib_stats
         end function ${name}$
       #:endfor
     #:endfor
-  
+
     #:for k1, t1, o1 in IR_KINDS_TYPES_OUTPUT
       #:for rank in RANKS
         #:set name = rname('median_mask',rank, t1, k1, o1)
