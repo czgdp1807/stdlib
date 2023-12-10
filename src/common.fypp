@@ -147,7 +147,7 @@ ${prefix + joinstr.join([line.strip() for line in txt.split("\n")]) + suffix}$
   #:if origrank > 1
     #:call join_lines(joinstr=", ", prefix="(", suffix=")")
       #:for i in range(1, origrank)
-        merge(size(${varname}$, ${i}$), size(${varname}$, ${i + 1}$), mask=${i}$<${idim}$)
+        my_merge(size(${varname}$, ${i}$), size(${varname}$, ${i + 1}$), mask=${i}$<${idim}$)
       #:endfor
     #:endcall
   #:endif

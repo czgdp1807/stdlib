@@ -66,8 +66,8 @@ module stdlib_stats
         ${t1}$, intent(in) :: x(:, :)
         integer, intent(in) :: dim
         logical, intent(in), optional :: mask
-        ${t1}$ :: res(merge(size(x, 1), size(x, 2), mask = 1<dim)&
-                            , merge(size(x, 1), size(x, 2), mask = 1<dim))
+        ${t1}$ :: res(my_merge(size(x, 1), size(x, 2), mask = 1<dim)&
+                            , my_merge(size(x, 1), size(x, 2), mask = 1<dim))
       end function ${RName}$
     #:endfor
 
@@ -77,8 +77,8 @@ module stdlib_stats
         ${t1}$, intent(in) :: x(:, :)
         integer, intent(in) :: dim
         logical, intent(in), optional :: mask
-        real(dp) :: res(merge(size(x, 1), size(x, 2), mask = 1<dim)&
-                        , merge(size(x, 1), size(x, 2), mask = 1<dim))
+        real(dp) :: res(my_merge(size(x, 1), size(x, 2), mask = 1<dim)&
+                        , my_merge(size(x, 1), size(x, 2), mask = 1<dim))
       end function ${RName}$
     #:endfor
 
@@ -88,8 +88,8 @@ module stdlib_stats
         ${t1}$, intent(in) :: x(:, :)
         integer, intent(in) :: dim
         logical, intent(in) :: mask(:,:)
-        ${t1}$ :: res(merge(size(x, 1), size(x, 2), mask = 1<dim)&
-                            , merge(size(x, 1), size(x, 2), mask = 1<dim))
+        ${t1}$ :: res(my_merge(size(x, 1), size(x, 2), mask = 1<dim)&
+                            , my_merge(size(x, 1), size(x, 2), mask = 1<dim))
       end function ${RName}$
     #:endfor
 
@@ -99,8 +99,8 @@ module stdlib_stats
         ${t1}$, intent(in) :: x(:, :)
         integer, intent(in) :: dim
         logical, intent(in) :: mask(:,:)
-        real(dp) :: res(merge(size(x, 1), size(x, 2), mask = 1<dim)&
-                            , merge(size(x, 1), size(x, 2), mask = 1<dim))
+        real(dp) :: res(my_merge(size(x, 1), size(x, 2), mask = 1<dim)&
+                            , my_merge(size(x, 1), size(x, 2), mask = 1<dim))
       end function ${RName}$
     #:endfor
 
@@ -163,8 +163,8 @@ module stdlib_stats
         integer, intent(in) :: dim
         logical, intent(in), optional :: mask
         logical, intent(in), optional :: corrected
-        ${t1}$ :: res(merge(size(x, 1), size(x, 2), mask = 1<dim)&
-                            , merge(size(x, 1), size(x, 2), mask = 1<dim))
+        ${t1}$ :: res(my_merge(size(x, 1), size(x, 2), mask = 1<dim)&
+                            , my_merge(size(x, 1), size(x, 2), mask = 1<dim))
       end function ${RName}$
     #:endfor
 
@@ -175,8 +175,8 @@ module stdlib_stats
         integer, intent(in) :: dim
         logical, intent(in), optional :: mask
         logical, intent(in), optional :: corrected
-        real(dp) :: res(merge(size(x, 1), size(x, 2), mask = 1<dim)&
-                        , merge(size(x, 1), size(x, 2), mask = 1<dim))
+        real(dp) :: res(my_merge(size(x, 1), size(x, 2), mask = 1<dim)&
+                        , my_merge(size(x, 1), size(x, 2), mask = 1<dim))
       end function ${RName}$
     #:endfor
 
@@ -187,8 +187,8 @@ module stdlib_stats
         integer, intent(in) :: dim
         logical, intent(in) :: mask(:,:)
         logical, intent(in), optional :: corrected
-        ${t1}$ :: res(merge(size(x, 1), size(x, 2), mask = 1<dim)&
-                            , merge(size(x, 1), size(x, 2), mask = 1<dim))
+        ${t1}$ :: res(my_merge(size(x, 1), size(x, 2), mask = 1<dim)&
+                            , my_merge(size(x, 1), size(x, 2), mask = 1<dim))
       end function ${RName}$
     #:endfor
 
@@ -199,8 +199,8 @@ module stdlib_stats
         integer, intent(in) :: dim
         logical, intent(in) :: mask(:,:)
         logical, intent(in), optional :: corrected
-        real(dp) :: res(merge(size(x, 1), size(x, 2), mask = 1<dim)&
-                            , merge(size(x, 1), size(x, 2), mask = 1<dim))
+        real(dp) :: res(my_merge(size(x, 1), size(x, 2), mask = 1<dim)&
+                            , my_merge(size(x, 1), size(x, 2), mask = 1<dim))
       end function ${RName}$
     #:endfor
   end interface cov
@@ -638,5 +638,20 @@ module stdlib_stats
       #:endfor
     #:endfor
   end interface moment
+
+  contains
+
+  function my_merge(val1, val2, mask) result(merged_value)
+    integer, intent(in) :: val1, val2
+    logical, intent(in) :: mask
+    integer :: merged_value
+
+    if (mask) then
+      merged_value = val1
+    else
+      merged_value = val2
+    end if
+
+  end function my_merge
 
 end module stdlib_stats
