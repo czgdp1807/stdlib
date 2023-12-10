@@ -383,10 +383,10 @@ contains
 
 
   !> Run a selected unit test
-  recursive subroutine run_unittest(test, unit, stat)
+  recursive subroutine run_unittest(test_var, unit, stat)
 
     !> Unit test
-    type(unittest_type), intent(in) :: test
+    type(unittest_type), intent(in) :: test_var
 
     !> Unit for IO
     integer, intent(in) :: unit
@@ -397,11 +397,11 @@ contains
     type(error_type), allocatable :: error
     character(len=:), allocatable :: message
 
-    call test%test(error)
+    call test_var%test(error)
     if (.not.test_skipped(error)) then
-      if (allocated(error) .neqv. test%should_fail) stat = stat + 1
+      if (allocated(error) .neqv. test_var%should_fail) stat = stat + 1
     end if
-    call make_output(message, test, error)
+    call make_output(message, test_var, error)
     !$omp critical(testdrive_testsuite)
     write(unit, '(a)') message
     !$omp end critical(testdrive_testsuite)
