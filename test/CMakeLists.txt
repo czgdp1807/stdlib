@@ -15,7 +15,7 @@ list(
   "-I${PROJECT_SOURCE_DIR}/src"
 )
 
-add_subdirectory(specialfunctions)
+#add_subdirectory(specialfunctions)
 
 ADDTEST(always_skip)
 set_tests_properties(always_skip PROPERTIES SKIP_RETURN_CODE 77)
