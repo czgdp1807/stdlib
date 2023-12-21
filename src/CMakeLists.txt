@@ -2,86 +2,18 @@
 
 # Create a list of the files to be preprocessed
 set(fppFiles
-    stdlib_ascii.fypp
-    stdlib_bitsets.fypp
-    stdlib_bitsets_64.fypp
-    stdlib_bitsets_large.fypp
-    stdlib_hash_32bit.fypp 
-    stdlib_hash_32bit_fnv.fypp
-    stdlib_hash_32bit_nm.fypp 
-    stdlib_hash_32bit_water.fypp 
-    stdlib_hash_64bit.fypp 
-    stdlib_hash_64bit_fnv.fypp 
-    stdlib_hash_64bit_pengy.fypp 
-    stdlib_hash_64bit_spookyv2.fypp 
-    stdlib_io.fypp
-    stdlib_io_npy.fypp
-    stdlib_io_npy_load.fypp
-    stdlib_io_npy_save.fypp
     stdlib_kinds.fypp
-    stdlib_linalg.fypp
-    stdlib_linalg_diag.fypp
-    stdlib_linalg_outer_product.fypp
-    stdlib_linalg_kronecker.fypp
-    stdlib_linalg_cross_product.fypp
     stdlib_optval.fypp
-    stdlib_selection.fypp
-    stdlib_sorting.fypp
-    stdlib_sorting_ord_sort.fypp
-    stdlib_sorting_sort.fypp
-    stdlib_sorting_sort_index.fypp
     stdlib_specialfunctions_gamma.fypp
-    stdlib_stats.fypp
-    stdlib_stats_corr.fypp
-    stdlib_stats_cov.fypp
-    stdlib_stats_mean.fypp
-    stdlib_stats_median.fypp
-    stdlib_stats_moment.fypp
-    stdlib_stats_moment_all.fypp
-    stdlib_stats_moment_mask.fypp
-    stdlib_stats_moment_scalar.fypp
-    stdlib_stats_distribution_uniform.fypp
-    stdlib_stats_distribution_normal.fypp
-    stdlib_stats_distribution_exponential.fypp
-    stdlib_stats_var.fypp
-    stdlib_quadrature.fypp
-    stdlib_quadrature_trapz.fypp
-    stdlib_quadrature_simps.fypp
-    stdlib_random.fypp
-    stdlib_math.fypp
-    stdlib_math_linspace.fypp
-    stdlib_math_logspace.fypp
-    stdlib_math_arange.fypp
-    stdlib_math_is_close.fypp
-    stdlib_math_all_close.fypp
-    stdlib_math_diff.fypp
-    stdlib_string_type.fypp
-    stdlib_string_type_constructor.fypp
-    stdlib_strings_to_string.fypp
-    stdlib_strings.fypp
-    stdlib_version.fypp
 )
 
 
 fypp_f90("${fyppFlags}" "${fppFiles}" outFiles)
 
 set(SRC
-    stdlib_ansi.f90
-    stdlib_ansi_operator.f90
-    stdlib_ansi_to_string.f90
-    stdlib_array.f90
     stdlib_error.f90
-    stdlib_hashmap_wrappers.f90
-    stdlib_hashmaps.f90
-    stdlib_hashmap_chaining.f90
-    stdlib_hashmap_open.f90
-    stdlib_logger.f90
-    stdlib_sorting_radix_sort.f90
-    stdlib_system.F90
     stdlib_specialfunctions.f90
     stdlib_specialfunctions_legendre.f90
-    stdlib_quadrature_gauss.f90
-    stdlib_stringlist_type.f90
     ${outFiles}
 )
 
