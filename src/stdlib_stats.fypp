@@ -641,7 +641,7 @@ module stdlib_stats
 
   contains
 
-  function my_merge(val1, val2, mask) result(merged_value)
+  pure function my_merge(val1, val2, mask) result(merged_value)
     integer, intent(in) :: val1, val2
     logical, intent(in) :: mask
     integer :: merged_value
