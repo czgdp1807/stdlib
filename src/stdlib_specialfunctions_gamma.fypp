@@ -309,7 +309,7 @@ contains
 
         end if
 
-        sum = cmplx(d(0), kind = ${k2}$)
+!        sum = cmplx(d(0), kind = ${k2}$)
 
         do i = 1, n
 
@@ -470,7 +470,7 @@ contains
 
         end if
 
-        d = hypot(z2 % re, z2 % im)
+!        d = hypot(z2 % re, z2 % im)
         z1 = z2
         m = 0
 
@@ -510,7 +510,7 @@ contains
 
             sum = log(pi) - log(sin(pi * z)) - sum
             m = ceiling((2 * z % re - 3) / 4)
-            sum % im = sum % im + 2 * pi * m * sign(1.0_${k1}$, z % im)
+!            sum % im = sum % im + 2 * pi * m * sign(1.0_${k1}$, z % im)
 
         end if
 
@@ -599,7 +599,7 @@ contains
 
         endif
 
-        if(x < zero_k1 .and. p < p_lim .and. abs(anint(p) - p) > tol_${k1}$)   &
+        if(x < zero_k1 .and. p < p_lim .and. abs((p) - p) > tol_${k1}$)   &
             call error_stop("Error(gpx): Incomplete gamma function with "      &
             //"negative x must come with a whole number p not too small")
 
