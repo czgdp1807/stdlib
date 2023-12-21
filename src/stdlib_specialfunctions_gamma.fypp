@@ -22,20 +22,20 @@ module stdlib_specialfunctions_gamma
 
 
 
-    public :: gamma, log_gamma, log_factorial
+    public :: mgamma, log_gamma, log_factorial
     public :: lower_incomplete_gamma, log_lower_incomplete_gamma
     public :: upper_incomplete_gamma, log_upper_incomplete_gamma
     public :: regularized_gamma_p, regularized_gamma_q
 
 
 
-    interface gamma
+    interface mgamma
     !! Gamma function for integer and complex numbers
     !!
         #:for k1, t1 in CI_KINDS_TYPES
         module procedure gamma_${t1[0]}$${k1}$
         #:endfor
-    end interface gamma
+    end interface mgamma
 
 
 

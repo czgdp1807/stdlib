@@ -1,6 +1,6 @@
 program example_gamma
   use stdlib_kinds, only: dp, int64
-  use stdlib_specialfunctions_gamma, only: gamma
+  use stdlib_specialfunctions_gamma, only: mgamma
   implicit none
 
   integer :: i
@@ -17,10 +17,10 @@ program example_gamma
   z = (2.3, 0.6)
   z1 = (-4.2_dp, 3.1_dp)
 
-  print *, gamma(i)              !integer gives exact result
+  print *, mgamma(i)              !integer gives exact result
 ! 362880
 
-  print *, gamma(n)
+  print *, mgamma(n)
 ! 87178291200
 
   print *, gamma(x)              ! intrinsic function call
@@ -29,9 +29,9 @@ program example_gamma
   print *, gamma(y)              ! intrinsic function call
 ! 8.8553433604540341
 
-  print *, gamma(z)
+  print *, mgamma(z)
 ! (0.988054395, 0.383354813)
 
-  print *, gamma(z1)
+  print *, mgamma(z1)
 ! (-2.78916032990983999E-005, 9.83164600163221218E-006)
 end program example_gamma
