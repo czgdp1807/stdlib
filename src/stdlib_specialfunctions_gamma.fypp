@@ -22,10 +22,7 @@ module stdlib_specialfunctions_gamma
 
 
 
-    public :: mgamma, log_gamma, log_factorial
-    public :: lower_incomplete_gamma, log_lower_incomplete_gamma
-    public :: upper_incomplete_gamma, log_upper_incomplete_gamma
-    public :: regularized_gamma_p, regularized_gamma_q
+    public :: mgamma
 
 
 
@@ -49,14 +46,6 @@ contains
         ${t1}$, intent(in) :: z
         ${t1}$ :: res, i
         ${t1}$, parameter :: zero = 0_${k1}$, one = 1_${k1}$
-
-        if(z <= zero) call error_stop("Error(gamma): Gamma function argument"  &
-            //" must be positive integer.")
-
-        if(z > max_fact_${k1}$) call error_stop("Error(gamma): Gamma function" &
-            //" integer argument is greater than the upper limit from which an"&
-            //" integer overflow will be generated. Suggest switch to high "   &
-            //" precision or convert to real data type")
 
         res = one
 

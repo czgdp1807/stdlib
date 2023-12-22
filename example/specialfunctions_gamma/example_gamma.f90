@@ -17,7 +17,7 @@ program example_gamma
   z = (2.3, 0.6)
   z1 = (-4.2_dp, 3.1_dp)
 
-!  print *, mgamma(i)              !integer gives exact result
+  print *, mgamma(i)              !integer gives exact result
 ! 362880
 
 !  print *, mgamma(n)
