@@ -23,7 +23,6 @@ module stdlib_specialfunctions_gamma
 
 
     public :: mgamma, log_gamma, log_factorial
-    public :: lower_incomplete_gamma
 
 
 
@@ -56,20 +55,6 @@ module stdlib_specialfunctions_gamma
     end interface log_factorial
 
 
-
-    interface lower_incomplete_gamma
-    !! Lower incomplete gamma function
-    !!
-        #:for k1, t1 in INT_KINDS_TYPES
-          #:for k2, t2 in REAL_KINDS_TYPES
-        module procedure ingamma_low_${t1[0]}$${k1}$${k2}$
-          #:endfor
-        #:endfor
-
-        #:for k1, t1 in REAL_KINDS_TYPES
-        module procedure ingamma_low_${t1[0]}$${k1}$
-        #:endfor
-    end interface lower_incomplete_gamma
 
 
 
@@ -763,81 +748,6 @@ contains
     #:endfor
 
 
-
-    #:for k1, t1 in REAL_KINDS_TYPES
-    impure elemental function ingamma_low_${t1[0]}$${k1}$(p, x) result(res)
-    !
-    ! Approximation of lower incomplete gamma function with real p.
-    !
-        ${t1}$, intent(in) :: p, x
-        ${t1}$ :: res, s1, y
-        ${t1}$, parameter :: zero = 0.0_${k1}$, one = 1.0_${k1}$
-
-        if(x == zero) then
-
-            res = zero
-
-        else if(x > p) then
-
-            s1 = log_gamma(p)
-            y = one - exp(-x + p * log(x) - s1) * gpx(p, x)
-            res = exp(s1 + log(y))
-
-        else if(x <= p .and. x > zero) then
-
-            s1 = -x + p * log(x)
-            res = gpx(p, x) * exp(s1)
-
-        else
-
-            call error_stop("Error(Logarithm of upper incomplete gamma "       &
-              //"function): negative x must be with integer p")
-
-        end if
-    end function ingamma_low_${t1[0]}$${k1}$
-
-    #:endfor
-
-
-
-    #:for k1, t1 in INT_KINDS_TYPES
-      #:for k2, t2 in REAL_KINDS_TYPES
-    impure elemental function ingamma_low_${t1[0]}$${k1}$${k2}$(p, x)          &
-        result(res)
-    !
-    ! Approximation of lower incomplete gamma function with integer p.
-    !
-        ${t1}$, intent(in) :: p
-        ${t2}$, intent(in) :: x
-        ${t2}$ :: res, s1, y
-        ${t2}$, parameter :: zero = 0.0_${k2}$, one = 1.0_${k2}$
-
-        if(x == zero) then
-
-            res = zero
-
-        else if(x > real(p, ${k2}$)) then
-
-            s1 = l_gamma(p, one)
-            y = one - exp(-x + p * log(x) - s1) * gpx(p, x)
-            res = exp(s1 + log(y))
-
-        else if(x <= real(p, ${k2}$) .and. x > zero) then
-
-            s1 = -x + p * log(x)
-            res = gpx(p, x) * exp(s1)
-
-        else
-
-            s1 = -x + p * log(abs(x))
-            res = gpx(p, x) * exp(s1)
-            res = (-1) ** p * res
-
-        end if
-    end function ingamma_low_${t1[0]}$${k1}$${k2}$
-
-      #:endfor
-    #:endfor
 
 
 
