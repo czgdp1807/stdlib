@@ -587,7 +587,7 @@ contains
 
             end do
 
-            if(y >= b * tol_${k2}$ .and. mod(p, two) /= zero_k1)               &
+            if(y >= b * tol_${k2}$ )               &
                 b = b + d * c / a
 
             g = ((-1) ** p * exp(-a + l_gamma(p, one) - (p - 1) * log(a))      &
