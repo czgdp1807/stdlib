@@ -22,10 +22,9 @@ make fortran_stdlib
 cp src/*.mod example/specialfunctions_gamma
 make
 ./example/specialfunctions_gamma/example_gamma
-
-#example/specialfunctions_gamma/example_gamma_p.f90
-#example/specialfunctions_gamma/example_gamma_q.f90
-#example/specialfunctions_gamma/example_ligamma.f90
-#example/specialfunctions_gamma/example_log_factorial.f90
-#example/specialfunctions_gamma/example_log_gamma.f90
-#example/specialfunctions_gamma/example_uigamma.f90
+./example/specialfunctions_gamma/example_gamma_p
+./example/specialfunctions_gamma/example_gamma_q
+./example/specialfunctions_gamma/example_ligamma
+./example/specialfunctions_gamma/example_log_factorial
+./example/specialfunctions_gamma/example_log_gamma
+./example/specialfunctions_gamma/example_uigamma
