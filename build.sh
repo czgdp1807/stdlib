@@ -15,11 +15,18 @@ make
 ./example/specialfunctions_gamma/example_log_gamma
 ./example/specialfunctions_gamma/example_uigamma
 
+./example/ascii/example_ascii_reverse
+./example/ascii/example_ascii_to_lower
+./example/ascii/example_ascii_to_sentence
+./example/ascii/example_ascii_to_title
+./example/ascii/example_ascii_to_upper
+
 git clean -dfx
 
 FC=lfortran cmake .
 make fortran_stdlib
 cp src/*.mod example/specialfunctions_gamma
+cp src/*.mod example/ascii
 make
 ./example/specialfunctions_gamma/example_gamma
 ./example/specialfunctions_gamma/example_gamma_p
@@ -28,3 +35,9 @@ make
 ./example/specialfunctions_gamma/example_log_factorial
 ./example/specialfunctions_gamma/example_log_gamma
 ./example/specialfunctions_gamma/example_uigamma
+
+./example/ascii/example_ascii_reverse
+./example/ascii/example_ascii_to_lower
+./example/ascii/example_ascii_to_sentence
+./example/ascii/example_ascii_to_title
+./example/ascii/example_ascii_to_upper
