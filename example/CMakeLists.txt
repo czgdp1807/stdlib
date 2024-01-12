@@ -7,3 +7,4 @@ macro(ADD_EXAMPLE name)
 endmacro(ADD_EXAMPLE)
 
 add_subdirectory(specialfunctions_gamma)
+add_subdirectory(ascii)
