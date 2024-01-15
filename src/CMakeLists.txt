@@ -6,6 +6,7 @@ set(fppFiles
     stdlib_kinds.fypp
     stdlib_optval.fypp
     stdlib_specialfunctions_gamma.fypp
+    stdlib_version.fypp
 )
 
 
@@ -16,6 +17,7 @@ set(SRC
     stdlib_ascii.f90
     stdlib_specialfunctions.f90
     stdlib_specialfunctions_legendre.f90
+    stdlib_version.f90
     ${outFiles}
 )
 

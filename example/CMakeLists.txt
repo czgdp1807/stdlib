@@ -8,3 +8,4 @@ endmacro(ADD_EXAMPLE)
 
 add_subdirectory(specialfunctions_gamma)
 add_subdirectory(ascii)
+add_subdirectory(version)

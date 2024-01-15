@@ -21,12 +21,15 @@ make
 ./example/ascii/example_ascii_to_title
 ./example/ascii/example_ascii_to_upper
 
+./example/version/example_version
+
 git clean -dfx
 
 FC=lfortran cmake .
 make fortran_stdlib
 cp src/*.mod example/specialfunctions_gamma
 cp src/*.mod example/ascii
+cp src/*.mod example/version
 make
 ./example/specialfunctions_gamma/example_gamma
 ./example/specialfunctions_gamma/example_gamma_p
@@ -41,3 +44,5 @@ make
 ./example/ascii/example_ascii_to_sentence
 ./example/ascii/example_ascii_to_title
 ./example/ascii/example_ascii_to_upper
+
+./example/version/example_version
