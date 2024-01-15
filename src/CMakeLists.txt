@@ -15,6 +15,7 @@ fypp_f90("${fyppFlags}" "${fppFiles}" outFiles)
 set(SRC
     stdlib_error.f90
     stdlib_ascii.f90
+    stdlib_optval.f90
     stdlib_specialfunctions.f90
     stdlib_specialfunctions_legendre.f90
     stdlib_version.f90

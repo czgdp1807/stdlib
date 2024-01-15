@@ -23,6 +23,8 @@ make
 
 ./example/version/example_version
 
+./example/optval/example_optval
+
 git clean -dfx
 
 FC=lfortran cmake .
@@ -30,6 +32,7 @@ make fortran_stdlib
 cp src/*.mod example/specialfunctions_gamma
 cp src/*.mod example/ascii
 cp src/*.mod example/version
+cp src/*.mod example/optval
 make
 ./example/specialfunctions_gamma/example_gamma
 ./example/specialfunctions_gamma/example_gamma_p
@@ -46,3 +49,5 @@ make
 ./example/ascii/example_ascii_to_upper
 
 ./example/version/example_version
+
+./example/optval/example_optval
