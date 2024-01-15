@@ -25,6 +25,28 @@ make
 
 ./example/optval/example_optval
 
+if ./example/error/example_check1 ; then
+    echo "Command succeeded. It was expected to fail"
+    exit 1
+fi
+if ./example/error/example_check2 ; then
+    echo "Command succeeded. It was expected to fail"
+    exit 1
+fi
+./example/error/example_check3 ;
+if ./example/error/example_check4 ; then
+    echo "Command succeeded. It was expected to fail"
+    exit 1
+fi
+if ./example/error/example_error_stop1 ; then
+    echo "Command succeeded. It was expected to fail"
+    exit 1
+fi
+if ./example/error/example_error_stop2 ; then
+    echo "Command succeeded. It was expected to fail"
+    exit 1
+fi
+
 git clean -dfx
 
 FC=lfortran cmake .
@@ -33,6 +55,7 @@ cp src/*.mod example/specialfunctions_gamma
 cp src/*.mod example/ascii
 cp src/*.mod example/version
 cp src/*.mod example/optval
+cp src/*.mod example/error
 make
 ./example/specialfunctions_gamma/example_gamma
 ./example/specialfunctions_gamma/example_gamma_p
@@ -51,3 +74,25 @@ make
 ./example/version/example_version
 
 ./example/optval/example_optval
+
+if ./example/error/example_check1 ; then
+    echo "Command succeeded. It was expected to fail"
+    exit 1
+fi
+if ./example/error/example_check2 ; then
+    echo "Command succeeded. It was expected to fail"
+    exit 1
+fi
+./example/error/example_check3 ;
+if ./example/error/example_check4 ; then
+    echo "Command succeeded. It was expected to fail"
+    exit 1
+fi
+if ./example/error/example_error_stop1 ; then
+    echo "Command succeeded. It was expected to fail"
+    exit 1
+fi
+if ./example/error/example_error_stop2 ; then
+    echo "Command succeeded. It was expected to fail"
+    exit 1
+fi
