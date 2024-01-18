@@ -2,8 +2,10 @@
 
 # Create a list of the files to be preprocessed
 set(fppFiles
-    stdlib_ascii.fypp
+    stdlib_string_type.fypp
+    stdlib_strings.fypp
     stdlib_kinds.fypp
+    stdlib_ascii.fypp
     stdlib_optval.fypp
     stdlib_specialfunctions_gamma.fypp
     stdlib_version.fypp
@@ -19,6 +21,9 @@ set(SRC
     stdlib_specialfunctions.f90
     stdlib_specialfunctions_legendre.f90
     stdlib_version.f90
+    stdlib_array.f90
+    stdlib_kinds.f90
+    stdlib_strings.f90
     ${outFiles}
 )
 
