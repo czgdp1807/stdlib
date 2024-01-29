@@ -15,13 +15,14 @@ contains
   !>
   !> Return the positions of the true elements in array.
   !> [Specification](../page/specs/stdlib_array.html#trueloc)
-  pure function trueloc(array, lbound) result(loc)
+  pure function trueloc(array, result_size, lbound) result(loc)
     !> Mask of logicals
     logical, intent(in) :: array(:)
+    integer, intent(in) :: result_size
     !> Lower bound of array to index
     integer, intent(in), optional :: lbound
     !> Locations of true elements
-    integer :: loc(count(array))
+    integer :: loc(result_size)
 
     call logicalloc(loc, array, .true., lbound)
   end function trueloc
@@ -30,13 +31,14 @@ contains
   !>
   !> Return the positions of the false elements in array.
   !> [Specification](../page/specs/stdlib_array.html#falseloc)
-  pure function falseloc(array, lbound) result(loc)
+  pure function falseloc(array, result_size, lbound) result(loc)
     !> Mask of logicals
     logical, intent(in) :: array(:)
+    integer, intent(in) :: result_size
     !> Lower bound of array to index
     integer, intent(in), optional :: lbound
     !> Locations of false elements
-    integer :: loc(count(.not.array))
+    integer :: loc(result_size)
 
     call logicalloc(loc, array, .false., lbound)
   end function falseloc
