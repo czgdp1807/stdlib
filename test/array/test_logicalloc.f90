@@ -44,7 +44,7 @@ contains
       call random_number(avec)
 
       bvec = avec
-      bvec(trueloc(bvec < 0)) = 0.0
+      bvec(trueloc(bvec < 0, count(bvec < 0))) = 0.0
 
       call check(error, all(bvec == avec))
       deallocate(avec, bvec)
@@ -64,7 +64,7 @@ contains
 
       call random_number(avec)
 
-      avec(trueloc(avec > 0, lbound(avec, 1))) = 0.0
+      avec(trueloc(avec > 0, count(avec > 0), lbound(avec, 1))) = 0.0
 
       call check(error, all(avec == 0.0))
       deallocate(avec)
@@ -90,7 +90,7 @@ contains
 
       bvec = avec
       tl = tl - timing()
-      bvec(trueloc(bvec > 0)) = 0.0
+      bvec(trueloc(bvec > 0, count(bvec > 0))) = 0.0
       tl = tl + timing()
 
       cvec = avec
@@ -123,7 +123,7 @@ contains
 
       bvec = avec
       tl = tl - timing()
-      bvec(trueloc(bvec > 0)) = 0.0
+      bvec(trueloc(bvec > 0, count(bvec > 0))) = 0.0
       tl = tl + timing()
 
       cvec = avec
@@ -156,7 +156,7 @@ contains
 
       bvec = avec
       tl = tl - timing()
-      bvec(trueloc(bvec > 0)) = 0.0
+      bvec(trueloc(bvec > 0, count(bvec > 0))) = 0.0
       tl = tl + timing()
 
       cvec = avec
@@ -187,7 +187,7 @@ contains
       call random_number(avec)
 
       bvec = avec
-      bvec(falseloc(bvec > 0)) = 0.0
+      bvec(falseloc(bvec > 0, count(.not. (bvec > 0)))) = 0.0
 
       call check(error, all(bvec == avec))
       deallocate(avec, bvec)
@@ -207,13 +207,27 @@ contains
 
       call random_number(avec)
 
-      avec(falseloc(avec < 0, lbound(avec, 1))) = 0.0
+      avec(falseloc(avec < 0, count(.not. (avec < 0)), lbound(avec, 1))) = 0.0
 
       call check(error, all(avec == 0.0))
       deallocate(avec)
       if (allocated(error)) exit
     end do
   end subroutine test_falseloc_all
+
+  subroutine where_user_defined(cond, array, value)
+    logical, allocatable :: cond(:)
+    real, allocatable :: array(:)
+    real :: value
+    integer :: i
+
+    do i = lbound(cond, 1), ubound(cond, 1)
+      if( cond(i) ) then
+        array(i) = value
+      end if
+    end do
+
+  end subroutine
 
   subroutine test_falseloc_where(error)
     !> Error handling
@@ -233,12 +247,12 @@ contains
 
       bvec = avec
       tl = tl - timing()
-      bvec(falseloc(bvec > 0)) = 0.0
+      bvec(falseloc(bvec > 0, count(.not. (bvec > 0)))) = 0.0
       tl = tl + timing()
 
       cvec = avec
       tw = tw - timing()
-      where(.not.(cvec > 0)) cvec = 0.0
+      call where_user_defined(.not.(cvec > 0), cvec, 0.0)
       tw = tw + timing()
 
       call check(error, all(bvec == cvec))
@@ -266,7 +280,7 @@ contains
 
       bvec = avec
       tl = tl - timing()
-      bvec(falseloc(bvec > 0)) = 0.0
+      bvec(falseloc(bvec > 0, count(.not. (bvec > 0)))) = 0.0
       tl = tl + timing()
 
       cvec = avec
@@ -299,7 +313,7 @@ contains
 
       bvec = avec
       tl = tl - timing()
-      bvec(falseloc(bvec > 0)) = 0.0
+      bvec(falseloc(bvec > 0, count(.not. (bvec > 0)))) = 0.0
       tl = tl + timing()
 
       cvec = avec
