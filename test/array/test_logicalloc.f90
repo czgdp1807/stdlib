@@ -3,14 +3,48 @@
 module test_logicalloc
   use stdlib_array, only : trueloc, falseloc
   use stdlib_kinds, only : dp, i8 => int64
-  use stdlib_strings, only : to_string
+  use stdlib_optval, only: optval
+  ! use stdlib_strings, only : to_string
   use testdrive, only : new_unittest, unittest_type, error_type, check
   implicit none
   private
 
-  public :: collect_logicalloc
+  public :: collect_logicalloc, to_string_r_dp
+
+  integer, parameter :: buffer_len = 128
+  character(len=*), parameter :: err_sym = "[*]"
 
 contains
+
+  pure module function to_string_r_dp(value, format) result(string)
+        real(dp), intent(in) :: value
+        character(len=*), intent(in), optional :: format
+        character(len=:), allocatable :: string
+
+        character(len=buffer_len) :: buffer
+        integer :: stat
+
+        write(buffer, '(' // optval(format, "g0") // ')', iostat=stat) value
+        if (stat == 0) then
+            string = trim(buffer)
+        else
+            string = err_sym
+        end if
+
+    end function to_string_r_dp
+
+  function count(mask) result(r)
+      logical, intent(in) :: mask(:)
+      integer :: r
+      integer :: i
+
+      r = 0
+      do i = lbound(mask, 1), ubound(mask, 1)
+          if( mask(i) ) then
+              r = r + 1
+          end if
+      end do
+  end function
 
   !> Collect all exported unit tests
   subroutine collect_logicalloc(testsuite)
@@ -31,12 +65,25 @@ contains
       ]
   end subroutine collect_logicalloc
 
+  subroutine set_indices_to_value(vec, indices, value)
+    real, allocatable, intent(inout) :: vec(:)
+    integer, intent(in) :: indices(:)
+    real, intent(in) :: value
+    integer :: i
+
+    do i = lbound(indices, 1), ubound(indices, 1)
+      vec(indices(i)) = value
+    end do
+
+  end subroutine
+
   subroutine test_trueloc_empty(error)
     !> Error handling
     type(error_type), allocatable, intent(out) :: error
 
     integer :: ndim
     real, allocatable :: avec(:), bvec(:)
+    integer, allocatable :: truelocr(:)
 
     do ndim = 100, 12000, 100
       allocate(avec(ndim))
@@ -44,7 +91,9 @@ contains
       call random_number(avec)
 
       bvec = avec
-      bvec(trueloc(bvec < 0, count(bvec < 0))) = 0.0
+      allocate(truelocr(count(bvec < 0)))
+      truelocr = trueloc(bvec < 0, count(bvec < 0))
+      call set_indices_to_value(bvec, truelocr, 0.0)
 
       call check(error, all(bvec == avec))
       deallocate(avec, bvec)
@@ -58,13 +107,16 @@ contains
 
     integer :: ndim
     real, allocatable :: avec(:)
+    integer, allocatable :: truelocr(:)
 
     do ndim = 100, 12000, 100
       allocate(avec(-ndim/2:ndim))
 
       call random_number(avec)
 
-      avec(trueloc(avec > 0, count(avec > 0), lbound(avec, 1))) = 0.0
+      allocate(truelocr(count(avec > 0)))
+      truelocr = trueloc(avec > 0, count(avec > 0), lbound(avec, 1))
+      call set_indices_to_value(avec, truelocr, 0.0)
 
       call check(error, all(avec == 0.0))
       deallocate(avec)
@@ -78,6 +130,7 @@ contains
 
     integer :: ndim
     real, allocatable :: avec(:), bvec(:), cvec(:)
+    integer, allocatable :: truelocr(:)
     real(dp) :: tl, tw
 
     tl = 0.0_dp
@@ -90,7 +143,9 @@ contains
 
       bvec = avec
       tl = tl - timing()
-      bvec(trueloc(bvec > 0, count(bvec > 0))) = 0.0
+      allocate(truelocr(count(bvec > 0)))
+      truelocr = trueloc(bvec > 0, count(bvec > 0))
+      call set_indices_to_value(bvec, truelocr, 0.0)
       tl = tl + timing()
 
       cvec = avec
@@ -111,6 +166,7 @@ contains
 
     integer :: ndim
     real, allocatable :: avec(:), bvec(:), cvec(:)
+    integer, allocatable :: truelocr(:)
     real(dp) :: tl, tm
 
     tl = 0.0_dp
@@ -123,7 +179,9 @@ contains
 
       bvec = avec
       tl = tl - timing()
-      bvec(trueloc(bvec > 0, count(bvec > 0))) = 0.0
+      allocate(truelocr(count(bvec > 0)))
+      truelocr = trueloc(bvec > 0, count(bvec > 0))
+      call set_indices_to_value(bvec, truelocr, 0.0)
       tl = tl + timing()
 
       cvec = avec
@@ -144,6 +202,7 @@ contains
 
     integer :: ndim
     real, allocatable :: avec(:), bvec(:), cvec(:)
+    integer, allocatable :: truelocr(:), packr(:)
     real(dp) :: tl, tp
 
     tl = 0.0_dp
@@ -156,14 +215,18 @@ contains
 
       bvec = avec
       tl = tl - timing()
-      bvec(trueloc(bvec > 0, count(bvec > 0))) = 0.0
+      allocate(truelocr(count(bvec > 0)))
+      truelocr = trueloc(bvec > 0, count(bvec > 0))
+      call set_indices_to_value(bvec, truelocr, 0.0)
       tl = tl + timing()
 
       cvec = avec
       tp = tp - timing()
       block
         integer :: i
-        cvec(pack([(i, i=1, size(cvec))], cvec > 0)) = 0.0
+        allocate(packr(count(cvec > 0)))
+        packr = pack([(i, i=1, size(cvec))], cvec > 0, count(cvec > 0))
+        call set_indices_to_value(cvec, packr, 0.0)
       end block
       tp = tp + timing()
 
@@ -180,6 +243,7 @@ contains
 
     integer :: ndim
     real, allocatable :: avec(:), bvec(:)
+    integer, allocatable :: falselocr(:)
 
     do ndim = 100, 12000, 100
       allocate(avec(ndim))
@@ -187,7 +251,9 @@ contains
       call random_number(avec)
 
       bvec = avec
-      bvec(falseloc(bvec > 0, count(.not. (bvec > 0)))) = 0.0
+      allocate(falselocr(count(.not. (bvec > 0))))
+      falselocr = falseloc(bvec > 0, count(.not. (bvec > 0)))
+      call set_indices_to_value(bvec, falselocr, 0.0)
 
       call check(error, all(bvec == avec))
       deallocate(avec, bvec)
@@ -199,15 +265,19 @@ contains
     !> Error handling
     type(error_type), allocatable, intent(out) :: error
 
-    integer :: ndim
+    integer :: ndim, falselocrsize
     real, allocatable :: avec(:)
+    integer, allocatable :: falselocr(:)
 
     do ndim = 100, 12000, 100
       allocate(avec(-ndim/2:ndim))
 
       call random_number(avec)
 
-      avec(falseloc(avec < 0, count(.not. (avec < 0)), lbound(avec, 1))) = 0.0
+      falselocrsize = count(avec >= 0)
+      allocate(falselocr(falselocrsize))
+      falselocr = falseloc(avec < 0, falselocrsize, lbound(avec, 1))
+      call set_indices_to_value(avec, falselocr, 0.0)
 
       call check(error, all(avec == 0.0))
       deallocate(avec)
@@ -235,6 +305,7 @@ contains
 
     integer :: ndim
     real, allocatable :: avec(:), bvec(:), cvec(:)
+    integer, allocatable :: falselocr(:)
     real(dp) :: tl, tw
 
     tl = 0.0_dp
@@ -247,7 +318,9 @@ contains
 
       bvec = avec
       tl = tl - timing()
-      bvec(falseloc(bvec > 0, count(.not. (bvec > 0)))) = 0.0
+      allocate(falselocr(count(.not. (bvec > 0))))
+      falselocr = falseloc(bvec > 0, count(.not. (bvec > 0)))
+      call set_indices_to_value(bvec, falselocr, 0.0)
       tl = tl + timing()
 
       cvec = avec
@@ -268,6 +341,7 @@ contains
 
     integer :: ndim
     real, allocatable :: avec(:), bvec(:), cvec(:)
+    integer, allocatable :: falselocr(:)
     real(dp) :: tl, tm
 
     tl = 0.0_dp
@@ -280,7 +354,9 @@ contains
 
       bvec = avec
       tl = tl - timing()
-      bvec(falseloc(bvec > 0, count(.not. (bvec > 0)))) = 0.0
+      allocate(falselocr(count(.not. (bvec > 0))))
+      falselocr = falseloc(bvec > 0, count(.not. (bvec > 0)))
+      call set_indices_to_value(bvec, falselocr, 0.0)
       tl = tl + timing()
 
       cvec = avec
@@ -295,12 +371,29 @@ contains
     call report("falseloc", tl, "merge", tm)
   end subroutine test_falseloc_merge
 
+  function pack(array, mask, resultsize) result(r)
+    integer, intent(in) :: array(:)
+    logical, intent(in) :: mask(:)
+    integer, intent(in) :: resultsize
+    integer :: r(resultsize)
+    integer :: i, j
+
+    j = 1
+    do i = lbound(array, 1), ubound(array, 1)
+      if( mask(i) ) then
+        r(j) = array(i)
+        j = j + 1
+      end if
+    end do
+  end function
+
   subroutine test_falseloc_pack(error)
     !> Error handling
     type(error_type), allocatable, intent(out) :: error
 
-    integer :: ndim
+    integer :: ndim, packrsize
     real, allocatable :: avec(:), bvec(:), cvec(:)
+    integer, allocatable :: falselocr(:), packr(:)
     real(dp) :: tl, tp
 
     tl = 0.0_dp
@@ -313,14 +406,19 @@ contains
 
       bvec = avec
       tl = tl - timing()
-      bvec(falseloc(bvec > 0, count(.not. (bvec > 0)))) = 0.0
+      allocate(falselocr(count(.not. (bvec > 0))))
+      falselocr = falseloc(bvec > 0, count(.not. (bvec > 0)))
+      call set_indices_to_value(bvec, falselocr, 0.0)
       tl = tl + timing()
 
       cvec = avec
       tp = tp - timing()
       block
         integer :: i
-        cvec(pack([(i, i=1, size(cvec))], cvec < 0)) = 0.0
+        packrsize = count(cvec < 0)
+        allocate(packr(packrsize))
+        packr = pack([(i, i=1, size(cvec))], cvec < 0, packrsize)
+        call set_indices_to_value(cvec, packr, 0.0)
       end block
       tp = tp + timing()
 
@@ -338,9 +436,9 @@ contains
 
     !$omp critical
     print '(2x, "[Timing]", *(1x, g0))', &
-      l1//":", to_string(t1, fmt)//"s", &
-      l2//":", to_string(t2, fmt)//"s", &
-      "ratio:", to_string(t1/t2, "f4.1")
+      l1//":", to_string_r_dp(t1, fmt)//"s", &
+      l2//":", to_string_r_dp(t2, fmt)//"s", &
+      "ratio:", to_string_r_dp(t1/t2, "f4.1")
     !$omp end critical
   end subroutine report
 
