@@ -4,6 +4,7 @@
 set(fppFiles
     stdlib_string_type.fypp
     stdlib_strings.fypp
+    stdlib_strings_to_string.fypp
     stdlib_kinds.fypp
     stdlib_ascii.fypp
     stdlib_optval.fypp
@@ -24,6 +25,7 @@ set(SRC
     stdlib_array.f90
     stdlib_kinds.f90
     stdlib_strings.f90
+    stdlib_strings_to_string.f90
     ${outFiles}
 )
 
