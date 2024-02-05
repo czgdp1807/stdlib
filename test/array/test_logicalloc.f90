@@ -38,12 +38,12 @@ contains
 
     testsuite = [ &
       new_unittest("trueloc-empty", test_trueloc_empty), &
-      ! new_unittest("trueloc-all", test_trueloc_all), &
+      new_unittest("trueloc-all", test_trueloc_all), &
       new_unittest("trueloc-where", test_trueloc_where), &
       new_unittest("trueloc-merge", test_trueloc_merge), &
       new_unittest("trueloc-pack", test_trueloc_pack), &
       new_unittest("falseloc-empty", test_falseloc_empty), &
-      ! new_unittest("falseloc-all", test_falseloc_all), &
+      new_unittest("falseloc-all", test_falseloc_all), &
       new_unittest("falseloc-where", test_falseloc_where), &
       new_unittest("falseloc-merge", test_falseloc_merge), &
       new_unittest("falseloc-pack", test_falseloc_pack) &
@@ -95,7 +95,7 @@ contains
     integer, allocatable :: truelocr(:)
 
     do ndim = 100, 12000, 100
-      allocate(avec(-ndim/2:ndim))
+      allocate(avec(-(ndim/2):ndim))
 
       call random_number(avec)
 
@@ -255,7 +255,7 @@ contains
     integer, allocatable :: falselocr(:)
 
     do ndim = 100, 12000, 100
-      allocate(avec(-ndim/2:ndim))
+      allocate(avec(-(ndim/2):ndim))
 
       call random_number(avec)
 
@@ -265,7 +265,7 @@ contains
       call set_indices_to_value(avec, falselocr, 0.0)
 
       call check(error, all(avec == 0.0))
-      deallocate(avec)
+      deallocate(avec, falselocr)
       if (allocated(error)) exit
     end do
   end subroutine test_falseloc_all
