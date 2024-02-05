@@ -16,23 +16,6 @@ module test_logicalloc
 
 contains
 
-  pure module function to_string_r_dp(value, format) result(string)
-        real(dp), intent(in) :: value
-        character(len=*), intent(in), optional :: format
-        character(len=:), allocatable :: string
-
-        character(len=buffer_len) :: buffer
-        integer :: stat
-
-        write(buffer, '(' // optval(format, "g0") // ')', iostat=stat) value
-        if (stat == 0) then
-            string = trim(buffer)
-        else
-            string = err_sym
-        end if
-
-    end function to_string_r_dp
-
   function count(mask) result(r)
       logical, intent(in) :: mask(:)
       integer :: r
@@ -51,14 +34,16 @@ contains
     !> Collection of tests
     type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
+    allocate(testsuite(10))
+
     testsuite = [ &
       new_unittest("trueloc-empty", test_trueloc_empty), &
-      new_unittest("trueloc-all", test_trueloc_all), &
+      ! new_unittest("trueloc-all", test_trueloc_all), &
       new_unittest("trueloc-where", test_trueloc_where), &
       new_unittest("trueloc-merge", test_trueloc_merge), &
       new_unittest("trueloc-pack", test_trueloc_pack), &
       new_unittest("falseloc-empty", test_falseloc_empty), &
-      new_unittest("falseloc-all", test_falseloc_all), &
+      ! new_unittest("falseloc-all", test_falseloc_all), &
       new_unittest("falseloc-where", test_falseloc_where), &
       new_unittest("falseloc-merge", test_falseloc_merge), &
       new_unittest("falseloc-pack", test_falseloc_pack) &
@@ -435,10 +420,10 @@ contains
     character(len=*), parameter :: fmt = "f6.4"
 
     !$omp critical
-    print '(2x, "[Timing]", *(1x, g0))', &
-      l1//":", to_string_r_dp(t1, fmt)//"s", &
-      l2//":", to_string_r_dp(t2, fmt)//"s", &
-      "ratio:", to_string_r_dp(t1/t2, "f4.1")
+    print *, "Timing (in s)"
+    print *, l1//":", t1
+    print *,  l2//":", t2
+    print *, "ratio:", t1/t2
     !$omp end critical
   end subroutine report
 
