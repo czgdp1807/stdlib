@@ -9,7 +9,7 @@ module test_logicalloc
   implicit none
   private
 
-  public :: collect_logicalloc, to_string_r_dp
+  public :: collect_logicalloc
 
   integer, parameter :: buffer_len = 128
   character(len=*), parameter :: err_sym = "[*]"
@@ -81,7 +81,7 @@ contains
       call set_indices_to_value(bvec, truelocr, 0.0)
 
       call check(error, all(bvec == avec))
-      deallocate(avec, bvec)
+      deallocate(avec, bvec, truelocr)
       if (allocated(error)) exit
     end do
   end subroutine test_trueloc_empty
@@ -104,7 +104,7 @@ contains
       call set_indices_to_value(avec, truelocr, 0.0)
 
       call check(error, all(avec == 0.0))
-      deallocate(avec)
+      deallocate(avec, truelocr)
       if (allocated(error)) exit
     end do
   end subroutine test_trueloc_all
@@ -139,7 +139,7 @@ contains
       tw = tw + timing()
 
       call check(error, all(bvec == cvec))
-      deallocate(avec, bvec, cvec)
+      deallocate(avec, bvec, cvec, truelocr)
       if (allocated(error)) exit
     end do
     call report("trueloc", tl, "where", tw)
@@ -175,7 +175,7 @@ contains
       tm = tm + timing()
 
       call check(error, all(bvec == cvec))
-      deallocate(avec, bvec, cvec)
+      deallocate(avec, bvec, cvec, truelocr)
       if (allocated(error)) exit
     end do
     call report("trueloc", tl, "merge", tm)
@@ -216,7 +216,7 @@ contains
       tp = tp + timing()
 
       call check(error, all(bvec == cvec))
-      deallocate(avec, bvec, cvec)
+      deallocate(avec, bvec, cvec, truelocr, packr)
       if (allocated(error)) exit
     end do
     call report("trueloc", tl, "pack", tp)
@@ -241,7 +241,7 @@ contains
       call set_indices_to_value(bvec, falselocr, 0.0)
 
       call check(error, all(bvec == avec))
-      deallocate(avec, bvec)
+      deallocate(avec, bvec, falselocr)
       if (allocated(error)) exit
     end do
   end subroutine test_falseloc_empty
@@ -314,7 +314,7 @@ contains
       tw = tw + timing()
 
       call check(error, all(bvec == cvec))
-      deallocate(avec, bvec, cvec)
+      deallocate(avec, bvec, cvec, falselocr)
       if (allocated(error)) exit
     end do
     call report("falseloc", tl, "where", tw)
@@ -350,7 +350,7 @@ contains
       tm = tm + timing()
 
       call check(error, all(bvec == cvec))
-      deallocate(avec, bvec, cvec)
+      deallocate(avec, bvec, cvec, falselocr)
       if (allocated(error)) exit
     end do
     call report("falseloc", tl, "merge", tm)
@@ -408,7 +408,7 @@ contains
       tp = tp + timing()
 
       call check(error, all(bvec == cvec))
-      deallocate(avec, bvec, cvec)
+      deallocate(avec, bvec, cvec, falselocr, packr)
       if (allocated(error)) exit
     end do
     call report("falseloc", tl, "pack", tp)
