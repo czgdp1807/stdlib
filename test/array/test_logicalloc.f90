@@ -286,7 +286,7 @@ contains
   end subroutine test_falseloc_all
 
   subroutine where_user_defined(cond, array, value)
-    logical, allocatable :: cond(:)
+    logical :: cond(:)
     real, allocatable :: array(:)
     real :: value
     integer :: i
@@ -464,9 +464,11 @@ program tester
 
   stat = 0
 
+  allocate(testsuites(1))
+  call new_testsuite("logicalloc", collect_logicalloc, testsuites(1))
+
   testsuites = [ &
-    new_testsuite("logicalloc", collect_logicalloc) &
-    ]
+    testsuites(1) ]
 
   do is = 1, size(testsuites)
     write(error_unit, fmt) "Testing:", testsuites(is)%name
