@@ -4,7 +4,7 @@ set -ex
 
 git clean -dfx
 
-FC=gfortran cmake .
+FC=gfortran cmake . -DBUILD_EXAMPLE=ON
 make fortran_stdlib
 make
 ./example/specialfunctions_gamma/example_gamma
@@ -49,7 +49,7 @@ fi
 
 git clean -dfx
 
-FC=lfortran cmake .
+FC="lfortran --cpp" cmake . -DTEST_DRIVE_BUILD_TESTING=OFF -DBUILD_TESTING=OFF -DBUILD_EXAMPLE=ON
 make fortran_stdlib
 cp src/*.mod example/specialfunctions_gamma
 cp src/*.mod example/ascii
