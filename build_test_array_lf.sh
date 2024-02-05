@@ -4,10 +4,10 @@ set -ex
 
 git clean -fdx
 
-FC="lfortran --cpp" cmake .
+FC="lfortran --cpp --realloc-lhs" cmake .
 make fortran_stdlib
 cp src/*.mod test/array
 cd test/array
-lfortran --cpp ../../subprojects/test-drive/src/testdrive.F90 -c
-lfortran test_logicalloc.f90 -o test_logicalloc.out
+lfortran --cpp --realloc-lhs ../../subprojects/test-drive/src/testdrive.F90 -c
+lfortran --realloc-lhs test_logicalloc.f90 -o test_logicalloc.out
 ./test_logicalloc.out
