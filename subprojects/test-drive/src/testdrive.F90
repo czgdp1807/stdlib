@@ -331,7 +331,6 @@ contains
 
     parallel_ = .true.
     if(present(parallel)) parallel_ = parallel
-
     call collect(testsuite)
 
     !$omp parallel do schedule(dynamic) shared(testsuite, unit) reduction(+:stat) &
@@ -398,10 +397,10 @@ contains
     character(len=:), allocatable :: message
 
     call test_var%test(error)
-    if (.not.test_skipped(error)) then
+    if (.not.test_skipped(error, allocated(error))) then
       if (allocated(error) .neqv. test_var%should_fail) stat = stat + 1
     end if
-    call make_output(message, test_var, error)
+    call make_output(message, test_var, error, allocated(error))
     !$omp critical(testdrive_testsuite)
     write(unit, '(a)') message
     !$omp end critical(testdrive_testsuite)
@@ -412,24 +411,25 @@ contains
   end subroutine run_unittest
 
 
-  pure function test_skipped(error) result(is_skipped)
+  pure function test_skipped(error, is_error_present) result(is_skipped)
 
     !> Error handling
-    type(error_type), intent(in), optional :: error
+    type(error_type), intent(in) :: error
+    logical, intent(in) :: is_error_present
 
     !> Test was skipped
     logical :: is_skipped
 
     is_skipped = .false.
-    if (present(error)) then
-      is_skipped = error%stat == skipped
+    if (is_error_present) then
+        is_skipped = error%stat == skipped
     end if
 
   end function test_skipped
 
 
   !> Create output message for test (this procedure is pure and therefore cannot launch tests)
-  pure subroutine make_output(output, test, error)
+  pure subroutine make_output(output, test, error, is_error_present)
 
     !> Output message for display
     character(len=:), allocatable, intent(out) :: output
@@ -438,18 +438,19 @@ contains
     type(unittest_type), intent(in) :: test
 
     !> Error handling
-    type(error_type), intent(in), optional :: error
+    type(error_type), intent(in) :: error
+    logical, intent(in) :: is_error_present
 
     character(len=:), allocatable :: label
     character(len=*), parameter :: indent = "       " // "..." // " "
 
-    if (test_skipped(error)) then
+    if (test_skipped(error, is_error_present)) then
       output = indent // test%name // " [SKIPPED]" &
         & // new_line("a") // "  Message: " // error%message
       return
     end if
 
-    if (present(error) .neqv. test%should_fail) then
+    if (is_error_present .neqv. test%should_fail) then
       if (test%should_fail) then
         label = " [UNEXPECTED PASS]"
       else
@@ -463,7 +464,7 @@ contains
       end if
     end if
     output = indent // test%name // label
-    if (present(error)) then
+    if (is_error_present) then
       output = output // new_line("a") // "  Message: " // error%message
     end if
   end subroutine make_output
