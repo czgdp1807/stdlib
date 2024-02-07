@@ -6,5 +6,4 @@ git clean -fdx
 
 FC=gfortran cmake . -DTEST_DRIVE_BUILD_TESTING=OFF
 make -j8
-cd test/array
-./test_logicalloc
+ctest
