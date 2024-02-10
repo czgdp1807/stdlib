@@ -51,11 +51,6 @@ git clean -dfx
 
 FC="lfortran --cpp" cmake . -DTEST_DRIVE_BUILD_TESTING=OFF -DBUILD_TESTING=OFF -DBUILD_EXAMPLE=ON
 make fortran_stdlib
-cp src/*.mod example/specialfunctions_gamma
-cp src/*.mod example/ascii
-cp src/*.mod example/version
-cp src/*.mod example/optval
-cp src/*.mod example/error
 make
 ./example/specialfunctions_gamma/example_gamma
 ./example/specialfunctions_gamma/example_gamma_p
