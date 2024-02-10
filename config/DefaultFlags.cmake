@@ -37,6 +37,8 @@ elseif(CMAKE_Fortran_COMPILER_ID MATCHES "^Intel")
 else()
   set(
     CMAKE_Fortran_FLAGS_INIT
+    "--cpp"
+    "--realloc-lhs"
   )
   set(
     CMAKE_Fortran_FLAGS_RELEASE_INIT
