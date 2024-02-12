@@ -449,11 +449,9 @@ program tester
 
   stat = 0
 
-  allocate(testsuites(1))
-  call new_testsuite("logicalloc", collect_logicalloc, testsuites(1))
-
   testsuites = [ &
-    testsuites(1) ]
+     new_testsuite("logicalloc", collect_logicalloc) &
+     ]
 
   do is = 1, size(testsuites)
     write(error_unit, fmt) "Testing:", testsuites(is)%name

@@ -483,9 +483,9 @@ program tester
 
     stat = 0
 
-    allocate(testsuites(1))
-
-    call new_testsuite("optval", collect_optval, testsuites(1))
+    testsuites = [ &
+         new_testsuite("optval", collect_optval) &
+         ]
 
     do is = 1, size(testsuites)
         write(error_unit, fmt) "Testing:", testsuites(is)%name

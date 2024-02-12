@@ -542,7 +542,7 @@ contains
 
 
   !> Register a new testsuite
-  subroutine new_testsuite(name, collect, self)
+  function new_testsuite(name, collect) result(self)
 
     !> Name of the testsuite
     character(len=*), intent(in) :: name
@@ -551,12 +551,12 @@ contains
     procedure(collect_interface) :: collect
 
     !> Newly registered testsuite
-    type(testsuite_type), intent(out) :: self
+    type(testsuite_type) :: self
 
     self%name = name
     self%collect => collect
 
-  end subroutine new_testsuite
+  end function new_testsuite
 
 
   subroutine check_stat(error, stat, message, more)
