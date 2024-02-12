@@ -26,9 +26,10 @@ program tester
 
   stat = 0
 
-  allocate(testsuites(2))
-  call new_testsuite("check", collect_check, testsuites(1))
-  call new_testsuite("select", collect_select, testsuites(2))
+  testsuites = [ &
+    new_testsuite("check", collect_check), &
+    new_testsuite("select", collect_select) &
+    ]
 
   call get_argument(1, suite_name)
   call get_argument(2, test_name)
