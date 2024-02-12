@@ -2,7 +2,7 @@
 
 module test_optval
     use, intrinsic :: iso_fortran_env, only: &
-        sp => real32, dp => real64, qp => real128, &
+        sp => real32, dp => real64, qp => real64, &
         int8, int16, int32, int64
     use testdrive, only : new_unittest, unittest_type, error_type, check, skip_test
     use stdlib_optval, only: optval
@@ -324,8 +324,8 @@ contains
         type(error_type), allocatable, intent(out) :: error
 
         complex(sp), dimension(2) :: z1, z2
-        z1 = cmplx(1.0_sp, 2.0_sp, kind=sp)*[1.0_sp, -1.0_sp]
-        z2 = cmplx(2.0_sp, 2.0_sp, kind=sp)*[1.0_sp, -1.0_sp]
+        z1 = [cmplx(1.0_sp, 2.0_sp, kind=sp)*1.0_sp, cmplx(1.0_sp, 2.0_sp, kind=sp)*(-1.0_sp)]
+        z2 = [cmplx(2.0_sp, 2.0_sp, kind=sp)*1.0_sp, cmplx(2.0_sp, 2.0_sp, kind=sp)*(-1.0_sp)]
         call check(error, all(foo_csp_arr(z1) == z1))
         if (allocated(error)) return
         call check(error, all(foo_csp_arr() == z2))
@@ -335,7 +335,7 @@ contains
     function foo_csp_arr(x) result(z)
         complex(sp), dimension(2), intent(in), optional :: x
         complex(sp), dimension(2) :: z
-        z = optval(x, cmplx(2.0_sp, 2.0_sp, kind=sp)*[1.0_sp, -1.0_sp])
+        z = optval(x, [cmplx(2.0_sp, 2.0_sp, kind=sp)*1.0_sp, cmplx(2.0_sp, 2.0_sp, kind=sp)*(-1.0_sp)])
     end function foo_csp_arr
 
 
@@ -344,8 +344,8 @@ contains
         type(error_type), allocatable, intent(out) :: error
 
         complex(dp), dimension(2) :: z1, z2
-        z1 = cmplx(1.0_dp, 2.0_dp, kind=dp)*[1.0_dp, -1.0_dp]
-        z2 = cmplx(2.0_dp, 2.0_dp, kind=dp)*[1.0_dp, -1.0_dp]
+        z1 = [cmplx(1.0_dp, 2.0_dp, kind=dp)*1.0_dp, cmplx(1.0_dp, 2.0_dp, kind=dp)*(-1.0_dp)]
+        z2 = [cmplx(2.0_dp, 2.0_dp, kind=dp)*1.0_dp, cmplx(2.0_dp, 2.0_dp, kind=dp)*(-1.0_dp)]
         call check(error, all(foo_cdp_arr(z1) == z1))
         if (allocated(error)) return
         call check(error, all(foo_cdp_arr() == z2))
@@ -355,7 +355,7 @@ contains
     function foo_cdp_arr(x) result(z)
         complex(dp), dimension(2), intent(in), optional :: x
         complex(dp), dimension(2) :: z
-        z = optval(x, cmplx(2.0_dp, 2.0_dp, kind=dp)*[1.0_dp, -1.0_dp])
+        z = optval(x, [cmplx(2.0_dp, 2.0_dp, kind=dp)*1.0_dp, cmplx(2.0_dp, 2.0_dp, kind=dp)*(-1.0_dp)])
     end function foo_cdp_arr
 
 
@@ -365,8 +365,8 @@ contains
 
 #:if WITH_QP
         complex(qp), dimension(2) :: z1, z2
-        z1 = cmplx(1.0_qp, 2.0_qp, kind=qp)*[1.0_qp, -1.0_qp]
-        z2 = cmplx(2.0_qp, 2.0_qp, kind=qp)*[1.0_qp, -1.0_qp]
+        z1 = [cmplx(1.0_qp, 2.0_qp, kind=qp)*1.0_qp, cmplx(1.0_qp, 2.0_qp, kind=qp)*(-1.0_qp)]
+        z2 = [cmplx(2.0_qp, 2.0_qp, kind=qp)*1.0_qp, cmplx(2.0_qp, 2.0_qp, kind=qp)*(-1.0_qp)]
         call check(error, all(foo_cqp_arr(z1) == z1))
         if (allocated(error)) return
         call check(error, all(foo_cqp_arr() == z2))
@@ -380,7 +380,7 @@ contains
     function foo_cqp_arr(x) result(z)
         complex(qp), dimension(2), intent(in), optional :: x
         complex(qp), dimension(2) :: z
-        z = optval(x, cmplx(2.0_qp, 2.0_qp, kind=qp)*[1.0_qp, -1.0_qp])
+        z = optval(x, [cmplx(2.0_qp, 2.0_qp, kind=qp)*1.0_qp, cmplx(2.0_qp, 2.0_qp, kind=qp)*(-1.0_qp)])
     end function foo_cqp_arr
 #:endif
 
@@ -483,9 +483,9 @@ program tester
 
     stat = 0
 
-    testsuites = [ &
-        new_testsuite("optval", collect_optval) &
-        ]
+    allocate(testsuites(1))
+
+    call new_testsuite("optval", collect_optval, testsuites(1))
 
     do is = 1, size(testsuites)
         write(error_unit, fmt) "Testing:", testsuites(is)%name
