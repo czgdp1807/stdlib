@@ -21,7 +21,6 @@ set(SRC
     stdlib_ascii.f90
     stdlib_optval.f90
     stdlib_specialfunctions.f90
-    stdlib_specialfunctions_legendre.f90
     stdlib_version.f90
     stdlib_array.f90
     stdlib_kinds.f90
