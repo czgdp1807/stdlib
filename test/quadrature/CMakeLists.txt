@@ -6,5 +6,5 @@ set(
 fypp_f90("${fyppFlags}" "${fppFiles}" outFiles)
 
 # ADDTEST(trapz)
-# ADDTEST(simps)
+ADDTEST(simps)
 ADDTEST(gauss)
