@@ -17,3 +17,4 @@ list(
 
 add_subdirectory(array)
 add_subdirectory(optval)
+add_subdirectory(quadrature)

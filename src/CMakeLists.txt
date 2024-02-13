@@ -10,6 +10,7 @@ set(fppFiles
     stdlib_optval.fypp
     stdlib_specialfunctions_gamma.fypp
     stdlib_version.fypp
+    stdlib_quadrature.fypp
 )
 
 
@@ -26,6 +27,7 @@ set(SRC
     stdlib_kinds.f90
     stdlib_strings.f90
     stdlib_strings_to_string.f90
+    stdlib_quadrature.f90
     ${outFiles}
 )
 
