@@ -11,6 +11,7 @@ set(fppFiles
     stdlib_specialfunctions_gamma.fypp
     stdlib_version.fypp
     stdlib_quadrature.fypp
+    stdlib_sorting.fypp
 )
 
 
@@ -27,6 +28,7 @@ set(SRC
     stdlib_strings.f90
     stdlib_strings_to_string.f90
     stdlib_quadrature.f90
+    stdlib_sorting.f90
     ${outFiles}
 )
 
