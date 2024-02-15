@@ -68,7 +68,7 @@ module stdlib_ascii
     character(len=*), public, parameter :: whitespace = " "//TAB//VT//CR//LF//FF !! ASCII _whitespace
 
 
-    !> Returns a new character sequence which is the lower case 
+    !> Returns a new character sequence which is the lower case
     !> version of the input character sequence
     !> This method is pure and returns a character sequence
     interface to_lower
@@ -102,7 +102,7 @@ module stdlib_ascii
     interface reverse
         module procedure :: reverse
     end interface reverse
-    
+
 
 contains
 
@@ -226,8 +226,8 @@ contains
         integer, parameter :: wp= iachar('a')-iachar('A'), BA=iachar('A'), BZ=iachar('Z')
         integer :: k
         !Check whether the integer equivalent is between BA=65 and BZ=90
-        k = ichar(c) 
-        if (k>=BA.and.k<=BZ) k = k + wp 
+        k = ichar(c)
+        if (k>=BA.and.k<=BZ) k = k + wp
         t = char(k)
 
     end function char_to_lower
@@ -240,8 +240,8 @@ contains
         integer, parameter :: wp= iachar('a')-iachar('A'), la=iachar('a'), lz=iachar('z')
         integer :: k
         !Check whether the integer equivalent is between la=97 and lz=122
-        k = ichar(c) 
-        if (k>=la.and.k<=lz) k = k - wp 
+        k = ichar(c)
+        if (k>=la.and.k<=lz) k = k - wp
         t = char(k)
 
     end function char_to_upper
@@ -336,11 +336,13 @@ contains
     pure function reverse(string) result(reverse_string)
         character(len=*), intent(in) :: string
         character(len=len(string)) :: reverse_string
-        integer :: i, n
+        integer :: i, n, j
 
         n = len(string)
+        j = n
         do i = 1, n
-            reverse_string(n-i+1:n-i+1) = string(i:i)
+            reverse_string(j:j) = string(i:i)
+            j = j - 1
         end do
 
     end function reverse
