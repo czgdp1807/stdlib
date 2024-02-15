@@ -80,10 +80,10 @@ module stdlib_sorting
 !! and arrays of `type(string_type)`.
 !! ([Specification](../page/specs/stdlib_sorting.html))
 !!
-!! By default sorting is in order of 
-!! increasing value, but there is an option to sort in decreasing order. 
-!! All the subroutines have worst case run time performance of `O(N Ln(N))`, 
-!! but on largely sorted data `ORD_SORT` and `SORT_INDEX` can have a run time 
+!! By default sorting is in order of
+!! increasing value, but there is an option to sort in decreasing order.
+!! All the subroutines have worst case run time performance of `O(N Ln(N))`,
+!! but on largely sorted data `ORD_SORT` and `SORT_INDEX` can have a run time
 !! performance of `O(N)`.
 !!
 !! `ORD_SORT` is a translation of the `"Rust" sort` sorting algorithm in
@@ -138,6 +138,14 @@ module stdlib_sorting
     private
 
     integer, parameter, public :: int_size = int64 !! Integer kind for indexing
+    integer, parameter :: radix_bits = 8
+    integer, parameter :: radix_mask = 255
+    integer(kind=int16), parameter :: radix_bits_i16 = 8_int16
+    integer(kind=int16), parameter :: radix_mask_i16 = 255_int16
+    integer(kind=int32), parameter :: radix_bits_i32 = 8_int32
+    integer(kind=int32), parameter :: radix_mask_i32 = 255_int32
+    integer(kind=int64), parameter :: radix_bits_i64 = 8_int64
+    integer(kind=int64), parameter :: radix_mask_i64 = 255_int64
 
 ! Constants for use by tim_sort
     integer, parameter :: &
@@ -170,10 +178,10 @@ module stdlib_sorting
 !! * array: the rank 1 array to be sorted. It is an `intent(inout)`
 !!   argument of any of the types `integer(int8)`, `integer(int16)`,
 !!   `integer(int32)`, `integer(int64)`, `real(real32)`, `real(real64)`,
-!!   `real(real128)`, `character(*)`, `type(string_type)`, 
-!!   `type(bitset_64)`, `type(bitset_large)`. If both the 
-!!   type of `array` is real and at least one of the elements is a 
-!!   `NaN`, then the ordering of the result is undefined. Otherwise it 
+!!   `real(real128)`, `character(*)`, `type(string_type)`,
+!!   `type(bitset_64)`, `type(bitset_large)`. If both the
+!!   type of `array` is real and at least one of the elements is a
+!!   `NaN`, then the ordering of the result is undefined. Otherwise it
 !!   is defined to be the original elements in non-decreasing order.
 !!
 !! * work (optional): shall be a rank 1 array of the same type as
@@ -221,7 +229,7 @@ module stdlib_sorting
 !! * array: the rank 1 array to be sorted. It is an `intent(inout)`
 !!   argument of any of the types `integer(int8)`, `integer(int16)`,
 !!   `integer(int32)`, `integer(int64)`, `real(real32)`, `real(real64)`,
-!!   `real(real128)`, `character(*)`, `type(string_type)`, 
+!!   `real(real128)`, `character(*)`, `type(string_type)`,
 !!   `type(bitset_64)`, `type(bitset_large)`. If both the type
 !!   of `array` is real and at least one of the elements is a `NaN`, then
 !!   the ordering of the result is undefined. Otherwise it is defined to be the
@@ -306,10 +314,10 @@ module stdlib_sorting
 !! * array: the rank 1 array to be sorted. It is an `intent(inout)`
 !!   argument of any of the types `integer(int8)`, `integer(int16)`,
 !!   `integer(int32)`, `integer(int64)`, `real(real32)`, `real(real64)`,
-!!   `real(real128)`, `character(*)`, `type(string_type)`, 
-!!   `type(bitset_64)`, `type(bitset_large)`. If both the 
-!!   type of `array` is real and at least one of the elements is a `NaN`, 
-!!   then the ordering of the `array` and `index` results is undefined. 
+!!   `real(real128)`, `character(*)`, `type(string_type)`,
+!!   `type(bitset_64)`, `type(bitset_large)`. If both the
+!!   type of `array` is real and at least one of the elements is a `NaN`,
+!!   then the ordering of the `array` and `index` results is undefined.
 !!   Otherwise it is defined to be as specified by reverse.
 !!
 !! * index: a rank 1 array of sorting indices. It is an `intent(out)`
@@ -419,16 +427,7 @@ module stdlib_sorting
 !! non-decreasing data.
 
 #:for t1, t2, name1 in IRSCB_TYPES_ALT_NAME
-        module subroutine ${name1}$_ord_sort( array, work, reverse )
-!! Version: experimental
-!!
-!! `${name1}$_ord_sort( array )` sorts the input `ARRAY` of type `${t1}$`
-!! using a hybrid sort based on the `"Rust" sort` algorithm found in `slice.rs`
-            ${t1}$, intent(inout)         :: array(0:)
-            ${t2}$, intent(out), optional :: work(0:)
-            logical, intent(in), optional :: reverse
-        end subroutine ${name1}$_ord_sort
-
+        procedure :: ${name1}$_ord_sort
 #:endfor
 
     end interface ord_sort
@@ -440,41 +439,12 @@ module stdlib_sorting
 !! It is always O(N) in sorting random data, but need a O(N) buffer.
 !! ([Specification](../page/specs/stdlib_sorting.html#radix_sort-sorts-an-input-array))
 !!
-
-        pure module subroutine int8_radix_sort(array, reverse)
-            integer(kind=int8), dimension(:), intent(inout) :: array
-            logical, intent(in), optional :: reverse
-        end subroutine int8_radix_sort
-
-        pure module subroutine int16_radix_sort(array, work, reverse)
-            integer(kind=int16), dimension(:), intent(inout) :: array
-            integer(kind=int16), dimension(:), intent(inout), target, optional :: work
-            logical, intent(in), optional :: reverse
-        end subroutine int16_radix_sort
-
-        pure module subroutine int32_radix_sort(array, work, reverse)
-            integer(kind=int32), dimension(:), intent(inout) :: array
-            integer(kind=int32), dimension(:), intent(inout), target, optional :: work
-            logical, intent(in), optional :: reverse
-        end subroutine int32_radix_sort
-
-        pure module subroutine int64_radix_sort(array, work, reverse)
-            integer(kind=int64), dimension(:), intent(inout) :: array
-            integer(kind=int64), dimension(:), intent(inout), target, optional :: work
-            logical, intent(in), optional :: reverse
-        end subroutine int64_radix_sort
-
-        module subroutine sp_radix_sort(array, work, reverse)
-            real(kind=sp), dimension(:), intent(inout), target :: array
-            real(kind=sp), dimension(:), intent(inout), target, optional :: work
-            logical, intent(in), optional :: reverse
-        end subroutine sp_radix_sort
-
-        module subroutine dp_radix_sort(array, work, reverse)
-            real(kind=dp), dimension(:), intent(inout), target :: array
-            real(kind=dp), dimension(:), intent(inout), target, optional :: work
-            logical, intent(in), optional :: reverse
-        end subroutine dp_radix_sort
+        procedure :: int8_radix_sort
+        procedure :: int16_radix_sort
+        procedure :: int32_radix_sort
+        procedure :: int64_radix_sort
+        procedure :: sp_radix_sort
+        procedure :: dp_radix_sort
     end interface radix_sort
 
     interface sort
@@ -483,22 +453,9 @@ module stdlib_sorting
 !! The generic subroutine interface implementing the `SORT` algorithm, based
 !! on the `introsort` of David Musser.
 !! ([Specification](../page/specs/stdlib_sorting.html#sort-sorts-an-input-array))
-
 #:for t1, t2, name1 in IRSCB_TYPES_ALT_NAME
-        pure module subroutine ${name1}$_sort( array, reverse )
-!! Version: experimental
-!!
-!! `${name1}$_sort( array[, reverse] )` sorts the input `ARRAY` of type `${t1}$`
-!! using a hybrid sort based on the `introsort` of David Musser.
-!! The algorithm is of order O(N Ln(N)) for all inputs.
-!! Because it relies on `quicksort`, the coefficient of the O(N Ln(N))
-!! behavior is small for random data compared to other sorting algorithms.
-            ${t1}$, intent(inout)         :: array(0:)
-            logical, intent(in), optional :: reverse
-        end subroutine ${name1}$_sort
-
+        procedure :: ${name1}$_sort
 #:endfor
-
     end interface sort
 
     interface sort_index
@@ -516,25 +473,1620 @@ module stdlib_sorting
 !! with a value of `.TRUE.` the indices correspond to a non-increasing sort.
 
 #:for t1, t2, name1 in IRSCB_TYPES_ALT_NAME
-        module subroutine ${name1}$_sort_index( array, index, work, iwork, &
-            reverse )
-!! Version: experimental
-!!
-!! `${name1}$_sort_index( array, index[, work, iwork, reverse] )` sorts
-!! an input `ARRAY` of type `${t1}$`
-!! using a hybrid sort based on the `"Rust" sort` algorithm found in `slice.rs`
-!! and returns the sorted `ARRAY` and an array `INDEX` of indices in the
-!! order that would sort the input `ARRAY` in the desired direction.
-            ${t1}$, intent(inout)                    :: array(0:)
-            integer(int_size), intent(out)           :: index(0:)
-            ${t2}$, intent(out), optional            :: work(0:)
-            integer(int_size), intent(out), optional :: iwork(0:)
-            logical, intent(in), optional            :: reverse
-        end subroutine ${name1}$_sort_index
-
+         procedure :: ${name1}$_sort_index
 #:endfor
 
     end interface sort_index
 
+#:set INT_TYPES_ALT_NAME = list(zip(INT_TYPES, INT_TYPES, INT_KINDS))
+#:set REAL_TYPES_ALT_NAME = list(zip(REAL_TYPES, REAL_TYPES, REAL_KINDS))
+#:set STRING_TYPES_ALT_NAME = list(zip(STRING_TYPES, STRING_TYPES, STRING_KINDS))
+#:set CHAR_TYPES_ALT_NAME = list(zip(["character(len=*)"],  ["character(len=len(array))"], ["char"]))
+#:set BITSET_TYPES_ALT_NAME = list(zip(BITSET_TYPES, BITSET_TYPES, BITSET_KINDS))
+
+#! For better code reuse in fypp, make lists that contain the input types,
+#! with each having output types and a separate name prefix for subroutines
+#! This approach allows us to have the same code for all input types.
+#:set IRSCB_TYPES_ALT_NAME = INT_TYPES_ALT_NAME + REAL_TYPES_ALT_NAME + STRING_TYPES_ALT_NAME + CHAR_TYPES_ALT_NAME &
+    & + BITSET_TYPES_ALT_NAME
+
+#:set SIGN_NAME = ["increase", "decrease"]
+#:set SIGN_TYPE = [">", "<"]
+#:set SIGN_OPP_TYPE = ["<", ">"]
+#:set SIGN_NAME_TYPE = list(zip(SIGN_NAME, SIGN_TYPE, SIGN_OPP_TYPE))
+
+!! Licensing:
+!!
+!! This file is subjec† both to the Fortran Standard Library license, and
+!! to additional licensing requirements as it contains translations of
+!! other software.
+!!
+!! The Fortran Standard Library, including this file, is distributed under
+!! the MIT license that should be included with the library's distribution.
+!!
+!!   Copyright (c) 2021 Fortran stdlib developers
+!!
+!!   Permission is hereby granted, free of charge, to any person obtaining a
+!!   copy of this software and associated documentation files (the
+!!   "Software"),  to deal in the Software without restriction, including
+!!   without limitation the rights to use, copy, modify, merge, publish,
+!!   distribute, sublicense, and/or sellcopies of the Software, and to permit
+!!   persons to whom the Software is furnished to do so, subject to the
+!!   following conditions:
+!!
+!!   The above copyright notice and this permission notice shall be included
+!!   in all copies or substantial portions of the Software.
+!!
+!!   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+!!   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+!!   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+!!   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+!!   CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+!!   TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+!!   SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+!!
+!! The generic subroutine, `SORT`, is substantially a
+!! translation to Fortran 2008, of the `introsort` of David Musser.
+!! David Musser has given permission to include a variant of `introsort`
+!! in the Fortran Standard Library under the MIT license provided
+!! we cite:
+!!
+!!   Musser, D.R., “Introspective Sorting and Selection Algorithms,”
+!!   Software—Practice and Experience, Vol. 27(8), 983–993 (August 1997).
+!!
+!! as the official source of the algorithm.
+
+contains
+
+#:for t1, t2, name1 in IRSCB_TYPES_ALT_NAME
+    pure module subroutine ${name1}$_sort( array, reverse )
+            ${t1}$, intent(inout) :: array(0:)
+            logical, intent(in), optional            :: reverse
+
+            if(optval(reverse, .false.))then
+             call ${name1}$_decrease_sort(array)
+            else
+             call ${name1}$_increase_sort(array)
+            endif
+    end subroutine ${name1}$_sort
+#:endfor
+
+#:for sname, signt, signoppt in SIGN_NAME_TYPE
+#:for t1, t2, name1 in IRSCB_TYPES_ALT_NAME
+
+    pure subroutine ${name1}$_${sname}$_sort( array )
+! `${name1}$_${sname}$_sort( array )` sorts the input `ARRAY` of type `${t1}$`
+! using a hybrid sort based on the `introsort` of David Musser. As with
+! `introsort`, `${name1}$_${sname}$_sort( array )` is an unstable hybrid comparison
+! algorithm using `quicksort` for the main body of the sort tree,
+! supplemented by `insertion sort` for the outer branches, but if
+! `quicksort` is converging too slowly the algorithm resorts
+! to `heapsort`. The algorithm is of order O(N Ln(N)) for all inputs.
+! Because it relies on `quicksort`, the coefficient of the O(N Ln(N))
+! behavior is typically small compared to other sorting algorithms.
+
+        ${t1}$, intent(inout) :: array(0:)
+
+        integer(int32) :: depth_limit
+
+        depth_limit = 2 * int( floor( log( real( size( array, kind=int_size),  &
+                                                 kind=dp) ) / log(2.0_dp) ), &
+                               kind=int32 )
+        call introsort(array, depth_limit)
+
+    contains
+
+        pure recursive subroutine introsort( array, depth_limit )
+! It devolves to `insertionsort` if the remaining number of elements
+! is fewer than or equal to `INSERT_SIZE`, `heapsort` if the completion
+! of the `quicksort` is too slow as estimated from `DEPTH_LIMIT`,
+! otherwise sorting is done by a `quicksort`.
+            ${t1}$, intent(inout) :: array(0:)
+            integer(int32), intent(in)     :: depth_limit
+
+            integer(int_size), parameter :: insert_size = 16_int_size
+            integer(int_size)            :: index
+
+            if ( size(array, kind=int_size) <= insert_size ) then
+                ! May be best at the end of SORT processing the whole array
+                ! See Musser, D.R., “Introspective Sorting and Selection
+                ! Algorithms,” Software—Practice and Experience, Vol. 27(8),
+                ! 983–993 (August 1997).
+
+                call insertion_sort( array )
+            else if ( depth_limit == 0 ) then
+                call heap_sort( array )
+            else
+                call partition( array, index )
+                call introsort( array(0:index-1), depth_limit-1 )
+                call introsort( array(index+1:), depth_limit-1 )
+            end if
+
+        end subroutine introsort
+
+
+        pure subroutine partition( array, index )
+! quicksort partition using median of three.
+            ${t1}$, intent(inout) :: array(0:)
+            integer(int_size), intent(out) :: index
+
+            ${t2}$ :: u, v, w, x, y
+            integer(int_size) :: i, j
+
+! Determine median of three and exchange it with the end.
+            u = array( 0 )
+            v = array( size(array, kind=int_size)/2-1 )
+            w = array( size(array, kind=int_size)-1 )
+            if ( (u ${signt}$ v) .neqv. (u ${signt}$ w) ) then
+                x = u
+                y = array(0)
+                array(0) = array( size( array, kind=int_size ) - 1 )
+                array( size( array, kind=int_size ) - 1 ) = y
+            else if ( (v ${signoppt}$ u) .neqv. (v ${signoppt}$ w) ) then
+                x = v
+                y = array(size( array, kind=int_size )/2-1)
+                array( size( array, kind=int_size )/2-1 ) = &
+                    array( size( array, kind=int_size )-1 )
+                array( size( array, kind=int_size )-1 ) = y
+            else
+                x = w
+            end if
+! Partition the array.
+            i = -1_int_size
+            do j = 0_int_size, size(array, kind=int_size)-2
+                if ( array(j) ${signoppt}$= x ) then
+                    i = i + 1
+                    y = array(i)
+                    array(i) = array(j)
+                    array(j) = y
+                end if
+            end do
+            y = array(i+1)
+            array(i+1) = array(size(array, kind=int_size)-1)
+            array(size(array, kind=int_size)-1) = y
+            index = i + 1
+
+        end subroutine partition
+
+        pure subroutine insertion_sort( array )
+! Bog standard insertion sort.
+            ${t1}$, intent(inout) :: array(0:)
+
+            integer(int_size) :: i, j
+            ${t2}$ :: key
+
+            do j=1_int_size, size(array, kind=int_size)-1
+                key = array(j)
+                i = j - 1
+                do while( i >= 0 )
+                    if ( array(i) ${signoppt}$= key ) exit
+                    array(i+1) = array(i)
+                    i = i - 1
+                end do
+                array(i+1) = key
+            end do
+
+        end subroutine insertion_sort
+
+        pure subroutine heap_sort( array )
+! A bog standard heap sort
+            ${t1}$, intent(inout) :: array(0:)
+
+            integer(int_size) :: i, heap_size
+            ${t2}$   :: y
+
+            heap_size = size( array, kind=int_size )
+! Build the max heap
+            do i = (heap_size-2)/2_int_size, 0_int_size, -1_int_size
+                call max_heapify( array, i, heap_size )
+            end do
+            do i = heap_size-1, 1_int_size, -1_int_size
+! Swap the first element with the current final element
+                y = array(0)
+                array(0) = array(i)
+                array(i) = y
+! Sift down using max_heapify
+                call max_heapify( array, 0_int_size, i )
+            end do
+
+        end subroutine heap_sort
+
+        pure recursive subroutine max_heapify( array, i, heap_size )
+! Transform the array into a max heap
+            ${t1}$, intent(inout) :: array(0:)
+            integer(int_size), intent(in)  :: i, heap_size
+
+            integer(int_size) :: l, r, largest
+            ${t2}$   :: y
+
+            largest = i
+            l = 2_int_size * i + 1_int_size
+            r = l + 1_int_size
+            if ( l < heap_size ) then
+                if ( array(l) ${signt}$ array(largest) ) largest = l
+            end if
+            if ( r < heap_size ) then
+                if ( array(r) ${signt}$ array(largest) ) largest = r
+            end if
+            if ( largest /= i ) then
+                y = array(i)
+                array(i) = array(largest)
+                array(largest) = y
+                call max_heapify( array, largest, heap_size )
+            end if
+
+        end subroutine max_heapify
+
+    end subroutine ${name1}$_${sname}$_sort
+
+#:endfor
+#:endfor
+
+#:include "common.fypp"
+#:set INT_TYPES_ALT_NAME = list(zip(INT_TYPES, INT_TYPES, INT_TYPES, INT_KINDS))
+#:set REAL_TYPES_ALT_NAME = list(zip(REAL_TYPES, REAL_TYPES, REAL_TYPES, REAL_KINDS))
+#:set STRING_TYPES_ALT_NAME = list(zip(STRING_TYPES, STRING_TYPES, STRING_TYPES, STRING_KINDS))
+#:set CHAR_TYPES_ALT_NAME = list(zip(["character(len=*)"],  ["character(len=:)"], ["character(len=len(array))"], ["char"]))
+#:set BITSET_TYPES_ALT_NAME = list(zip(BITSET_TYPES, BITSET_TYPES, BITSET_TYPES, BITSET_KINDS))
+
+#! For better code reuse in fypp, make lists that contain the input types,
+#! with each having output types and a separate name prefix for subroutines
+#! This approach allows us to have the same code for all input types.
+#:set IRSCB_TYPES_ALT_NAME = INT_TYPES_ALT_NAME + REAL_TYPES_ALT_NAME + STRING_TYPES_ALT_NAME + CHAR_TYPES_ALT_NAME &
+    & + BITSET_TYPES_ALT_NAME
+
+!! Licensing:
+!!
+!! This file is subjec† both to the Fortran Standard Library license, and
+!! to additional licensing requirements as it contains translations of
+!! other software.
+!!
+!! The Fortran Standard Library, including this file, is distributed under
+!! the MIT license that should be included with the library's distribution.
+!!
+!!   Copyright (c) 2021 Fortran stdlib developers
+!!
+!!   Permission is hereby granted, free of charge, to any person obtaining a
+!!   copy of this software and associated documentation files (the
+!!   "Software"),  to deal in the Software without restriction, including
+!!   without limitation the rights to use, copy, modify, merge, publish,
+!!   distribute, sublicense, and/or sellcopies of the Software, and to permit
+!!   persons to whom the Software is furnished to do so, subject to the
+!!   following conditions:
+!!
+!!   The above copyright notice and this permission notice shall be included
+!!   in all copies or substantial portions of the Software.
+!!
+!!   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+!!   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+!!   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+!!   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+!!   CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+!!   TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+!!   SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+!!
+!! The generic subroutine, `SORT_INDEX`, is substantially a translation to
+!! Fortran 2008 of the `"Rust" sort` sorting routines in
+!! [`slice.rs`](https://github.com/rust-lang/rust/blob/90eb44a5897c39e3dff9c7e48e3973671dcd9496/src/liballoc/slice.rs)
+!! The `rust sort` implementation is distributed with the header:
+!!
+!!   Copyright 2012-2015 The Rust Project Developers. See the COPYRIGHT
+!!   file at the top-level directory of this distribution and at
+!!   http://rust-lang.org/COPYRIGHT.
+!!
+!!   Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
+!!   http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
+!!   <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
+!!   option. This file may not be copied, modified, or distributed
+!!   except according to those terms.
+!!
+!! so the license for the original`slice.rs` code is compatible with the use
+!! of modified versions of the code in the Fortran Standard Library under
+!! the MIT license.
+
+#:for t1, t2, t3, name1 in IRSCB_TYPES_ALT_NAME
+
+    module subroutine ${name1}$_sort_index( array, index, work, iwork, reverse )
+! A modification of `${name1}$_ord_sort` to return an array of indices that
+! would perform a stable sort of the `ARRAY` as input, and also sort `ARRAY`
+! as desired. The indices by default
+! correspond to a non-decreasing sort, but if the optional argument
+! `REVERSE` is present with a value of `.TRUE.` the indices correspond to
+! a non-increasing sort. The logic of the determination of indexing largely
+! follows the `"Rust" sort` found in `slice.rs`:
+! https://github.com/rust-lang/rust/blob/90eb44a5897c39e3dff9c7e48e3973671dcd9496/src/liballoc/slice.rs#L2159
+! The Rust version is a simplification of the Timsort algorithm described
+! in https://svn.python.org/projects/python/trunk/Objects/listsort.txt, as
+! it drops both the use of 'galloping' to identify bounds of regions to be
+! sorted and the estimation of the optimal `run size`. However it remains
+! a hybrid sorting algorithm combining an iterative Merge sort controlled
+! by a stack of `RUNS` identified by regions of uniformly decreasing or
+! non-decreasing sequences that may be expanded to a minimum run size, with
+! an insertion sort.
+!
+! Note the Fortran implementation simplifies the logic as it only has to
+! deal with Fortran arrays of intrinsic types and not the full generality
+! of Rust's arrays and lists for arbitrary types. It also adds the
+! estimation of the optimal `run size` as suggested in Tim Peters'
+! original listsort.txt, and the optional `work` and `iwork` arraya to be
+! used as scratch memory.
+
+        ${t1}$, intent(inout)                    :: array(0:)
+        integer(int_size), intent(out)           :: index(0:)
+        ${t3}$, intent(out), optional            :: work(0:)
+        integer(int_size), intent(out), optional :: iwork(0:)
+        logical, intent(in), optional            :: reverse
+
+        integer(int_size) :: array_size, i, stat
+        ${t2}$, allocatable :: buf(:)
+        integer(int_size), allocatable :: ibuf(:)
+
+        array_size = size(array, kind=int_size)
+
+        do i = 0, array_size-1
+            index(i) = i+1
+        end do
+
+        if ( optval(reverse, .false.) ) then
+            call reverse_segment( array, index )
+        end if
+
+! If necessary allocate buffers to serve as scratch memory.
+        if ( present(work) ) then
+            if ( size(work, kind=int_size) < array_size/2 ) then
+                error stop "work array is too small."
+            end if
+            if ( present(iwork) ) then
+                if ( size(iwork, kind=int_size) < array_size/2 ) then
+                    error stop "iwork array is too small."
+                endif
+                call merge_sort( array, index, work, iwork )
+            else
+                allocate( ibuf(0:array_size/2-1), stat=stat )
+                if ( stat /= 0 ) error stop "Allocation of index buffer failed."
+                call merge_sort( array, index, work, ibuf )
+            end if
+        else
+            #:if t1[0:4] == "char"
+            allocate( ${t3}$ :: buf(0:array_size/2-1), &
+                      stat=stat )
+            #:else
+            allocate( buf(0:array_size/2-1), stat=stat )
+            #:endif
+            if ( stat /= 0 ) error stop "Allocation of array buffer failed."
+            if ( present(iwork) ) then
+                if ( size(iwork, kind=int_size) < array_size/2 ) then
+                    error stop "iwork array is too small."
+                endif
+                call merge_sort( array, index, buf, iwork )
+            else
+                allocate( ibuf(0:array_size/2-1), stat=stat )
+                if ( stat /= 0 ) error stop "Allocation of index buffer failed."
+                call merge_sort( array, index, buf, ibuf )
+            end if
+        end if
+
+        if ( optval(reverse, .false.) ) then
+            call reverse_segment( array, index )
+        end if
+
+    contains
+
+        pure function calc_min_run( n ) result(min_run)
+!! Returns the minimum length of a run from 32-63 so that N/MIN_RUN is
+!! less than or equal to a power of two. See
+!! https://svn.python.org/projects/python/trunk/Objects/listsort.txt
+            integer(int_size)             :: min_run
+            integer(int_size), intent(in) :: n
+
+            integer(int_size) :: num, r
+
+            num = n
+            r = 0_int_size
+
+            do while( num >= 64 )
+                r = ior( r, iand(num, 1_int_size) )
+                num = ishft(num, -1_int_size)
+            end do
+            min_run = num + r
+
+        end function calc_min_run
+
+
+        pure subroutine insertion_sort( array, index )
+! Sorts `ARRAY` using an insertion sort, while maintaining consistency in
+! location of the indices in `INDEX` to the elements of `ARRAY`.
+            ${t1}$, intent(inout)            :: array(0:)
+            integer(int_size), intent(inout) :: index(0:)
+
+            integer(int_size) :: i, j, key_index
+            ${t3}$ :: key
+
+            do j=1, size(array, kind=int_size)-1
+                key = array(j)
+                key_index = index(j)
+                i = j - 1
+                do while( i >= 0 )
+                    if ( array(i) <= key ) exit
+                    array(i+1) = array(i)
+                    index(i+1) = index(i)
+                    i = i - 1
+                end do
+                array(i+1) = key
+                index(i+1) = key_index
+            end do
+
+        end subroutine insertion_sort
+
+
+        pure function collapse( runs ) result ( r )
+! Examine the stack of runs waiting to be merged, identifying adjacent runs
+! to be merged until the stack invariants are restablished:
+!
+! 1. len(-3) > len(-2) + len(-1)
+! 2. len(-2) > len(-1)
+
+            integer(int_size) :: r
+            type(run_type), intent(in), target :: runs(0:)
+
+            integer(int_size) :: n
+            logical :: test
+
+            n = size(runs, kind=int_size)
+            test = .false.
+            if (n >= 2) then
+                if ( runs( n-1 ) % base == 0 .or. &
+                     runs( n-2 ) % len <= runs(n-1) % len ) then
+                    test = .true.
+                else if ( n >= 3 ) then ! X exists
+                    if ( runs(n-3) % len <= &
+                         runs(n-2) % len + runs(n-1) % len ) then
+                        test = .true.
+!               |X| <= |Y| + |Z| => will need to merge due to rho1 or rho2
+                    else if( n >= 4 ) then
+                        if ( runs(n-4) % len <= &
+                             runs(n-3) % len + runs(n-2) % len ) then
+                            test = .true.
+!               |W| <= |X| + |Y| => will need to merge due to rho1 or rho3
+                        end if
+                    end if
+                end if
+            end if
+            if ( test ) then
+! By default merge Y & Z, rho2 or rho3
+                if ( n >= 3 ) then
+                    if ( runs(n-3) % len < runs(n-1) % len ) then
+                        r = n - 3
+! |X| < |Z| => merge X & Y, rho1
+                        return
+                    end if
+                end if
+                r = n - 2
+! |Y| <= |Z| => merge Y & Z, rho4
+                return
+            else
+                r = -1
+            end if
+
+        end function collapse
+
+
+        pure subroutine insert_head( array, index )
+! Inserts `array(0)` into the pre-sorted sequence `array(1:)` so that the
+! whole `array(0:)` becomes sorted, copying the first element into
+! a temporary variable, iterating until the right place for it is found.
+! copying every traversed element into the slot preceding it, and finally,
+! copying data from the temporary variable into the resulting hole.
+! Consistency of the indices in `index` with the elements of `array`
+! are maintained.
+
+            ${t1}$, intent(inout)            :: array(0:)
+            integer(int_size), intent(inout) :: index(0:)
+
+            ${t3}$ :: tmp
+            integer(int_size) :: i, tmp_index
+
+            tmp = array(0)
+            tmp_index = index(0)
+            find_hole: do i=1, size(array, kind=int_size)-1
+                if ( array(i) >= tmp ) exit find_hole
+                array(i-1) = array(i)
+                index(i-1) = index(i)
+            end do find_hole
+            array(i-1) = tmp
+            index(i-1) = tmp_index
+
+        end subroutine insert_head
+
+
+        subroutine merge_sort( array, index, buf, ibuf )
+! The Rust merge sort borrows some (but not all) of the ideas from TimSort,
+! which is described in detail at
+! (http://svn.python.org/projects/python/trunk/Objects/listsort.txt).
+!
+! The algorithm identifies strictly descending and non-descending
+! subsequences, which are called natural runs. Where these runs are less
+! than a minimum run size they are padded by adding additional samples
+! using an insertion sort. The merge process is driven by a stack of
+! pending unmerged runs. Each newly found run is pushed onto the stack,
+! and then pairs of adjacentd runs are merged until these two invariants
+! are satisfied:
+!
+! 1. for every `i` in `1..size(runs)-1`: `runs(i - 1)%len > runs(i)%len`
+! 2. for every `i` in `2..size(runs)-1`: `runs(i - 2)%len >
+!    runs(i - 1)%len + runs(i)%len`
+!
+! The invariants ensure that the total running time is `O(n log n)`
+! worst-case. Consistency of the indices in `index` with the elements of
+! `array` are maintained.
+
+            ${t1}$, intent(inout)            :: array(0:)
+            integer(int_size), intent(inout) :: index(0:)
+            ${t3}$, intent(inout)            :: buf(0:)
+            integer(int_size), intent(inout) :: ibuf(0:)
+
+            integer(int_size) :: array_size, finish, min_run, r, r_count, &
+                start
+            type(run_type) :: runs(0:max_merge_stack-1), left, right
+
+            array_size = size(array, kind=int_size)
+
+! Very short runs are extended using insertion sort to span at least this
+! many elements. Slices of up to this length are sorted using insertion sort.
+            min_run = calc_min_run( array_size )
+
+            if ( array_size <= min_run ) then
+                if ( array_size >= 2 ) call insertion_sort( array, index )
+                return
+            end if
+
+
+! Following Rust sort, natural runs in `array` are identified by traversing
+! it backwards. By traversing it backward, merges more often go in the
+! opposite direction (forwards). According to developers of Rust sort,
+! merging forwards is slightly faster than merging backwards. Therefore
+! identifying runs by traversing backwards should improve performance.
+            r_count = 0
+            finish = array_size - 1
+            do while ( finish >= 0 )
+! Find the next natural run, and reverse it if it's strictly descending.
+                start = finish
+                if ( start > 0 ) then
+                    start = start - 1
+                    if ( array(start+1) < array(start) ) then
+                        Descending: do while ( start > 0 )
+                            if ( array(start) >= array(start-1) ) &
+                                exit Descending
+                            start = start - 1
+                        end do Descending
+                        call reverse_segment( array(start:finish), &
+                                            index(start:finish) )
+                    else
+                        Ascending: do while( start > 0 )
+                            if ( array(start) < array(start-1) ) exit Ascending
+                            start = start - 1
+                        end do Ascending
+                    end if
+                end if
+
+! If the run is too short insert some more elements using an insertion sort.
+                Insert: do while ( start > 0 )
+                    if ( finish - start >= min_run - 1 ) exit Insert
+                    start = start - 1
+                    call insert_head( array(start:finish), index(start:finish) )
+                end do Insert
+                if ( start == 0 .and. finish == array_size - 1 ) return
+
+                runs(r_count) = run_type( base = start, &
+                                          len = finish - start + 1 )
+                finish = start-1
+                r_count = r_count + 1
+
+! Determine whether pairs of adjacent runs need to be merged to satisfy
+! the invariants, and, if so, merge them.
+                Merge_loop: do
+                    r = collapse( runs(0:r_count - 1) )
+                    if ( r < 0 .or. r_count <= 1 ) exit Merge_loop
+                    left = runs( r + 1 )
+                    right = runs( r )
+                    call merge( array( left % base: &
+                                     right % base + right % len - 1 ), &
+                                left % len, buf, &
+                                index( left % base: &
+                                     right % base + right % len - 1 ), ibuf )
+
+                    runs(r) = run_type( base = left % base, &
+                                        len = left % len + right % len )
+                    if ( r == r_count - 3 ) runs(r+1) = runs(r+2)
+                    r_count = r_count - 1
+
+                end do Merge_loop
+            end do
+            if ( r_count /= 1 ) &
+                error stop "MERGE_SORT completed without RUN COUNT == 1."
+
+        end subroutine merge_sort
+
+
+        pure subroutine merge( array, mid, buf, index, ibuf )
+! Merges the two non-decreasing runs `ARRAY(0:MID-1)` and `ARRAY(MID:)`
+! using `BUF` as temporary storage, and stores the merged runs into
+! `ARRAY(0:)`. `MID` must be > 0, and < `SIZE(ARRAY)-1`. Buffer `BUF`
+! must be long enough to hold the shorter of the two runs.
+            ${t1}$, intent(inout)            :: array(0:)
+            integer(int_size), intent(in)    :: mid
+            ${t3}$, intent(inout)            :: buf(0:)
+            integer(int_size), intent(inout) :: index(0:)
+            integer(int_size), intent(inout) :: ibuf(0:)
+
+            integer(int_size) :: array_len, i, j, k
+
+            array_len = size(array, kind=int_size)
+
+! Merge first copies the shorter run into `buf`. Then, depending on which
+! run was shorter, it traces the copied run and the longer run forwards
+! (or backwards), comparing their next unprocessed elements and then
+! copying the lesser (or greater) one into `array`.
+
+            if ( mid <= array_len - mid ) then ! The left run is shorter.
+                buf(0:mid-1) = array(0:mid-1)
+                ibuf(0:mid-1) = index(0:mid-1)
+                i = 0
+                j = mid
+                merge_lower: do k = 0, array_len-1
+                    if ( buf(i) <= array(j) ) then
+                        array(k) = buf(i)
+                        index(k) = ibuf(i)
+                        i = i + 1
+                        if ( i >= mid ) exit merge_lower
+                    else
+                        array(k) = array(j)
+                        index(k) = index(j)
+                        j = j + 1
+                        if ( j >= array_len ) then
+                            array(k+1:) = buf(i:mid-1)
+                            index(k+1:) = ibuf(i:mid-1)
+                            exit merge_lower
+                        end if
+                    end if
+                end do merge_lower
+            else ! The right run is shorter
+                buf(0:array_len-mid-1) = array(mid:array_len-1)
+                ibuf(0:array_len-mid-1) = index(mid:array_len-1)
+                i = mid - 1
+                j = array_len - mid -1
+                merge_upper: do k = array_len-1, 0, -1
+                    if ( buf(j) >= array(i) ) then
+                        array(k) = buf(j)
+                        index(k) = ibuf(j)
+                        j = j - 1
+                        if ( j < 0 ) exit merge_upper
+                    else
+                        array(k) = array(i)
+                        index(k) = index(i)
+                        i = i - 1
+                        if ( i < 0 ) then
+                            array(0:k-1) = buf(0:j)
+                            index(0:k-1) = ibuf(0:j)
+                            exit merge_upper
+                        end if
+                    end if
+                end do merge_upper
+            end if
+        end subroutine merge
+
+
+        pure subroutine reverse_segment( array, index )
+! Reverse a segment of an array in place
+            ${t1}$, intent(inout) :: array(0:)
+            integer(int_size), intent(inout) :: index(0:)
+
+            integer(int_size) :: itemp, lo, hi
+            ${t3}$ :: temp
+
+            lo = 0
+            hi = size( array, kind=int_size ) - 1
+            do while( lo < hi )
+                temp = array(lo)
+                array(lo) = array(hi)
+                array(hi) = temp
+                itemp = index(lo)
+                index(lo) = index(hi)
+                index(hi) = itemp
+                lo = lo + 1
+                hi = hi - 1
+            end do
+
+        end subroutine reverse_segment
+
+    end subroutine ${name1}$_sort_index
+
+#:endfor
+
+! For int8, radix sort becomes counting sort, so buffer is not needed
+    pure subroutine radix_sort_u8_helper(N, arr)
+        integer(kind=int_size), intent(in) :: N
+        integer(kind=int8), dimension(N), intent(inout) :: arr
+        integer(kind=int_size) :: i
+        integer :: bin_idx
+        integer(kind=int_size), dimension(-128:127) :: counts
+        counts(:) = 0
+        do i = 1, N
+            bin_idx = arr(i)
+            counts(bin_idx) = counts(bin_idx) + 1
+        end do
+        i = 1
+        do bin_idx = -128, 127
+            do while (counts(bin_idx) > 0)
+                arr(i) = int(bin_idx, kind=int8)
+                i = i + 1
+                counts(bin_idx) = counts(bin_idx) - 1
+            end do
+        end do
+    end subroutine
+
+    pure subroutine radix_sort_u16_helper(N, arr, buf)
+        integer(kind=int_size), intent(in) :: N
+        integer(kind=int16), dimension(N), intent(inout) :: arr
+        integer(kind=int16), dimension(N), intent(inout) :: buf
+        integer(kind=int_size) :: i
+        integer :: b, b0, b1
+        integer(kind=int_size), dimension(0:radix_mask) :: c0, c1
+        c0(:) = 0
+        c1(:) = 0
+        do i = 1, N
+            b0 = iand(arr(i), radix_mask_i16)
+            b1 = ishft(arr(i), -radix_bits_i16)
+            c0(b0) = c0(b0) + 1
+            c1(b1) = c1(b1) + 1
+        end do
+        do b = 1, radix_mask
+            c0(b) = c0(b) + c0(b - 1)
+            c1(b) = c1(b) + c1(b - 1)
+        end do
+        do i = N, 1, -1
+            b0 = iand(arr(i), radix_mask_i16)
+            buf(c0(b0)) = arr(i)
+            c0(b0) = c0(b0) - 1
+        end do
+        do i = N, 1, -1
+            b1 = ishft(buf(i), -radix_bits_i16)
+            arr(c1(b1)) = buf(i)
+            c1(b1) = c1(b1) - 1
+        end do
+    end subroutine
+
+    pure subroutine radix_sort_u32_helper(N, arr, buf)
+        integer(kind=int_size), intent(in) :: N
+        integer(kind=int32), dimension(N), intent(inout) :: arr
+        integer(kind=int32), dimension(N), intent(inout) :: buf
+        integer(kind=int_size) :: i
+        integer :: b, b0, b1, b2, b3
+        integer(kind=int_size), dimension(0:radix_mask) :: c0, c1, c2, c3
+        c0(:) = 0
+        c1(:) = 0
+        c2(:) = 0
+        c3(:) = 0
+        do i = 1, N
+            b0 = iand(arr(i), radix_mask_i32)
+            b1 = iand(ishft(arr(i), -radix_bits_i32), radix_mask_i32)
+            b2 = iand(ishft(arr(i), -2*radix_bits_i32), radix_mask_i32)
+            b3 = ishft(arr(i), -3*radix_bits_i32)
+            c0(b0) = c0(b0) + 1
+            c1(b1) = c1(b1) + 1
+            c2(b2) = c2(b2) + 1
+            c3(b3) = c3(b3) + 1
+        end do
+        do b = 1, radix_mask
+            c0(b) = c0(b) + c0(b - 1)
+            c1(b) = c1(b) + c1(b - 1)
+            c2(b) = c2(b) + c2(b - 1)
+            c3(b) = c3(b) + c3(b - 1)
+        end do
+        do i = N, 1, -1
+            b0 = iand(arr(i), radix_mask_i32)
+            buf(c0(b0)) = arr(i)
+            c0(b0) = c0(b0) - 1
+        end do
+        do i = N, 1, -1
+            b1 = iand(ishft(buf(i), -radix_bits_i32), radix_mask_i32)
+            arr(c1(b1)) = buf(i)
+            c1(b1) = c1(b1) - 1
+        end do
+        do i = N, 1, -1
+            b2 = iand(ishft(arr(i), -2*radix_bits_i32), radix_mask_i32)
+            buf(c2(b2)) = arr(i)
+            c2(b2) = c2(b2) - 1
+        end do
+        do i = N, 1, -1
+            b3 = ishft(buf(i), -3*radix_bits_i32)
+            arr(c3(b3)) = buf(i)
+            c3(b3) = c3(b3) - 1
+        end do
+    end subroutine radix_sort_u32_helper
+
+    pure subroutine radix_sort_u64_helper(N, arr, buffer)
+        integer(kind=int_size), intent(in) :: N
+        integer(kind=int64), dimension(N), intent(inout) :: arr
+        integer(kind=int64), dimension(N), intent(inout) :: buffer
+        integer(kind=int_size) :: i
+        integer(kind=int64) :: b, b0, b1, b2, b3, b4, b5, b6, b7
+        integer(kind=int_size), dimension(0:radix_mask) :: c0, c1, c2, c3, c4, c5, c6, c7
+        c0(:) = 0
+        c1(:) = 0
+        c2(:) = 0
+        c3(:) = 0
+        c4(:) = 0
+        c5(:) = 0
+        c6(:) = 0
+        c7(:) = 0
+        do i = 1, N
+            b0 = iand(arr(i), radix_mask_i64)
+            b1 = iand(ishft(arr(i), -radix_bits_i64), radix_mask_i64)
+            b2 = iand(ishft(arr(i), -2*radix_bits_i64), radix_mask_i64)
+            b3 = iand(ishft(arr(i), -3*radix_bits_i64), radix_mask_i64)
+            b4 = iand(ishft(arr(i), -4*radix_bits_i64), radix_mask_i64)
+            b5 = iand(ishft(arr(i), -5*radix_bits_i64), radix_mask_i64)
+            b6 = iand(ishft(arr(i), -6*radix_bits_i64), radix_mask_i64)
+            b7 = ishft(arr(i), -7*radix_bits_i64)
+            c0(b0) = c0(b0) + 1
+            c1(b1) = c1(b1) + 1
+            c2(b2) = c2(b2) + 1
+            c3(b3) = c3(b3) + 1
+            c4(b4) = c4(b4) + 1
+            c5(b5) = c5(b5) + 1
+            c6(b6) = c6(b6) + 1
+            c7(b7) = c7(b7) + 1
+        end do
+        do b = 1, radix_mask
+            c0(b) = c0(b) + c0(b - 1)
+            c1(b) = c1(b) + c1(b - 1)
+            c2(b) = c2(b) + c2(b - 1)
+            c3(b) = c3(b) + c3(b - 1)
+            c4(b) = c4(b) + c4(b - 1)
+            c5(b) = c5(b) + c5(b - 1)
+            c6(b) = c6(b) + c6(b - 1)
+            c7(b) = c7(b) + c7(b - 1)
+        end do
+        do i = N, 1, -1
+            b0 = iand(arr(i), radix_mask_i64)
+            buffer(c0(b0)) = arr(i)
+            c0(b0) = c0(b0) - 1
+        end do
+        do i = N, 1, -1
+            b1 = iand(ishft(buffer(i), -radix_bits_i64), radix_mask_i64)
+            arr(c1(b1)) = buffer(i)
+            c1(b1) = c1(b1) - 1
+        end do
+        do i = N, 1, -1
+            b2 = iand(ishft(arr(i), -2*radix_bits_i64), radix_mask_i64)
+            buffer(c2(b2)) = arr(i)
+            c2(b2) = c2(b2) - 1
+        end do
+        do i = N, 1, -1
+            b3 = iand(ishft(buffer(i), -3*radix_bits_i64), radix_mask_i64)
+            arr(c3(b3)) = buffer(i)
+            c3(b3) = c3(b3) - 1
+        end do
+        do i = N, 1, -1
+            b4 = iand(ishft(arr(i), -4*radix_bits_i64), radix_mask_i64)
+            buffer(c4(b4)) = arr(i)
+            c4(b4) = c4(b4) - 1
+        end do
+        do i = N, 1, -1
+            b5 = iand(ishft(buffer(i), -5*radix_bits_i64), radix_mask_i64)
+            arr(c5(b5)) = buffer(i)
+            c5(b5) = c5(b5) - 1
+        end do
+        do i = N, 1, -1
+            b6 = iand(ishft(arr(i), -6*radix_bits_i64), radix_mask_i64)
+            buffer(c6(b6)) = arr(i)
+            c6(b6) = c6(b6) - 1
+        end do
+        do i = N, 1, -1
+            b7 = ishft(buffer(i), -7*radix_bits_i64)
+            arr(c7(b7)) = buffer(i)
+            c7(b7) = c7(b7) - 1
+        end do
+    end subroutine radix_sort_u64_helper
+
+    pure module subroutine int8_radix_sort(array, reverse)
+        integer(kind=int8), dimension(:), intent(inout) :: array
+        logical, intent(in), optional :: reverse
+        integer(kind=int8) :: item
+        integer(kind=int_size) :: i, N
+        N = size(array, kind=int_size)
+        call radix_sort_u8_helper(N, array)
+        if (optval(reverse, .false.)) then
+            do i = 1, N/2
+                item = array(i)
+                array(i) = array(N - i + 1)
+                array(N - i + 1) = item
+            end do
+        end if
+    end subroutine int8_radix_sort
+
+    pure module subroutine int16_radix_sort(array, work, reverse)
+        integer(kind=int16), dimension(:), intent(inout) :: array
+        integer(kind=int16), dimension(:), intent(inout), target, optional :: work
+        logical, intent(in), optional :: reverse
+        integer(kind=int_size) :: i, N, start, middle, end
+        integer(kind=int16), dimension(:), pointer :: buffer
+        integer(kind=int16) :: item
+        logical :: use_internal_buffer
+        N = size(array, kind=int_size)
+        if (present(work)) then
+            if (size(work, kind=int_size) < N) then
+                error stop "int16_radix_sort: work array is too small."
+            end if
+            use_internal_buffer = .false.
+            buffer => work
+        else
+            use_internal_buffer = .true.
+            allocate (buffer(N))
+        end if
+        call radix_sort_u16_helper(N, array, buffer)
+! After calling `radix_sort_u<width>_helper. The array is sorted as unsigned integers.
+! In the view of signed array, the negative numbers are sorted but in the tail of the array.
+! Use binary search to find the boundary, and move them to correct position.
+        if (array(1) >= 0 .and. array(N) < 0) then
+            start = 1
+            end = N
+            middle = (1 + N)/2
+            do while (.true.)
+                if (array(middle) >= 0) then
+                    start = middle + 1
+                else
+                    end = middle
+                end if
+                middle = (start + end)/2
+                if (start == end) exit
+            end do
+            buffer(1:(N - middle + 1)) = array(middle:N)
+            buffer(N - middle + 2:N) = array(1:middle - 1)
+            array(:) = buffer(:)
+        end if
+        if (optval(reverse, .false.)) then
+            do i = 1, N/2
+                item = array(i)
+                array(i) = array(N - i + 1)
+                array(N - i + 1) = item
+            end do
+        end if
+        if (use_internal_buffer) then
+            deallocate (buffer)
+        end if
+    end subroutine int16_radix_sort
+
+    pure module subroutine int32_radix_sort(array, work, reverse)
+        integer(kind=int32), dimension(:), intent(inout) :: array
+        integer(kind=int32), dimension(:), intent(inout), target, optional :: work
+        logical, intent(in), optional :: reverse
+        integer(kind=int_size) :: i, N, start, middle, end
+        integer(kind=int32), dimension(:), pointer :: buffer
+        integer(kind=int32) :: item
+        logical :: use_internal_buffer
+        N = size(array, kind=int_size)
+        if (present(work)) then
+            if (size(work, kind=int_size) < N) then
+                error stop "int32_radix_sort: work array is too small."
+            end if
+            use_internal_buffer = .false.
+            buffer => work
+        else
+            use_internal_buffer = .true.
+            allocate (buffer(N))
+        end if
+        call radix_sort_u32_helper(N, array, buffer)
+        if (array(1) >= 0 .and. array(N) < 0) then
+            start = 1
+            end = N
+            middle = (1 + N)/2
+            do while (.true.)
+                if (array(middle) >= 0) then
+                    start = middle + 1
+                else
+                    end = middle
+                end if
+                middle = (start + end)/2
+                if (start == end) exit
+            end do
+            buffer(1:(N - middle + 1)) = array(middle:N)
+            buffer(N - middle + 2:N) = array(1:middle - 1)
+            array(:) = buffer(:)
+        end if
+        if (optval(reverse, .false.)) then
+            do i = 1, N/2
+                item = array(i)
+                array(i) = array(N - i + 1)
+                array(N - i + 1) = item
+            end do
+        end if
+        if (use_internal_buffer) then
+            deallocate (buffer)
+        end if
+    end subroutine int32_radix_sort
+
+    module subroutine sp_radix_sort(array, work, reverse)
+        use iso_c_binding
+        real(kind=sp), dimension(:), intent(inout), target :: array
+        real(kind=sp), dimension(:), intent(inout), target, optional :: work
+        logical, intent(in), optional :: reverse
+        integer(kind=int_size) :: i, N, pos, rev_pos
+        integer(kind=int32), dimension(:), pointer :: arri32
+        integer(kind=int32), dimension(:), pointer :: buffer
+        real(kind=sp) :: item
+        logical :: use_internal_buffer
+        N = size(array, kind=int_size)
+        if (present(work)) then
+            if (size(work, kind=int_size) < N) then
+                error stop "sp_radix_sort: work array is too small."
+            end if
+            use_internal_buffer = .false.
+            call c_f_pointer(c_loc(work), buffer, [N])
+        else
+            use_internal_buffer = .true.
+            allocate (buffer(N))
+        end if
+        call c_f_pointer(c_loc(array), arri32, [N])
+        call radix_sort_u32_helper(N, arri32, buffer)
+! After calling `radix_sort_u<width>_helper. The array is sorted as unsigned integers.
+! The positive real number is sorted, guaranteed by IEEE-754 standard.
+! But the negative real number is sorted in a reversed order, and also in the tail of array.
+! Remark that -0.0 is the minimum nagative integer, so using radix sort, -0.0 is naturally lesser than 0.0.
+! In IEEE-754 standard, the bit representation of `Inf` is greater than all positive real numbers,
+! and the `-Inf` is lesser than all negative real numbers. So the order of `Inf, -Inf` is ok.
+! The bit representation of `NaN` may be positive or negative integers in different machine,
+! thus if the array contains `NaN`, the result is undefined.
+        if (arri32(1) >= 0 .and. arri32(N) < 0) then
+            pos = 1
+            rev_pos = N
+            do while (arri32(rev_pos) < 0)
+                buffer(pos) = arri32(rev_pos)
+                pos = pos + 1
+                rev_pos = rev_pos - 1
+            end do
+            buffer(pos:N) = arri32(1:rev_pos)
+            arri32(:) = buffer(:)
+        end if
+        if (optval(reverse, .false.)) then
+            do i = 1, N/2
+                item = array(i)
+                array(i) = array(N - i + 1)
+                array(N - i + 1) = item
+            end do
+        end if
+        if (use_internal_buffer) then
+            deallocate (buffer)
+        end if
+    end subroutine sp_radix_sort
+
+    pure module subroutine int64_radix_sort(array, work, reverse)
+        integer(kind=int64), dimension(:), intent(inout) :: array
+        integer(kind=int64), dimension(:), intent(inout), target, optional :: work
+        logical, intent(in), optional :: reverse
+        integer(kind=int_size) :: i, N, start, middle, end
+        integer(kind=int64), dimension(:), pointer :: buffer
+        integer(kind=int64) :: item
+        logical :: use_internal_buffer
+        N = size(array, kind=int_size)
+        if (present(work)) then
+            if (size(work, kind=int_size) < N) then
+                error stop "int64_radix_sort: work array is too small."
+            end if
+            use_internal_buffer = .false.
+            buffer => work
+        else
+            use_internal_buffer = .true.
+            allocate (buffer(N))
+        end if
+        call radix_sort_u64_helper(N, array, buffer)
+        if (array(1) >= 0 .and. array(N) < 0) then
+            start = 1
+            end = N
+            middle = (1 + N)/2
+            do while (.true.)
+                if (array(middle) >= 0) then
+                    start = middle + 1
+                else
+                    end = middle
+                end if
+                middle = (start + end)/2
+                if (start == end) exit
+            end do
+            buffer(1:(N - middle + 1)) = array(middle:N)
+            buffer(N - middle + 2:N) = array(1:middle - 1)
+            array(:) = buffer(:)
+        end if
+        if (optval(reverse, .false.)) then
+            do i = 1, N/2
+                item = array(i)
+                array(i) = array(N - i + 1)
+                array(N - i + 1) = item
+            end do
+        end if
+        if (use_internal_buffer) then
+            deallocate (buffer)
+        end if
+    end subroutine int64_radix_sort
+
+    module subroutine dp_radix_sort(array, work, reverse)
+        use iso_c_binding
+        real(kind=dp), dimension(:), intent(inout), target :: array
+        real(kind=dp), dimension(:), intent(inout), target, optional :: work
+        logical, intent(in), optional :: reverse
+        integer(kind=int_size) :: i, N, pos, rev_pos
+        integer(kind=int64), dimension(:), pointer :: arri64
+        integer(kind=int64), dimension(:), pointer :: buffer
+        real(kind=dp) :: item
+        logical :: use_internal_buffer
+        N = size(array, kind=int_size)
+        if (present(work)) then
+            if (size(work, kind=int_size) < N) then
+                error stop "sp_radix_sort: work array is too small."
+            end if
+            use_internal_buffer = .false.
+            call c_f_pointer(c_loc(work), buffer, [N])
+        else
+            use_internal_buffer = .true.
+            allocate (buffer(N))
+        end if
+        call c_f_pointer(c_loc(array), arri64, [N])
+        call radix_sort_u64_helper(N, arri64, buffer)
+        if (arri64(1) >= 0 .and. arri64(N) < 0) then
+            pos = 1
+            rev_pos = N
+            do while (arri64(rev_pos) < 0)
+                buffer(pos) = arri64(rev_pos)
+                pos = pos + 1
+                rev_pos = rev_pos - 1
+            end do
+            buffer(pos:N) = arri64(1:rev_pos)
+            arri64(:) = buffer(:)
+        end if
+        if (optval(reverse, .false.)) then
+            do i = 1, N/2
+                item = array(i)
+                array(i) = array(N - i + 1)
+                array(N - i + 1) = item
+            end do
+        end if
+        if (use_internal_buffer) then
+            deallocate (buffer)
+        end if
+    end subroutine dp_radix_sort
+
+#:include "common.fypp"
+#:set INT_TYPES_ALT_NAME = list(zip(INT_TYPES, INT_TYPES, INT_TYPES, INT_KINDS))
+#:set REAL_TYPES_ALT_NAME = list(zip(REAL_TYPES, REAL_TYPES, REAL_TYPES, REAL_KINDS))
+#:set STRING_TYPES_ALT_NAME = list(zip(STRING_TYPES, STRING_TYPES, STRING_TYPES, STRING_KINDS))
+#:set CHAR_TYPES_ALT_NAME = list(zip(["character(len=*)"],  ["character(len=:)"], ["character(len=len(array))"], ["char"]))
+#:set BITSET_TYPES_ALT_NAME = list(zip(BITSET_TYPES, BITSET_TYPES, BITSET_TYPES, BITSET_KINDS))
+
+#! For better code reuse in fypp, make lists that contain the input types,
+#! with each having output types and a separate name prefix for subroutines
+#! This approach allows us to have the same code for all input types.
+#:set IRSCB_TYPES_ALT_NAME = INT_TYPES_ALT_NAME + REAL_TYPES_ALT_NAME + STRING_TYPES_ALT_NAME + CHAR_TYPES_ALT_NAME &
+    & + BITSET_TYPES_ALT_NAME
+
+#:set SIGN_NAME = ["increase", "decrease"]
+#:set SIGN_TYPE = [">", "<"]
+#:set SIGN_OPP_TYPE = ["<", ">"]
+#:set SIGN_NAME_TYPE = list(zip(SIGN_NAME, SIGN_TYPE, SIGN_OPP_TYPE))
+
+!! Licensing:
+!!
+!! This file is subjec† both to the Fortran Standard Library license, and
+!! to additional licensing requirements as it contains translations of
+!! other software.
+!!
+!! The Fortran Standard Library, including this file, is distributed under
+!! the MIT license that should be included with the library's distribution.
+!!
+!!   Copyright (c) 2021 Fortran stdlib developers
+!!
+!!   Permission is hereby granted, free of charge, to any person obtaining a
+!!   copy of this software and associated documentation files (the
+!!   "Software"),  to deal in the Software without restriction, including
+!!   without limitation the rights to use, copy, modify, merge, publish,
+!!   distribute, sublicense, and/or sellcopies of the Software, and to permit
+!!   persons to whom the Software is furnished to do so, subject to the
+!!   following conditions:
+!!
+!!   The above copyright notice and this permission notice shall be included
+!!   in all copies or substantial portions of the Software.
+!!
+!!   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+!!   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+!!   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+!!   IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+!!   CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+!!   TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+!!   SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+!!
+!! The generic subroutine, `ORD_SORT`, is substantially a translation to
+!! Fortran 2008 of the `"Rust" sort` sorting routines in
+!! [`slice.rs`](https://github.com/rust-lang/rust/blob/90eb44a5897c39e3dff9c7e48e3973671dcd9496/src/liballoc/slice.rs)
+!! The `rust sort` implementation is distributed with the header:
+!!
+!!   Copyright 2012-2015 The Rust Project Developers. See the COPYRIGHT
+!!   file at the top-level directory of this distribution and at
+!!   http://rust-lang.org/COPYRIGHT.
+!!
+!!   Licensed under the Apache License, Version 2.0 <LICENSE-APACHE or
+!!   http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
+!!   <LICENSE-MIT or http://opensource.org/licenses/MIT>, at your
+!!   option. This file may not be copied, modified, or distributed
+!!   except according to those terms.
+!!
+!! so the license for the original`slice.rs` code is compatible with the use
+!! of modified versions of the code in the Fortran Standard Library under
+!! the MIT license.
+
+#:for t1, t2, t3, name1 in IRSCB_TYPES_ALT_NAME
+    module subroutine ${name1}$_ord_sort( array, work, reverse )
+        ${t1}$, intent(inout)         :: array(0:)
+        ${t3}$, intent(out), optional :: work(0:)
+        logical, intent(in), optional :: reverse
+
+        if (optval(reverse, .false.)) then
+            call ${name1}$_decrease_ord_sort(array, work)
+        else
+            call ${name1}$_increase_ord_sort(array, work)
+        endif
+
+    end subroutine ${name1}$_ord_sort
+#:endfor
+
+#:for sname, signt, signoppt in SIGN_NAME_TYPE
+#:for t1, t2, t3, name1 in IRSCB_TYPES_ALT_NAME
+
+    subroutine ${name1}$_${sname}$_ord_sort( array, work )
+! A translation to Fortran 2008, of the `"Rust" sort` algorithm found in
+! `slice.rs`
+! https://github.com/rust-lang/rust/blob/90eb44a5897c39e3dff9c7e48e3973671dcd9496/src/liballoc/slice.rs#L2159
+! The Rust version in turn is a simplification of the Timsort algorithm
+! described in
+! https://svn.python.org/projects/python/trunk/Objects/listsort.txt, as
+! it drops both the use of 'galloping' to identify bounds of regions to be
+! sorted and the estimation of the optimal `run size`. However it remains
+! a hybrid sorting algorithm combining an iterative Merge sort controlled
+! by a stack of `RUNS` identified by regions of uniformly decreasing or
+! non-decreasing sequences that may be expanded to a minimum run size and
+! initially processed by an insertion sort.
+!
+! Note the Fortran implementation simplifies the logic as it only has to
+! deal with Fortran arrays of intrinsic types and not the full generality
+! of Rust's arrays and lists for arbitrary types. It also adds the
+! estimation of the optimal `run size` as suggested in Tim Peters'
+! original `listsort.txt`, and an optional `work` array to be used as
+! scratch memory.
+        ${t1}$, intent(inout)         :: array(0:)
+        ${t3}$, intent(out), optional :: work(0:)
+
+        ${t2}$, allocatable :: buf(:)
+        integer(int_size) :: array_size
+        integer :: stat
+
+        array_size = size( array, kind=int_size )
+        if ( present(work) ) then
+            if ( size( work, kind=int_size) < array_size/2 ) then
+                error stop "${name1}$_${sname}$_ord_sort: work array is too small."
+            endif
+! Use the work array as scratch memory
+            call merge_sort( array, work )
+        else
+! Allocate a buffer to use as scratch memory.
+            #:if t1[0:4] == "char"
+            allocate( ${t3}$ :: buf(0:array_size/2-1), &
+                      stat=stat )
+            #:else
+            allocate( buf(0:array_size/2-1), stat=stat )
+            #:endif
+            if ( stat /= 0 ) error stop "${name1}$_${sname}$_ord_sort: Allocation of buffer failed."
+            call merge_sort( array, buf )
+        end if
+
+    contains
+
+        pure function calc_min_run( n ) result(min_run)
+!! Returns the minimum length of a run from 32-63 so that N/MIN_RUN is
+!! less than or equal to a power of two. See
+!! https://svn.python.org/projects/python/trunk/Objects/listsort.txt
+            integer(int_size)             :: min_run
+            integer(int_size), intent(in) :: n
+
+            integer(int_size) :: num, r
+
+            num = n
+            r = 0_int_size
+
+            do while( num >= 64 )
+                r = ior( r, iand(num, 1_int_size) )
+                num = ishft(num, -1_int_size)
+            end do
+            min_run = num + r
+
+        end function calc_min_run
+
+
+        pure subroutine insertion_sort( array )
+! Sorts `ARRAY` using an insertion sort.
+            ${t1}$, intent(inout) :: array(0:)
+
+            integer(int_size) :: i, j
+            ${t3}$ :: key
+
+            do j=1, size(array, kind=int_size)-1
+                key = array(j)
+                i = j - 1
+                do while( i >= 0 )
+                    if ( array(i) ${signoppt}$= key ) exit
+                    array(i+1) = array(i)
+                    i = i - 1
+                end do
+                array(i+1) = key
+            end do
+
+        end subroutine insertion_sort
+
+
+        pure function collapse( runs ) result ( r )
+! Examine the stack of runs waiting to be merged, identifying adjacent runs
+! to be merged until the stack invariants are restablished:
+!
+! 1. len(-3) > len(-2) + len(-1)
+! 2. len(-2) > len(-1)
+            integer(int_size) :: r
+            type(run_type), intent(in), target :: runs(0:)
+
+            integer(int_size) :: n
+            logical :: test
+
+            n = size(runs, kind=int_size)
+            test = .false.
+            if (n >= 2) then
+                if ( runs( n-1 ) % base == 0 .or. &
+                     runs( n-2 ) % len <= runs(n-1) % len ) then
+                    test = .true.
+                else if ( n >= 3 ) then ! X exists
+                    if ( runs(n-3) % len <= &
+                         runs(n-2) % len + runs(n-1) % len ) then
+                        test = .true.
+!               |X| <= |Y| + |Z| => will need to merge due to rho1 or rho2
+                    else if( n >= 4 ) then
+                        if ( runs(n-4) % len <= &
+                             runs(n-3) % len + runs(n-2) % len ) then
+                            test = .true.
+!               |W| <= |X| + |Y| => will need to merge due to rho1 or rho3
+                        end if
+                    end if
+                end if
+            end if
+            if ( test ) then
+! By default merge Y & Z, rho2 or rho3
+                if ( n >= 3 ) then
+                    if ( runs(n-3) % len < runs(n-1) % len ) then
+                        r = n - 3
+! |X| < |Z| => merge X & Y, rho1
+                        return
+                    end if
+                end if
+                r = n - 2
+! |Y| <= |Z| => merge Y & Z, rho4
+                return
+            else
+                r = -1
+            end if
+
+        end function collapse
+
+
+        pure subroutine insert_head( array )
+! Inserts `array(0)` into the pre-sorted sequence `array(1:)` so that the
+! whole `array(0:)` becomes sorted, copying the first element into
+! a temporary variable, iterating until the right place for it is found.
+! copying every traversed element into the slot preceding it, and finally,
+! copying data from the temporary variable into the resulting hole.
+
+            ${t1}$, intent(inout) :: array(0:)
+
+            ${t3}$ :: tmp
+            integer(int_size) :: i
+
+            tmp = array(0)
+            find_hole: do i=1, size(array, kind=int_size)-1
+                if ( array(i) ${signt}$= tmp ) exit find_hole
+                array(i-1) = array(i)
+            end do find_hole
+            array(i-1) = tmp
+
+        end subroutine insert_head
+
+
+        subroutine merge_sort( array, buf )
+! The Rust merge sort borrows some (but not all) of the ideas from TimSort,
+! which is described in detail at
+! (http://svn.python.org/projects/python/trunk/Objects/listsort.txt).
+!
+! The algorithm identifies strictly descending and non-descending
+! subsequences, which are called natural runs. Where these runs are less
+! than a minimum run size they are padded by adding additional samples
+! using an insertion sort. The merge process is driven by a stack of
+! pending unmerged runs. Each newly found run is pushed onto the stack,
+! and then pairs of adjacentd runs are merged until these two invariants
+! are satisfied:
+!
+! 1. for every `i` in `1..size(runs)-1`: `runs(i - 1)%len > runs(i)%len`
+! 2. for every `i` in `2..size(runs)-1`: `runs(i - 2)%len >
+!    runs(i - 1)%len + runs(i)%len`
+!
+! The invariants ensure that the total running time is `O(n log n)`
+! worst-case.
+
+            ${t1}$, intent(inout) :: array(0:)
+            ${t3}$, intent(inout) :: buf(0:)
+
+            integer(int_size) :: array_size, finish, min_run, r, r_count, &
+                start
+            type(run_type) :: runs(0:max_merge_stack-1), left, right
+
+            array_size = size(array, kind=int_size)
+
+! Very short runs are extended using insertion sort to span at least
+! min_run elements. Slices of up to this length are sorted using insertion
+! sort.
+            min_run = calc_min_run( array_size )
+
+            if ( array_size <= min_run ) then
+                if ( array_size >= 2 ) call insertion_sort( array )
+                return
+            end if
+
+! Following Rust sort, natural runs in `array` are identified by traversing
+! it backwards. By traversing it backward, merges more often go in the
+! opposite direction (forwards). According to developers of Rust sort,
+! merging forwards is slightly faster than merging backwards. Therefore
+! identifying runs by traversing backwards should improve performance.
+            r_count = 0
+            finish = array_size - 1
+            do while ( finish >= 0 )
+! Find the next natural run, and reverse it if it's strictly descending.
+                start = finish
+                if ( start > 0 ) then
+                    start = start - 1
+                    if ( array(start+1) ${signoppt}$ array(start) ) then
+                        Descending: do while ( start > 0 )
+                            if ( array(start) ${signt}$= array(start-1) ) &
+                                exit Descending
+                            start = start - 1
+                        end do Descending
+                        call reverse_segment( array(start:finish) )
+                    else
+                        Ascending: do while( start > 0 )
+                            if ( array(start) ${signoppt}$ array(start-1) ) exit Ascending
+                            start = start - 1
+                        end do Ascending
+                    end if
+                end if
+
+! If the run is too short insert some more elements using an insertion sort.
+                Insert: do while ( start > 0 )
+                    if ( finish - start >= min_run - 1 ) exit Insert
+                    start = start - 1
+                    call insert_head( array(start:finish) )
+                end do Insert
+                if ( start == 0 .and. finish == array_size - 1 ) return
+
+                runs(r_count) = run_type( base = start, &
+                                          len = finish - start + 1 )
+                finish = start-1
+                r_count = r_count + 1
+
+! Determine whether pairs of adjacent runs need to be merged to satisfy
+! the invariants, and, if so, merge them.
+                Merge_loop: do
+                    r = collapse( runs(0:r_count - 1) )
+                    if ( r < 0 .or. r_count <= 1 ) exit Merge_loop
+                    left = runs( r + 1 )
+                    right = runs( r )
+                    call merge( array( left % base: &
+                                       right % base + right % len - 1 ), &
+                                left % len, buf )
+
+                    runs(r) = run_type( base = left % base, &
+                                        len = left % len + right % len )
+                    if ( r == r_count - 3 ) runs(r+1) = runs(r+2)
+                    r_count = r_count - 1
+
+                end do Merge_loop
+            end do
+            if ( r_count /= 1 ) &
+                error stop "MERGE_SORT completed without RUN COUNT == 1."
+
+        end subroutine merge_sort
+
+
+        pure subroutine merge( array, mid, buf )
+! Merges the two non-decreasing runs `ARRAY(0:MID-1)` and `ARRAY(MID:)`
+! using `BUF` as temporary storage, and stores the merged runs into
+! `ARRAY(0:)`. `MID` must be > 0, and < `SIZE(ARRAY)-1`. Buffer `BUF`
+! must be long enough to hold the shorter of the two runs.
+            ${t1}$, intent(inout) :: array(0:)
+            integer(int_size), intent(in)  :: mid
+            ${t3}$, intent(inout) :: buf(0:)
+
+            integer(int_size) :: array_len, i, j, k
+
+            array_len = size(array, kind=int_size)
+
+! Merge first copies the shorter run into `buf`. Then, depending on which
+! run was shorter, it traces the copied run and the longer run forwards
+! (or backwards), comparing their next unprocessed elements and then
+! copying the lesser (or greater) one into `array`.
+
+            if ( mid <= array_len - mid ) then ! The left run is shorter.
+                buf(0:mid-1) = array(0:mid-1)
+                i = 0
+                j = mid
+                merge_lower: do k = 0, array_len-1
+                    if ( buf(i) ${signoppt}$= array(j) ) then
+                        array(k) = buf(i)
+                        i = i + 1
+                        if ( i >= mid ) exit merge_lower
+                    else
+                        array(k) = array(j)
+                        j = j + 1
+                        if ( j >= array_len ) then
+                            array(k+1:) = buf(i:mid-1)
+                            exit merge_lower
+                        end if
+                    end if
+                end do merge_lower
+            else ! The right run is shorter ! check that it is stable
+                buf(0:array_len-mid-1) = array(mid:array_len-1)
+                i = mid - 1
+                j = array_len - mid -1
+                merge_upper: do k = array_len-1, 0, -1
+                    if ( buf(j) ${signt}$= array(i) ) then
+                        array(k) = buf(j)
+                        j = j - 1
+                        if ( j < 0 ) exit merge_upper
+                    else
+                        array(k) = array(i)
+                        i = i - 1
+                        if ( i < 0 ) then
+                            array(0:k-1) = buf(0:j)
+                            exit merge_upper
+                        end if
+                    end if
+                end do merge_upper
+            end if
+        end subroutine merge
+
+
+        pure subroutine reverse_segment( array )
+! Reverse a segment of an array in place
+            ${t1}$, intent(inout) :: array(0:)
+
+            integer(int_size) :: lo, hi
+            ${t3}$ :: temp
+
+            lo = 0
+            hi = size( array, kind=int_size ) - 1
+            do while( lo < hi )
+                temp = array(lo)
+                array(lo) = array(hi)
+                array(hi) = temp
+                lo = lo + 1
+                hi = hi - 1
+            end do
+
+        end subroutine reverse_segment
+
+    end subroutine ${name1}$_${sname}$_ord_sort
+
+#:endfor
+#:endfor
 
 end module stdlib_sorting
