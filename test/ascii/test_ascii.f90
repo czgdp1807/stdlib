@@ -774,11 +774,11 @@ contains
         end do
 
         ! output table for verification
-        write(*,'(5X,12(I4))') (i,i=1,12)
+        print *, (i,i=1,12)
         do j = 1, 15
-            write(*,'(I3,2X,12(L4),2X,I3)') j, (table(j,i),i=1,12), count(table(j,:))
+            print*, j, table(j, :)!, count(table(j,:))
         end do
-        write(*,'(5X,12(I4))') (count(table(:,i)),i=1,12)
+        ! print *, (count(table(:,i)), i=1,12)
     end subroutine test_ascii_table
 
     subroutine test_to_lower_string(error)
