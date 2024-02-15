@@ -1,4 +1,4 @@
-module test_sorting
+module test_sorting_bitsets
 
     use, intrinsic :: iso_fortran_env, only: compiler_version, error_unit
     use stdlib_kinds, only: int32, int64, dp, sp
@@ -9,8 +9,23 @@ module test_sorting
 
     implicit none
 
+    integer(int32), parameter :: test_power = 16
+    integer(int32), parameter :: char_set_size = 16
+    integer(int32), parameter :: test_size = 2_int32**test_power
+    integer(int32), parameter :: char_size = char_set_size**4
+    integer(int32), parameter :: string_size = char_set_size**3
     integer(int32), parameter :: bitset_size = char_set_size**3
+    integer, parameter        :: repeat = 1
 
+    integer(int_size)       :: index(0:max(test_size, char_size, string_size)-1)
+    integer(int_size)       :: iwork(0:max(test_size, char_size, &
+                                     string_size)/2-1)
+    integer                 :: count, i, index1, index2, j, k, l, temp
+    character(*), parameter :: filename = 'test_sorting.txt'
+    integer                 :: lun
+    real(sp)                :: arand, brand
+    character(32)           :: bin32
+    character(64)           :: bin64
     type(bitset_large) ::                  &
         bitsetl_decrease(0:bitset_size-1), &
         bitsetl_increase(0:bitset_size-1), &
@@ -585,13 +600,13 @@ contains
         valid = .true.
 
     end subroutine verify_bitset64_reverse_sort
-end module test_sorting
+end module test_sorting_bitsets
 
 
 program tester
     use, intrinsic :: iso_fortran_env, only: compiler_version, error_unit
     use testdrive, only: new_testsuite, run_testsuite, testsuite_type
-    use test_sorting, only: initialize_tests, collect_sorting
+    use test_sorting_bitsets, only: initialize_tests, collect_sorting
 
     implicit none
     integer :: stat, is
