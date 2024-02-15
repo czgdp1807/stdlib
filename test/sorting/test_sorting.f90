@@ -1,6 +1,6 @@
 module test_sorting
 
-    use, intrinsic :: iso_fortran_env, only: compiler_version, error_unit
+    use, intrinsic :: iso_fortran_env, only: error_unit
     use stdlib_kinds, only: int32, int64, dp, sp
     use stdlib_sorting
     use stdlib_string_type, only: string_type, assignment(=), operator(>), &
@@ -178,7 +178,7 @@ contains
         ! Create and intialize file to report the results of the sortings
         open( newunit=lun, file=filename, access='sequential', action='write', &
             form='formatted', status='replace' )
-        write( lun, '(a)' ) trim(compiler_version())
+        ! write( lun, '(a)' ) trim(compiler_version())
         write( lun, * )
         write( lun, '("|     Type     | Elements |    Array Name   |    Method ' // &
             '  |  Time (s) |")' )
@@ -1179,7 +1179,7 @@ end module test_sorting
 
 
 program tester
-    use, intrinsic :: iso_fortran_env, only: compiler_version, error_unit
+    use, intrinsic :: iso_fortran_env, only: error_unit
     use testdrive, only: new_testsuite, run_testsuite, testsuite_type
     use test_sorting, only: initialize_tests, collect_sorting
 
