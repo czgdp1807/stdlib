@@ -580,7 +580,11 @@ contains
             integer(int_size), parameter :: insert_size = 16_int_size
             integer(int_size)            :: index
 
-            if ( size(array, kind=int_size) <= insert_size ) then
+            integer(int_size) :: array_len
+
+            array_len = size(array, kind=int_size)
+
+            if ( array_len <= insert_size ) then
                 ! May be best at the end of SORT processing the whole array
                 ! See Musser, D.R., “Introspective Sorting and Selection
                 ! Algorithms,” Software—Practice and Experience, Vol. 27(8),
@@ -592,7 +596,7 @@ contains
             else
                 call partition( array, index )
                 call introsort( array(0:index-1), depth_limit-1 )
-                call introsort( array(index+1:), depth_limit-1 )
+                call introsort( array(index+1:array_len), depth_limit-1 )
             end if
 
         end subroutine introsort
@@ -1080,7 +1084,7 @@ contains
                     if ( r < 0 .or. r_count <= 1 ) exit Merge_loop
                     left = runs( r + 1 )
                     right = runs( r )
-                    call merge( array( left % base: &
+                    call merge_index( array( left % base: &
                                      right % base + right % len - 1 ), &
                                 left % len, buf, &
                                 index( left % base: &
@@ -1099,7 +1103,7 @@ contains
         end subroutine merge_sort
 
 
-        pure subroutine merge( array, mid, buf, index, ibuf )
+        pure subroutine merge_index( array, mid, buf, index, ibuf )
 ! Merges the two non-decreasing runs `ARRAY(0:MID-1)` and `ARRAY(MID:)`
 ! using `BUF` as temporary storage, and stores the merged runs into
 ! `ARRAY(0:)`. `MID` must be > 0, and < `SIZE(ARRAY)-1`. Buffer `BUF`
@@ -1135,8 +1139,8 @@ contains
                         index(k) = index(j)
                         j = j + 1
                         if ( j >= array_len ) then
-                            array(k+1:) = buf(i:mid-1)
-                            index(k+1:) = ibuf(i:mid-1)
+                            array(k+1:array_len) = buf(i:mid-1)
+                            index(k+1:array_len) = ibuf(i:mid-1)
                             exit merge_lower
                         end if
                     end if
@@ -1164,7 +1168,7 @@ contains
                     end if
                 end do merge_upper
             end if
-        end subroutine merge
+        end subroutine merge_index
 
 
         pure subroutine reverse_segment( array, index )
@@ -2027,7 +2031,7 @@ contains
                         array(k) = array(j)
                         j = j + 1
                         if ( j >= array_len ) then
-                            array(k+1:) = buf(i:mid-1)
+                            array(k+1:array_len) = buf(i:mid-1)
                             exit merge_lower
                         end if
                     end if
