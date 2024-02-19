@@ -61,9 +61,11 @@ contains
           ${arraytype}$, allocatable :: long_array(:)
 
           ! x contains the numbers 1**2, 2**2, .... 10**2, with mixed-up order
-          x = (/( i**2, i=1, size(x, kind=ip) )/)
-          x(5:2:-1) = x(2:5)
-          x(10:8:-1) = x(8:10)
+          x = (/( i**2_${arraykind}$, i=1, size(x, kind=ip) )/)
+          x_copy = x
+          x_copy(5:2:-1) = x(2:5)
+          x_copy(10:8:-1) = x(8:10)
+          x = x_copy
 
           ! Check that the ith-ranked entry of x really is i**2
           do i = 1, size(x, kind=ip)
@@ -174,7 +176,7 @@ contains
                   test1 = kth_smallest == random_vals(p)
                   test2 = all(random_vals(1:(p-1)) <= random_vals(p))
                   test3 = all(random_vals(p) <= &
-                      random_vals((p+1):size(random_vals, kind=ip)))
+                      random_vals((p+1):size(random_vals)))
                   call check(error, (test1 .and. test2 .and. test3), "${name}$: random data regular select")
                   if(allocated(error)) return
 
@@ -185,7 +187,7 @@ contains
                   test1 = kth_smallest == random_vals(up_rank)
                   test2 = all(random_vals(1:(up_rank-1)) <= random_vals(up_rank))
                   test3 = all(random_vals(up_rank) <= &
-                      random_vals((up_rank+1):size(random_vals, kind=ip)))
+                      random_vals((up_rank+1):size(random_vals)))
                   call check(error, (test1 .and. test2 .and. test3), "${name}$: random data left-constrained select")
                   if(allocated(error)) return
 
@@ -197,7 +199,7 @@ contains
                   test2 = all(random_vals(1:(down_rank-1)) <= &
                       random_vals(down_rank))
                   test3 = all(random_vals(down_rank) <= &
-                      random_vals((down_rank+1):size(random_vals, kind=ip)))
+                      random_vals((down_rank+1):size(random_vals)))
                   call check(error, (test1 .and. test2 .and. test3), "${name}$: random data right-constrained select")
                   if(allocated(error)) return
 
@@ -211,7 +213,7 @@ contains
                   test2 = all(random_vals(1:(mid_rank-1)) <= &
                       random_vals(mid_rank))
                   test3 = all(random_vals(mid_rank) <= &
-                      random_vals((mid_rank+1):size(random_vals, kind=ip)))
+                      random_vals((mid_rank+1):size(random_vals)))
                   call check(error, (test1 .and. test2 .and. test3), "${name}$: random data left-right-constrained select")
                   if(allocated(error)) return
 
@@ -226,6 +228,18 @@ contains
   #:for arraykind, arraytype in ARRAY_KINDS_TYPES
     #:for intkind, inttype in INT_KINDS_TYPES
       #:set name = rname("test_arg_select", 1, arraytype, arraykind, intkind)
+      #:set indexname = rname("index_with_vector", 1, arraytype, arraykind, intkind)
+
+      function ${indexname}$(array, indices) result(r)
+          ${arraytype}$, intent(in) :: array(:)
+          ${inttype}$, intent(in) :: indices(:)
+          ${arraytype}$ :: r(size(indices))
+          integer :: i
+          do i = 1, size(indices)
+              r(i) = array(indices(i))
+          end do
+      end function
+
       subroutine ${name}$(error)
           type(error_type), allocatable, intent(out) :: error
 
@@ -235,7 +249,7 @@ contains
           ${inttype}$, parameter :: Nreps = 2  ! Number of repetitions of random sampling
           ${inttype}$, parameter :: Nr = 25_ip ! Size of random array, must be < HUGE(N)
 
-          ${arraytype}$ :: x(N), mat(Nm), len1(1), len2(2), random_vals(Nr), one=1
+          ${arraytype}$ :: x(N), y(N), mat(Nm), len1(1), len2(2), random_vals(Nr), one=1
 
           integer(ip) :: indx(N), indx_copy(N), indx_mat(Nm), indx_mat_copy(Nm), &
               indx_len1(1), indx_len2(2), indx_r(Nr)
@@ -246,9 +260,11 @@ contains
           ${inttype}$, allocatable :: long_array_index(:)
 
           ! Make x contain 1**2, 2**2, .... 10**2, but mix up the order
-          x = (/( i**2, i=1, size(x, kind=ip) )/)
-          x(5:2:-1) = x(2:5)
-          x(10:8:-1) = x(8:10)
+          x = (/( i**2_${arraykind}$, i=1, size(x, kind=ip) )/)
+          y = x
+          y(5:2:-1) = x(2:5)
+          y(10:8:-1) = x(8:10)
+          x = y
 
           indx = (/(i, i = 1, size(x, kind=ip))/)
 
@@ -295,7 +311,7 @@ contains
 
           ! Simple tests
           mat = one * [3, 2, 7, 4, 5, 1, 4, -1]
-          indx_mat = (/( i, i = 1, size(mat, kind=ip) )/)
+          indx_mat = [( i, i = 1, size(mat, kind=ip) )]
 
           indx_mat_copy = indx_mat
           call arg_select(mat, indx_mat_copy, 1_ip, kth_smallest)
@@ -374,16 +390,16 @@ contains
                   call random_number(random_doubles)
                   random_vals = random_doubles * Nr
 
-                  indx_r = (/( j, j = 1, size(random_vals, kind=ip) )/)
+                  indx_r = [( j, j = 1, size(random_vals, kind=ip) )]
 
                   ! Standard arg_select
                   call arg_select(random_vals, indx_r, p, kth_smallest)
 
                   test1 = random_vals(kth_smallest) == random_vals(indx_r(p))
-                  test2 = all(random_vals(indx_r(1:(p-1))) <= &
+                  test2 = all(${indexname}$(random_vals, indx_r(1:(p-1))) <= &
                       random_vals(indx_r(p)))
                   test3 = all(random_vals(indx_r(p)) <= &
-                      random_vals(indx_r((p+1):size(random_vals, kind=ip))))
+                      ${indexname}$(random_vals, indx_r((p+1):size(random_vals))) )
                   call check(error, (test1 .and. test2 .and. test3), "${name}$: random data regular arg_select")
                   if(allocated(error)) return
 
@@ -394,10 +410,10 @@ contains
 
                   test1 = random_vals(kth_smallest) == &
                       random_vals(indx_r(up_rank))
-                  test2 = all(random_vals(indx_r(1:(up_rank-1))) <= &
+                  test2 = all(${indexname}$(random_vals, indx_r(1:(up_rank-1))) <= &
                       random_vals(indx_r(up_rank)))
                   test3 = all(random_vals(indx_r(up_rank)) <= &
-                      random_vals(indx_r((up_rank+1):size(random_vals, kind=ip))))
+                      ${indexname}$(random_vals, indx_r((up_rank+1):size(random_vals))))
                   call check(error, (test1 .and. test2 .and. test3), "${name}$: random data left-constrained arg_select")
                   if(allocated(error)) return
 
@@ -409,10 +425,10 @@ contains
 
                   test1 = random_vals(kth_smallest) == &
                       random_vals(indx_r(down_rank))
-                  test2 = all(random_vals(indx_r(1:(down_rank-1))) <= &
+                  test2 = all(${indexname}$(random_vals, indx_r(1:(down_rank-1))) <= &
                       random_vals(indx_r(down_rank)))
                   test3 = all(random_vals(indx_r(down_rank)) <= &
-                      random_vals(indx_r((down_rank+1):size(random_vals, kind=ip))))
+                      ${indexname}$(random_vals, indx_r((down_rank+1):size(random_vals))))
                   call check(error, (test1 .and. test2 .and. test3), "${name}$: random data right-constrained arg_select")
                   if(allocated(error)) return
 
@@ -424,10 +440,10 @@ contains
 
                   test1 = random_vals(kth_smallest) == &
                       random_vals(indx_r(mid_rank))
-                  test2 = all(random_vals(indx_r(1:(mid_rank-1))) <= &
+                  test2 = all(${indexname}$(random_vals, indx_r(1:(mid_rank-1))) <= &
                       random_vals(indx_r(mid_rank)))
                   test3 = all(random_vals(indx_r(mid_rank)) <= &
-                      random_vals(indx_r((mid_rank+1):size(random_vals, kind=ip))))
+                      ${indexname}$(random_vals, indx_r((mid_rank+1):size(random_vals))))
                   call check(error, (test1 .and. test2 .and. test3), "${name}$: random data left-right-constrained arg_select")
                   if(allocated(error)) return
 
@@ -441,7 +457,7 @@ contains
 end module
 
 program tester
-    use, intrinsic :: iso_fortran_env, only: compiler_version, error_unit
+    use, intrinsic :: iso_fortran_env, only: error_unit
     use testdrive, only: new_testsuite, run_testsuite, testsuite_type
     use test_selection, only: collect_selection
 
