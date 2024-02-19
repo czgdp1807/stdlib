@@ -13,6 +13,7 @@ set(fppFiles
     stdlib_quadrature.fypp
     # stdlib_sorting.fypp
     stdlib_linalg.fypp
+    stdlib_selection.fypp
 )
 
 
@@ -31,6 +32,7 @@ set(SRC
     stdlib_quadrature.f90
     # stdlib_sorting.f90
     stdlib_linalg.f90
+    stdlib_selection.f90
     ${outFiles}
 )
 
