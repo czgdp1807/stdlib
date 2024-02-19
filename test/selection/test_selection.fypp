@@ -61,7 +61,7 @@ contains
           ${arraytype}$, allocatable :: long_array(:)
 
           ! x contains the numbers 1**2, 2**2, .... 10**2, with mixed-up order
-          x = (/( i**2_${arraykind}$, i=1, size(x, kind=ip) )/)
+          x = (/( i**2, i=1, size(x, kind=ip) )/)
           x_copy = x
           x_copy(5:2:-1) = x(2:5)
           x_copy(10:8:-1) = x(8:10)
@@ -260,7 +260,7 @@ contains
           ${inttype}$, allocatable :: long_array_index(:)
 
           ! Make x contain 1**2, 2**2, .... 10**2, but mix up the order
-          x = (/( i**2_${arraykind}$, i=1, size(x, kind=ip) )/)
+          x = (/( i**2, i=1, size(x, kind=ip) )/)
           y = x
           y(5:2:-1) = x(2:5)
           y(10:8:-1) = x(8:10)
