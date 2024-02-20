@@ -266,6 +266,16 @@ contains
            "Precision loss when rereading array")
     end subroutine test_write_int16_rank4
 
+    function spread_01(source, dim, ncopies) result(output)
+        real(dp), intent(in) :: source
+        integer, intent(in) :: dim, ncopies
+        integer :: i
+        real(dp) :: output(ncopies)
+        do i = 1, ncopies
+            output(i) = source
+        end do
+    end function spread_01
+
     subroutine test_invalid_magic_number(error)
         !> Error handling
         type(error_type), allocatable, intent(out) :: error
@@ -284,7 +294,7 @@ contains
 
         open(newunit=io, file=filename, form="unformatted", access="stream")
         write(io) header
-        write(io) spread(0.0_dp, 1, 40)
+        write(io) spread_01(0.0_dp, 1, 40)
         close(io)
 
         call load_npy(filename, array, stat, msg)
@@ -311,7 +321,7 @@ contains
 
         open(newunit=io, file=filename, form="unformatted", access="stream")
         write(io) header
-        write(io) spread(0.0_dp, 1, 40)
+        write(io) spread_01(0.0_dp, 1, 40)
         close(io)
 
         call load_npy(filename, array, stat, msg)
@@ -338,7 +348,7 @@ contains
 
         open(newunit=io, file=filename, form="unformatted", access="stream")
         write(io) header
-        write(io) spread(0.0_dp, 1, 40)
+        write(io) spread_01(0.0_dp, 1, 40)
         close(io)
 
         call load_npy(filename, array, stat, msg)
@@ -365,7 +375,7 @@ contains
 
         open(newunit=io, file=filename, form="unformatted", access="stream")
         write(io) header
-        write(io) spread(0.0_dp, 1, 40)
+        write(io) spread_01(0.0_dp, 1, 40)
         close(io)
 
         call load_npy(filename, array, stat, msg)
@@ -392,7 +402,7 @@ contains
 
         open(newunit=io, file=filename, form="unformatted", access="stream")
         write(io) header
-        write(io) spread(0.0_dp, 1, 40)
+        write(io) spread_01(0.0_dp, 1, 40)
         close(io)
 
         call load_npy(filename, array, stat, msg)
@@ -419,7 +429,7 @@ contains
 
         open(newunit=io, file=filename, form="unformatted", access="stream")
         write(io) header
-        write(io) spread(0.0_dp, 1, 40)
+        write(io) spread_01(0.0_dp, 1, 40)
         close(io)
 
         call load_npy(filename, array, stat, msg)
@@ -446,7 +456,7 @@ contains
 
         open(newunit=io, file=filename, form="unformatted", access="stream")
         write(io) header
-        write(io) spread(0.0_dp, 1, 40)
+        write(io) spread_01(0.0_dp, 1, 40)
         close(io)
 
         call load_npy(filename, array, stat, msg)
@@ -474,7 +484,7 @@ contains
 
         open(newunit=io, file=filename, form="unformatted", access="stream")
         write(io) header
-        write(io) spread(0.0_dp, 1, 40)
+        write(io) spread_01(0.0_dp, 1, 40)
         close(io)
 
         call load_npy(filename, array, stat, msg)
@@ -502,7 +512,7 @@ contains
 
         open(newunit=io, file=filename, form="unformatted", access="stream")
         write(io) header
-        write(io) spread(0.0_dp, 1, 40)
+        write(io) spread_01(0.0_dp, 1, 40)
         close(io)
 
         call load_npy(filename, array, stat, msg)
@@ -530,7 +540,7 @@ contains
 
         open(newunit=io, file=filename, form="unformatted", access="stream")
         write(io) header
-        write(io) spread(0.0_dp, 1, 40)
+        write(io) spread_01(0.0_dp, 1, 40)
         close(io)
 
         call load_npy(filename, array, stat, msg)
@@ -557,7 +567,7 @@ contains
 
         open(newunit=io, file=filename, form="unformatted", access="stream")
         write(io) header
-        write(io) spread(0.0_dp, 1, 40)
+        write(io) spread_01(0.0_dp, 1, 40)
         close(io)
 
         call load_npy(filename, array, stat, msg)
@@ -584,7 +594,7 @@ contains
 
         open(newunit=io, file=filename, form="unformatted", access="stream")
         write(io) header
-        write(io) spread(0.0_dp, 1, 40)
+        write(io) spread_01(0.0_dp, 1, 40)
         close(io)
 
         call load_npy(filename, array, stat, msg)
@@ -611,7 +621,7 @@ contains
 
         open(newunit=io, file=filename, form="unformatted", access="stream")
         write(io) header
-        write(io) spread(0.0_dp, 1, 40)
+        write(io) spread_01(0.0_dp, 1, 40)
         close(io)
 
         call load_npy(filename, array, stat, msg)
