@@ -5,17 +5,29 @@
 #:set KINDS_TYPES = REAL_KINDS_TYPES + INT_KINDS_TYPES + CMPLX_KINDS_TYPES
 
 !> Implementation of loading npy files into multidimensional arrays
-submodule (stdlib_io_npy) stdlib_io_npy_load
+module stdlib_io_npy_load
     use stdlib_error, only : error_stop
     use stdlib_strings, only : to_string, starts_with
+    use stdlib_kinds, only : int8, int16, int32, int64, sp, dp, xdp, qp
     implicit none
+
+    character(len=*), parameter :: nl = achar(10)
+
+    character(len=*), parameter :: &
+        type_iint8 = "<i1", type_iint16 = "<i2", type_iint32 = "<i4", type_iint64 = "<i8", &
+        type_rsp = "<f4", type_rdp = "<f8", type_rxdp = "<f10", type_rqp = "<f16", &
+        type_csp = "<c8", type_cdp = "<c16", type_cxdp = "<c20", type_cqp = "<c32"
+
+    character(len=*), parameter :: &
+        & magic_number = char(int(z"93")), &
+        & magic_string = "NUMPY"
 
 contains
 
 #:for k1, t1 in KINDS_TYPES
   #:for rank in RANKS
     !> Load a ${rank}$-dimensional array from a npy file
-    module subroutine load_npy_${t1[0]}$${k1}$_${rank}$(filename, array, iostat, iomsg)
+    subroutine load_npy_${t1[0]}$${k1}$_${rank}$(filename, array, iostat, iomsg)
         !> Name of the npy file to load from
         character(len=*), intent(in) :: filename
         !> Array to be loaded from the npy file
@@ -122,10 +134,10 @@ contains
         character(len=8) :: header
         character :: buf(4)
         logical :: fortran_order
-        
+
         ! stat should be zero if no error occurred
         stat = 0
-        
+
         read(io, iostat=stat) header
         if (stat /= 0) return
 
@@ -536,4 +548,4 @@ contains
 
     end subroutine parse_descriptor
 
-end submodule stdlib_io_npy_load
+end module stdlib_io_npy_load
