@@ -33,6 +33,7 @@ set(SRC
     # stdlib_sorting.f90
     stdlib_linalg.f90
     stdlib_selection.f90
+    stdlib_specialfunctions_gamma.f90
     ${outFiles}
 )
 
