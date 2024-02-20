@@ -1,7 +1,7 @@
 module test_var
     use testdrive, only : new_unittest, unittest_type, error_type, check
     use stdlib_kinds, only: sp, dp, int32, int64
-    use stdlib_stats, only: var
+    use stdlib_stats_var, only: var
     use,intrinsic :: ieee_arithmetic, only : ieee_is_nan
     implicit none
 
@@ -18,14 +18,33 @@ module test_var
     real(dp), parameter :: d(4, 3) = reshape([1._dp, 3._dp, 5._dp, 7._dp,&
                                    2._dp, 4._dp, 6._dp, 8._dp,&
                                    9._dp, 10._dp, 11._dp, 12._dp], [4, 3])
-    real(dp), parameter :: d3(4, 3, 3) = reshape([d, d*2, d*4], shape(d3))
-    real(sp), parameter :: s(4, 3) = d
-    real(sp), parameter :: s3(4, 3, 3) = reshape([s, s*2, s*4], shape(s3))
+    real(dp), parameter :: d3(4, 3, 3) = reshape([1._dp, 3._dp, 5._dp, 7._dp,&
+    2._dp, 4._dp, 6._dp, 8._dp, 9._dp, 10._dp, 11._dp, 12._dp, 2._dp, 6._dp, 10._dp,&
+    14._dp, 4._dp, 8._dp, 12._dp, 16._dp, 18._dp, 20._dp, 22._dp, 24._dp, 4._dp, 12._dp,&
+    20._dp, 28._dp, 8._dp, 16._dp, 24._dp, 32._dp, 36._dp, 40._dp, 44._dp, 48._dp], [4, 3, 3])
+    real(sp), parameter :: s(4, 3) = reshape([1._sp, 3._sp, 5._sp, 7._sp,&
+                                   2._sp, 4._sp, 6._sp, 8._sp,&
+                                   9._sp, 10._sp, 11._sp, 12._sp], [4, 3])
+    real(sp), parameter :: s3(4, 3, 3) = reshape([1._sp, 3._sp, 5._sp, 7._sp,&
+    2._sp, 4._sp, 6._sp, 8._sp, 9._sp, 10._sp, 11._sp, 12._sp, 2._sp, 6._sp, 10._sp,&
+    14._sp, 4._sp, 8._sp, 12._sp, 16._sp, 18._sp, 20._sp, 22._sp, 24._sp, 4._sp, 12._sp,&
+    20._sp, 28._sp, 8._sp, 16._sp, 24._sp, 32._sp, 36._sp, 40._sp, 44._sp, 48._sp], [4, 3, 3])
 
-    integer(int32), parameter :: i32(4, 3) = d
-    integer(int32), parameter :: i323(4, 3, 3) = d3
-    integer(int64), parameter :: i64(4, 3) = d
-    integer(int64), parameter :: i643(4, 3, 3) = d3
+    integer(int32), parameter :: i32(4, 3) = reshape([1, 3, 5, 7,&
+                                   2, 4, 6, 8,&
+                                   9, 10, 11, 12], [4, 3])
+    integer(int32), parameter :: i323(4, 3, 3) = reshape([1, 3, 5, 7,&
+    2, 4, 6, 8, 9, 10, 11, 12, 2, 6, 10,&
+    14, 4, 8, 12, 16, 18, 20, 22, 24, 4, 12,&
+    20, 28, 8, 16, 24, 32, 36, 40, 44, 48], [4, 3, 3])
+    integer(int64), parameter :: i64(4, 3) = reshape([1_int64, 3_int64, 5_int64, 7_int64,&
+                                   2_int64, 4_int64, 6_int64, 8_int64,&
+                                   9_int64, 10_int64, 11_int64, 12_int64], [4, 3])
+    integer(int64), parameter :: i643(4, 3, 3) = reshape([1_int64, 3_int64, 5_int64, 7_int64,&
+    2_int64, 4_int64, 6_int64, 8_int64, 9_int64, 10_int64, 11_int64, 12_int64, 2_int64, 6_int64, 10_int64,&
+    14_int64, 4_int64, 8_int64, 12_int64, 16_int64, 18_int64, 20_int64, 22_int64, 24_int64, 4_int64, 12_int64,&
+    20_int64, 28_int64, 8_int64, 16_int64, 24_int64, 32_int64, 36_int64, 40_int64, 44_int64, 48_int64], [4, 3, 3])
+
 
     complex(sp), parameter :: cs1(5) = [ cmplx(0.57706_sp, 0.00000_sp, sp),&
                             cmplx(0.00000_sp, 1.44065_sp, sp),&
@@ -37,8 +56,22 @@ module test_var
                             cmplx(1.26401_dp, 0.00000_dp,kind=dp),&
                             cmplx(0.00000_dp, 0.88833_dp,kind=dp),&
                             cmplx(1.14352_dp, 0.00000_dp,kind=dp)]
-    complex(sp), parameter :: cs(5,3) = reshape([cs1, cs1*3.0_sp, cs1*1.5_sp], shape(cs))
-    complex(dp), parameter :: cd(5,3) = reshape([cd1, cd1*3.0_dp, cd1*1.5_dp], shape(cd))
+    complex(sp), parameter :: cs(5,3) = reshape([cmplx(0.577059984_sp,0.00000000_sp, sp), cmplx(0.00000000_sp,1.44064999_sp, sp),&
+        cmplx(1.26400995_sp,0.00000000_sp, sp), cmplx(0.00000000_sp,0.888329983_sp, sp),&
+        cmplx(1.14352000_sp,0.00000000_sp, sp), cmplx(1.73117995_sp,0.00000000_sp, sp),&
+        cmplx(0.00000000_sp,4.32194996_sp, sp), cmplx(3.79202986_sp,0.00000000_sp, sp),&
+        cmplx(0.00000000_sp,2.66498995_sp, sp), cmplx(3.43056011_sp,0.00000000_sp, sp),&
+        cmplx(0.865589976_sp,0.00000000_sp, sp), cmplx(0.00000000_sp,2.16097498_sp, sp),&
+        cmplx(1.89601493_sp,0.00000000_sp, sp), cmplx(0.00000000_sp,1.33249497_sp, sp),&
+        cmplx(1.71528006_sp,0.00000000_sp, sp)], [5, 3])
+    complex(dp), parameter :: cd(5,3) = reshape([cmplx(0.577059984_dp,0.00000000_dp, dp), cmplx(0.00000000_dp,1.44064999_dp, dp),&
+        cmplx(1.26400995_dp,0.00000000_dp, dp), cmplx(0.00000000_dp,0.888329983_dp, dp),&
+        cmplx(1.14352000_dp,0.00000000_dp, dp), cmplx(1.73117995_dp,0.00000000_dp, dp),&
+        cmplx(0.00000000_dp,4.32194996_dp, dp), cmplx(3.79202986_dp,0.00000000_dp, dp),&
+        cmplx(0.00000000_dp,2.66498995_dp, dp), cmplx(3.43056011_dp,0.00000000_dp, dp),&
+        cmplx(0.865589976_dp,0.00000000_dp, dp), cmplx(0.00000000_dp,2.16097498_dp, dp),&
+        cmplx(1.89601493_dp,0.00000000_dp, dp), cmplx(0.00000000_dp,1.33249497_dp, dp),&
+        cmplx(1.71528006_dp,0.00000000_dp, dp)], [5, 3])
 
 contains
 

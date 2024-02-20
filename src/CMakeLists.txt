@@ -14,6 +14,7 @@ set(fppFiles
     # stdlib_sorting.fypp
     stdlib_linalg.fypp
     stdlib_selection.fypp
+    stdlib_stats_var.fypp
 )
 
 
@@ -34,6 +35,7 @@ set(SRC
     stdlib_linalg.f90
     stdlib_selection.f90
     stdlib_specialfunctions_gamma.f90
+    stdlib_stats_var.f90
     ${outFiles}
 )
 
