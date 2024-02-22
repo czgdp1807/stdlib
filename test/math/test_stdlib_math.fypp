@@ -6,10 +6,13 @@ module test_stdlib_math
     use testdrive, only : new_unittest, unittest_type, error_type, check, skip_test
     use stdlib_math, only: clip, arg, argd, argpi, arange, is_close, all_close, diff, &
                            arange
-    use stdlib_kinds, only: int8, int16, int32, int64, sp, dp, xdp, qp
+    use stdlib_kinds, only: int8, int16, int32, int64, sp, dp
     implicit none
 
     public :: collect_stdlib_math
+
+    integer, parameter :: qp = selected_real_kind(15)
+    integer, parameter :: xdp = selected_real_kind(15)
 
     #:for k1 in REAL_KINDS
     real(kind=${k1}$), parameter :: PI_${k1}$ = acos(-1.0_${k1}$)
