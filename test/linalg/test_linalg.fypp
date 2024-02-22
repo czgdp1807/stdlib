@@ -956,13 +956,13 @@ program tester
 
     stat = 0
 
-    testsuites = [ &
-        new_testsuite("linalg", collect_linalg) &
-        ]
+    ! testsuites = [ &
+    !     new_testsuite("linalg", collect_linalg) &
+    !     ]
 
     do is = 1, size(testsuites)
-        write(error_unit, fmt) "Testing:", testsuites(is)%name
-        call run_testsuite(testsuites(is)%collect, error_unit, stat)
+        write(error_unit, fmt) "Testing:", "linalg"
+        call run_testsuite(collect_linalg, error_unit, stat)
     end do
 
     if (stat > 0) then
