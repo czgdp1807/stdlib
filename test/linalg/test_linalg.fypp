@@ -251,8 +251,10 @@ contains
         complex(qp), parameter :: i_ = cmplx(0,1,kind=qp)
 
         a = diag([i_,i_],-1) + diag([i_,i_],1)
-        call check(error, all(diag(a,-1) == i_) .and. all(diag(a,1) == i_), &
-            "all(diag(a,-1) == i_) .and. all(diag(a,1) == i_) failed.")
+        call check(error, all(diag(a,-1) == i_), &
+            "all(diag(a,-1) == i_) failed.")
+        call check(error, all(diag(a,1) == i_), &
+            "all(diag(a,1) == i_) failed.")
 #:else
         call skip_test(error, "Quadruple precision is not enabled")
 #:endif
