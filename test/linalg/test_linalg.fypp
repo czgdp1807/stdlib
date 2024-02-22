@@ -564,14 +564,17 @@ contains
       !> Error handling
       type(error_type), allocatable, intent(out) :: error
       integer, parameter :: m1 = 1, n1 = 2, m2 = 2, n2 = 3
-      ${t1}$, dimension(m1*m2,n1*n2), parameter :: expected &
-           = transpose(reshape([1,2,3, 2,4,6, 2,4,6, 4,8,12], [m2*n2, m1*n1]))
+      ${t1}$, dimension(m2*n2, m1*n1) :: temp_variable
+      ${t1}$, dimension(m1*m2,n1*n2) :: expected
       ${t1}$, parameter :: tol = 1.e-6
 
       ${t1}$ :: A(m1,n1), B(m2,n2)
       ${t1}$ :: C(m1*m2,n1*n2), diff(m1*m2,n1*n2)
 
       integer :: i,j
+
+      temp_variable = reshape([1,2,3, 2,4,6, 2,4,6, 4,8,12], [m2*n2, m1*n1])
+      expected = transpose(temp_variable)
 
       do j = 1, n1
          do i = 1, m1
