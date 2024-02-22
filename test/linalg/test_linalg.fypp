@@ -134,7 +134,7 @@ contains
         type(error_type), allocatable, intent(out) :: error
 
         integer, parameter :: n = 4
-        real(sp) :: a(n,n), b(n,n)
+        real(sp) :: a(n,n), b(n,n), c(n, n)
         integer :: i,j
 
 
@@ -150,7 +150,10 @@ contains
             "sum(diag(a,-1)) - (n-1) < sptol failed.")
         if (allocated(error)) return
 
-        call check(error, all(a == transpose(diag([(1._sp,i=1,n-1)],1))), &
+        c = diag([(1._sp,i=1,n-1)],1)
+        c = transpose(c)
+
+        call check(error, all(a == c), &
             "all(a == transpose(diag([(1._sp,i=1,n-1)],1))) failed")
         if (allocated(error)) return
 
