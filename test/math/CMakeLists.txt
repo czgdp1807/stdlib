@@ -4,6 +4,6 @@ set(
 )
 fypp_f90("${fyppFlags}" "${fppFiles}" outFiles)
 
-# ADDTEST(stdlib_math)
+ADDTEST(stdlib_math)
 ADDTEST(linspace)
 ADDTEST(logspace)
