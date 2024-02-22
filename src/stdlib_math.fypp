@@ -667,6 +667,7 @@ contains
 
         n_ = optval(n, 1)
         if (n_ <= 0) then
+            allocate(y(size(x)))
             y = x
             return
         end if
@@ -685,6 +686,7 @@ contains
 
         !> Use a quick exit for the common case, to avoid memory allocation.
         if (size_prepend == 0 .and. size_append == 0 .and. n_ == 1) then
+            allocate(y(size_x - 1))
             y = x(2:) - x(1:size_x-1)
             return
         end if
@@ -699,6 +701,7 @@ contains
             work(1:size_work-i) = work(2:size_work-i+1) - work(1:size_work-i)
         end do
 
+        allocate(y(size_work - n_))
         y = work(1:size_work-n_)
         end block
 
@@ -714,6 +717,7 @@ contains
 
         n_ = optval(n, 1)
         if (n_ <= 0) then
+            allocate(y(size(x, 1), size(x, 2)))
             y = x
             return
         end if
@@ -743,8 +747,10 @@ contains
         !> Use a quick exit for the common case, to avoid memory allocation.
         if (size_prepend == 0 .and. size_append == 0 .and. n_ == 1) then
             if (dim_ == 1) then
+                allocate(y(size_x - 1, size(x, 2)))
                 y = x(2:, :) - x(1:size_x-1, :)
             elseif (dim_ == 2) then
+                allocate(y(size(x, 1), size_x - 1))
                 y = x(:, 2:) - x(:, 1:size_x-1)
             end if
             return
@@ -760,6 +766,7 @@ contains
                 work(1:size_work-i, :) = work(2:size_work-i+1, :) - work(1:size_work-i, :)
             end do
 
+            allocate(y(size_work - n_, size(work, 2)))
             y = work(1:size_work-n_, :)
             end block
 
@@ -773,6 +780,7 @@ contains
                 work(:, 1:size_work-i) = work(:, 2:size_work-i+1) - work(:, 1:size_work-i)
             end do
 
+            allocate(y(size(work, 1), size_work - n_))
             y = work(:, 1:size_work-n_)
             end block
 
@@ -838,8 +846,18 @@ contains
         ${t1}$, intent(in) :: a${ranksuffix(r1)}$, b${ranksuffix(r1)}$
         real(${k1}$), intent(in), optional :: rel_tol, abs_tol
         logical, intent(in), optional :: equal_nan
+        logical :: isclose(&
+        #:for r in range(1, r1 + 1)
+          #:if r < r1
+          size(a, ${r}$), &
+          #:else
+          size(a, ${r}$) &
+          #:endif
+        #:endfor
+        )
 
-        close = all(is_close(a, b, rel_tol, abs_tol, equal_nan))
+        isclose = is_close(a, b, rel_tol, abs_tol, equal_nan)
+        close = all(isclose)
 
     end function all_close_${r1}$_${t1[0]}$${k1}$
     #:endfor
