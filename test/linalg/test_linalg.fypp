@@ -276,17 +276,26 @@ contains
         !> Error handling
         type(error_type), allocatable, intent(out) :: error
 
-        integer, parameter :: n = 3
-        integer(int8), allocatable :: a(:,:)
+        integer, parameter :: n = 4
+        integer(int8) :: a(n, n), b(n, n), c(n, n)
         integer :: i
-        logical, allocatable :: mask(:,:)
+        integer(int8) :: j
+        logical :: mask(n, n)
 
-        a = reshape([(i,i=1,n**2)],[n,n])
+        ! allocate(a(n,n))
+
+        a = reshape([(j,j=1_int8,n**2)],[n,n])
+        ! print *, diag(a)
+        ! allocate(mask(n,n))
+        b = diag(a)
+        c = pack(a, mask)
         mask = merge(.true.,.false.,eye(n) == 1)
-        call check(error, all(diag(a) == pack(a,mask)), &
-            "all(diag(a) == pack(a,mask)) failed.")
+        call check(error, all(b == c), &
+            "all(diag(a) == pack(a,mask))")
         if (allocated(error)) return
-        call check(error, all(diag(diag(a)) == merge(a,0_int8,mask)), &
+        b = diag(b)
+        c = merge(a,0_int8,mask)
+        call check(error, all(b == c), &
             "all(diag(diag(a)) == merge(a,0_int8,mask)) failed.")
     end subroutine test_diag_int8
     subroutine test_diag_int16(error)
@@ -294,16 +303,25 @@ contains
         type(error_type), allocatable, intent(out) :: error
 
         integer, parameter :: n = 4
-        integer(int16), allocatable :: a(:,:)
+        integer(int16) :: a(n, n), b(n, n), c(n, n)
         integer :: i
-        logical, allocatable :: mask(:,:)
+        integer(int16) :: j
+        logical :: mask(n, n)
 
-        a = reshape([(i,i=1,n**2)],[n,n])
+        ! allocate(a(n,n))
+
+        a = reshape([(j,j=1_int16,n**2)],[n,n])
+        ! print *, diag(a)
+        ! allocate(mask(n,n))
+        b = diag(a)
+        c = pack(a, mask)
         mask = merge(.true.,.false.,eye(n) == 1)
-        call check(error, all(diag(a) == pack(a,mask)), &
+        call check(error, all(b == c), &
             "all(diag(a) == pack(a,mask))")
         if (allocated(error)) return
-        call check(error, all(diag(diag(a)) == merge(a,0_int16,mask)), &
+        b = diag(b)
+        c = merge(a,0_int16,mask)
+        call check(error, all(b == c), &
             "all(diag(diag(a)) == merge(a,0_int16,mask)) failed.")
     end subroutine test_diag_int16
     subroutine test_diag_int32(error)
