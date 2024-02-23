@@ -15,11 +15,12 @@
 module stdlib_string_type
     use stdlib_ascii, only: to_lower_ => to_lower, to_upper_ => to_upper, &
        & to_title_ => to_title, to_sentence_ => to_sentence, reverse_ => reverse
-    use stdlib_kinds, only : int8, int16, int32, int64, lk, c_bool
+    use stdlib_kinds, only : sp, dp, xdp, qp, int8, int16, int32, int64, lk, c_bool
     use stdlib_optval, only: optval
     implicit none
     private
 
+    public :: to_string
     public :: string_type
     public :: len, len_trim, trim, index, scan, verify, repeat, adjustr, adjustl
     public :: lgt, lge, llt, lle, char, ichar, iachar
@@ -32,7 +33,8 @@ module stdlib_string_type
 
 
     integer, parameter :: long = selected_int_kind(18)
-
+    integer, parameter :: buffer_len = 128
+    character(len=*), parameter :: err_sym = "[*]"
 
     !> String type holding an arbitrary sequence of characters.
     type :: string_type
@@ -43,6 +45,22 @@ module stdlib_string_type
         character(len=:), allocatable :: raw
     end type string_type
 
+    !> Version: experimental
+    !>
+    !> Format or transfer other types as a string.
+    !> ([Specification](../page/specs/stdlib_strings.html#to_string))
+    interface to_string
+        #:set RC_KINDS_TYPES = REAL_KINDS_TYPES + CMPLX_KINDS_TYPES
+        #:set IL_KINDS_TYPES = INT_KINDS_TYPES + LOG_KINDS_TYPES
+        #:for k1, t1 in RC_KINDS_TYPES
+        module procedure :: to_string_${t1[0]}$_${k1}$
+        #:endfor
+        #:for k1, t1 in IL_KINDS_TYPES
+        module procedure :: to_string_1_${t1[0]}$_${k1}$
+        module procedure :: to_string_2_${t1[0]}$_${k1}$
+        #:endfor
+    end interface to_string
+
     !> Returns the length of the character sequence represented by the string.
     !>
     !> This method is elemental and returns a default integer scalar value.
@@ -52,23 +70,14 @@ module stdlib_string_type
 
     !> Constructor for new string instances
     interface string_type
-        elemental module function new_string(string) result(new)
-            character(len=*), intent(in), optional :: string
-            type(string_type) :: new
-        end function new_string
+        module procedure :: new_string
         #:for kind in INT_KINDS
-        elemental module function new_string_from_integer_${kind}$(val) result(new)
-            integer(${kind}$), intent(in) :: val
-            type(string_type) :: new
-        end function new_string_from_integer_${kind}$
+        module procedure :: new_string_from_integer_${kind}$
         #:endfor
         #:for kind in LOG_KINDS
-        elemental module function new_string_from_logical_${kind}$(val) result(new)
-            logical(${kind}$), intent(in) :: val
-            type(string_type) :: new
-        end function new_string_from_logical_${kind}$
+        module procedure :: new_string_from_logical_${kind}$
         #:endfor
-    end interface string_type        
+    end interface string_type
 
     !> Returns the length of the character sequence without trailing spaces
     !> represented by the string.
@@ -142,7 +151,7 @@ module stdlib_string_type
     end interface to_sentence
 
     !> Reverses the character sequence hold by the input string
-    !> 
+    !>
     !> This method is elemental and returns a new string_type instance which holds this
     !> reverse character sequence
     interface reverse
@@ -375,6 +384,147 @@ module stdlib_string_type
 
 
 contains
+
+    #:for k1, t1 in REAL_KINDS_TYPES
+    !> Format or transfer a ${t1}$ scalar as a string.
+    pure function to_string_${t1[0]}$_${k1}$(value, format) result(string)
+        ${t1}$, intent(in) :: value
+        character(len=*), intent(in), optional :: format
+        character(len=:), allocatable :: string
+
+        character(len=buffer_len) :: buffer
+        integer :: stat
+
+        write(buffer, '(' // optval(format, "g0") // ')', iostat=stat) value
+        if (stat == 0) then
+            string = trim(buffer)
+        else
+            string = err_sym
+        end if
+
+    end function to_string_${t1[0]}$_${k1}$
+    #:endfor
+
+    #:for k1, t1 in CMPLX_KINDS_TYPES
+    !> Format or transfer a ${t1}$ scalar as a string.
+    pure function to_string_${t1[0]}$_${k1}$(value, format) result(string)
+        ${t1}$, intent(in) :: value
+        character(len=*), intent(in), optional :: format
+        character(len=:), allocatable :: string
+
+        string = '(' // to_string_r_${k1}$(value%re, format) // ',' // &
+                      & to_string_r_${k1}$(value%im, format) // ')'
+
+    end function to_string_${t1[0]}$_${k1}$
+    #:endfor
+
+    #:for k1, t1 in INT_KINDS_TYPES
+    !> Represent an integer of kind ${k1}$ as character sequence.
+    pure function to_string_1_${t1[0]}$_${k1}$(value) result(string)
+        integer, parameter :: ik = ${k1}$
+        integer(ik), intent(in) :: value
+        character(len=:), allocatable :: string
+        integer, parameter :: buffer_len = range(value)+2
+        character(len=buffer_len) :: buffer
+        integer :: pos
+        integer(ik) :: n
+        character(len=1), parameter :: numbers(-9:0) = &
+            ["9", "8", "7", "6", "5", "4", "3", "2", "1", "0"]
+
+        if (value == 0_ik) then
+            string = numbers(0)
+            return
+        end if
+
+        n = sign(value, -1_ik)
+        buffer = ""
+        pos = buffer_len + 1
+        do while (n < 0_ik)
+            pos = pos - 1
+            buffer(pos:pos) = numbers(mod(n, 10_ik))
+            n = n/10_ik
+        end do
+
+        if (value < 0_ik) then
+            pos = pos - 1
+            buffer(pos:pos) = '-'
+        end if
+
+        string = buffer(pos:)
+    end function to_string_1_${t1[0]}$_${k1}$
+
+    pure function to_string_2_${t1[0]}$_${k1}$(value, format) result(string)
+        ${t1}$, intent(in) :: value
+        character(len=*), intent(in) :: format
+        character(len=:), allocatable :: string
+
+        character(len=buffer_len) :: buffer
+        integer :: stat
+
+        write(buffer, "(" // format // ")", iostat=stat) value
+        if (stat == 0) then
+            string = trim(buffer)
+        else
+            string = err_sym
+        end if
+
+    end function to_string_2_${t1[0]}$_${k1}$
+    #:endfor
+
+    #:for k1, t1 in LOG_KINDS_TYPES
+    !> Represent an logical of kind ${k1}$ as character sequence.
+    pure function to_string_1_${t1[0]}$_${k1}$(value) result(string)
+        ${t1}$, intent(in) :: value
+        character(len=1) :: string
+
+        string = merge("T", "F", value)
+
+    end function to_string_1_${t1[0]}$_${k1}$
+
+    pure function to_string_2_${t1[0]}$_${k1}$(value, format) result(string)
+        ${t1}$, intent(in) :: value
+        character(len=*), intent(in) :: format
+        character(len=:), allocatable :: string
+
+        character(len=buffer_len) :: buffer
+        integer :: stat
+
+        write(buffer, "(" // format // ")", iostat=stat) value
+        if (stat == 0) then
+            string = trim(buffer)
+        else
+            string = err_sym
+        end if
+
+    end function to_string_2_${t1[0]}$_${k1}$
+    #:endfor
+
+    !> Constructor for new string instances from a scalar character value.
+    elemental module function new_string(string) result(new)
+        character(len=*), intent(in), optional :: string
+        type(string_type) :: new
+        if (present(string)) then
+            new%raw = string
+        end if
+    end function new_string
+
+    #:for kind in INT_KINDS
+    !> Constructor for new string instances from an integer of kind ${kind}$.
+    elemental module function new_string_from_integer_${kind}$(val) result(new)
+        integer(${kind}$), intent(in) :: val
+        type(string_type) :: new
+        new%raw = to_string(val)
+    end function new_string_from_integer_${kind}$
+    #:endfor
+
+    #:for kind in LOG_KINDS
+    !> Constructor for new string instances from a logical of kind ${kind}$.
+    elemental module function new_string_from_logical_${kind}$(val) result(new)
+        logical(${kind}$), intent(in) :: val
+        type(string_type) :: new
+        new%raw = to_string(val)
+    end function new_string_from_logical_${kind}$
+    #:endfor
 
     !> Assign a character sequence to a string.
     elemental subroutine assign_string_char(lhs, rhs)

@@ -2,7 +2,6 @@
 
 # Create a list of the files to be preprocessed
 set(fppFiles
-    stdlib_string_type_constructor.fypp
     stdlib_string_type.fypp
     stdlib_strings.fypp
     stdlib_kinds.fypp
