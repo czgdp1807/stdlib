@@ -786,7 +786,7 @@ contains
         type(error_type), allocatable, intent(out) :: error
 
         character(len=:), allocatable :: dlc
-        character(len=32), parameter :: input = "UPPERCASE"
+        character(len=32), parameter :: input = "UPPERCASE                       "
 
         dlc = to_lower("UPPERCASE")
         call check(error, dlc, "uppercase")
@@ -812,7 +812,7 @@ contains
         type(error_type), allocatable, intent(out) :: error
 
         character(len=:), allocatable :: dlc
-        character(len=32), parameter :: input = "lowercase"
+        character(len=32), parameter :: input = "lowercase                       "
 
         dlc = to_upper("lowercase")
         call check(error, dlc, "LOWERCASE")
@@ -838,7 +838,7 @@ contains
         type(error_type), allocatable, intent(out) :: error
 
         character(len=:), allocatable :: dlc
-        character(len=32), parameter :: input = "tHis Is tO bE tiTlEd"
+        character(len=32), parameter :: input = "tHis Is tO bE tiTlEd            "
 
         dlc = to_title("tHis Is tO bE tiTlEd")
         call check(error, dlc, "This Is To Be Titled")
@@ -872,7 +872,7 @@ contains
         type(error_type), allocatable, intent(out) :: error
 
         character(len=:), allocatable :: dlc
-        character(len=32), parameter :: input = "tHis iS A seNteNcE."
+        character(len=32), parameter :: input = "tHis iS A seNteNcE.             "
 
         dlc = to_sentence("tHis iS A seNteNcE.")
         call check(error, dlc, "This is a sentence.")
@@ -906,7 +906,7 @@ contains
         type(error_type), allocatable, intent(out) :: error
 
         character(len=:), allocatable :: dlc
-        character(len=32), parameter :: input = "reversed"
+        character(len=32), parameter :: input = "reversed                        "
 
         dlc = reverse("reversed")
         call check(error, dlc, "desrever")
