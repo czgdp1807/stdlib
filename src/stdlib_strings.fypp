@@ -5,7 +5,7 @@
 !> The specification of this module is available [here](../page/specs/stdlib_strings.html).
 module stdlib_strings
     use stdlib_ascii, only: whitespace
-    use stdlib_string_type, only: string_type, char, verify, repeat, len, to_string
+    use stdlib_string_type, only: string_type, char, verify, repeat, len, to_string, construct_string_type
     use stdlib_optval, only: optval
     use stdlib_kinds, only: sp, dp, xdp, qp, int8, int16, int32, int64, lk, c_bool
     implicit none
@@ -377,7 +377,7 @@ contains
         integer, intent(in), optional :: first, last, stride
         type(string_type) :: sliced_string
 
-        sliced_string = string_type(slice(char(string), first, last, stride))
+        sliced_string = construct_string_type(slice(char(string), first, last, stride))
 
     end function slice_string
 
@@ -565,7 +565,7 @@ contains
         type(string_type), intent(in) :: replacement
         type(string_type) :: res
 
-        res = string_type(replace_all(char(string), &
+        res = construct_string_type(replace_all(char(string), &
                 & char(pattern), char(replacement)))
 
     end function replace_all_string_string_string
@@ -579,7 +579,7 @@ contains
         character(len=*), intent(in) :: replacement
         type(string_type) :: res
 
-        res = string_type(replace_all(char(string), char(pattern), replacement))
+        res = construct_string_type(replace_all(char(string), char(pattern), replacement))
 
     end function replace_all_string_string_char
 
@@ -592,7 +592,7 @@ contains
         type(string_type), intent(in) :: replacement
         type(string_type) :: res
 
-        res = string_type(replace_all(char(string), pattern, char(replacement)))
+        res = construct_string_type(replace_all(char(string), pattern, char(replacement)))
 
     end function replace_all_string_char_string
 
@@ -618,7 +618,7 @@ contains
         character(len=*), intent(in) :: replacement
         type(string_type) :: res
 
-        res = string_type(replace_all(char(string), pattern, replacement))
+        res = construct_string_type(replace_all(char(string), pattern, replacement))
 
     end function replace_all_string_char_char
 
@@ -700,7 +700,7 @@ contains
         integer, intent(in) :: output_length
         type(string_type) :: res
 
-        res = string_type(padl(char(string), output_length, " "))
+        res = construct_string_type(padl(char(string), output_length, " "))
 
     end function padl_string_default
 
@@ -713,7 +713,7 @@ contains
         character(len=1), intent(in) :: pad_with
         type(string_type) :: res
 
-        res = string_type(padl(char(string), output_length, pad_with))
+        res = construct_string_type(padl(char(string), output_length, pad_with))
 
     end function padl_string_pad_with
 
@@ -764,7 +764,7 @@ contains
         ! type and back to `string_type`, we're effectively right-padding
         ! `string` with spaces, so we don't need to pad explicitly.
         char_output = char(string)
-        res = string_type(char_output)
+        res = construct_string_type(char_output)
 
     end function padr_string_default
 
@@ -777,7 +777,7 @@ contains
         character(len=1), intent(in) :: pad_with
         type(string_type) :: res
 
-        res = string_type(padr(char(string), output_length, pad_with))
+        res = construct_string_type(padr(char(string), output_length, pad_with))
 
     end function padr_string_pad_with
 
@@ -901,7 +901,7 @@ contains
         integer, intent(in) :: output_length
         type(string_type) :: res
 
-        res = string_type(padl(char(string), output_length, "0"))
+        res = construct_string_type(padl(char(string), output_length, "0"))
 
     end function zfill_string
 

@@ -22,6 +22,7 @@ module stdlib_string_type
 
     public :: to_string
     public :: string_type
+    public :: construct_string_type
     public :: len, len_trim, trim, index, scan, verify, repeat, adjustr, adjustl
     public :: lgt, lge, llt, lle, char, ichar, iachar
     public :: to_lower, to_upper, to_title, to_sentence, reverse, move
@@ -69,7 +70,7 @@ module stdlib_string_type
     end interface len
 
     !> Constructor for new string instances
-    interface string_type
+    interface construct_string_type
         module procedure :: new_string
         #:for kind in INT_KINDS
         module procedure :: new_string_from_integer_${kind}$
@@ -77,7 +78,7 @@ module stdlib_string_type
         #:for kind in LOG_KINDS
         module procedure :: new_string_from_logical_${kind}$
         #:endfor
-    end interface string_type
+    end interface construct_string_type
 
     !> Returns the length of the character sequence without trailing spaces
     !> represented by the string.
