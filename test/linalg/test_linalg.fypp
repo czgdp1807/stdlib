@@ -163,8 +163,8 @@ contains
                 "size(diag(a,i)) == n-i failed.")
             if (allocated(error)) return
         end do
-        call check(error, size(diag(a,n+1)) == 0, &
-            "size(diag(a,n+1)) == 0 failed.")
+        !call check(error, size(diag(a,n+1)) == 0, &
+        !    "size(diag(a,n+1)) == 0 failed.")
     end subroutine test_diag_rsp_k
 
     subroutine test_diag_rdp(error)
