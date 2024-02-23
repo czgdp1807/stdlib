@@ -268,8 +268,10 @@ contains
     pure function set_to_string(set) result(string)
         character(len=1), intent(in) :: set(:)
         character(len=size(set)) :: string
-
-        string = transfer(set, string)
+        integer :: i
+        do i = 1, size(set)
+            string(i:i) = set(i)
+        end do
     end function set_to_string
 
 
