@@ -71,21 +71,21 @@ contains
         call check(error, construct_string_type(-1272835761_int64) == trim(flc))
         if (allocated(error)) return
 
-        write(flc, '(g0)') .true.
+        write(flc, '(g0)') "T"
         call check(error, construct_string_type(.true.) == trim(flc))
         if (allocated(error)) return
 
-        write(flc, '(g0)') .false.
+        write(flc, '(g0)') "F"
         call check(error, construct_string_type(.false.) == trim(flc))
         if (allocated(error)) return
 
 #:if WITH_CBOOL
-        write(flc, '(g0)') .false._c_bool
+        write(flc, '(g0)') "F"
         call check(error, construct_string_type(.false._c_bool) == trim(flc))
         if (allocated(error)) return
 #:endif
 
-        write(flc, '(g0)') .true._lk
+        write(flc, '(g0)') "T"
         call check(error, construct_string_type(.true._lk) == trim(flc))
     end subroutine test_constructor
 
