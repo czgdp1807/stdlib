@@ -9,10 +9,11 @@ module stdlib_stats
   !! ([Specification](../page/specs/stdlib_stats.html))
   use stdlib_kinds, only: sp, dp, xdp, qp, &
       int8, int16, int32, int64
-  use, intrinsic:: ieee_arithmetic, only: ieee_value, ieee_quiet_nan
+  use, intrinsic:: ieee_arithmetic, only: ieee_value, ieee_quiet_nan, ieee_is_nan
   use stdlib_error, only: error_stop
   use stdlib_linalg, only: diag
   use stdlib_optval, only: optval
+  use stdlib_selection, only: select
   implicit none
   private
   ! Public API
@@ -186,46 +187,28 @@ module stdlib_stats
     #:for k1, t1, o1 in IR_KINDS_TYPES_OUTPUT
       #:for rank in RANKS
         #:set name = rname("median_all",rank, t1, k1, o1)
-        module function ${name}$ (x, mask) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          logical, intent(in), optional :: mask
-          real(${o1}$) :: res
-        end function ${name}$
+        procedure :: ${name}$
       #:endfor
     #:endfor
 
     #:for k1, t1, o1 in IR_KINDS_TYPES_OUTPUT
       #:for rank in RANKS
         #:set name = rname("median",rank, t1, k1, o1)
-        module function ${name}$(x, dim, mask) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          integer, intent(in) :: dim
-          logical, intent(in), optional :: mask
-          real(${o1}$) :: res${reduced_shape('x', rank, 'dim')}$
-        end function ${name}$
+        procedure :: ${name}$
       #:endfor
     #:endfor
 
     #:for k1, t1, o1 in IR_KINDS_TYPES_OUTPUT
       #:for rank in RANKS
         #:set name = rname('median_all_mask',rank, t1, k1, o1)
-        module function ${name}$(x, mask) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          logical, intent(in) :: mask${ranksuffix(rank)}$
-          real(${o1}$) :: res
-        end function ${name}$
+        procedure :: ${name}$
       #:endfor
     #:endfor
 
     #:for k1, t1, o1 in IR_KINDS_TYPES_OUTPUT
       #:for rank in RANKS
         #:set name = rname('median_mask',rank, t1, k1, o1)
-        module function  ${name}$(x, dim, mask) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          integer, intent(in) :: dim
-          logical, intent(in) :: mask${ranksuffix(rank)}$
-          real(${o1}$) :: res${reduced_shape('x', rank, 'dim')}$
-        end function ${name}$
+        procedure :: ${name}$
       #:endfor
     #:endfor
 
@@ -305,164 +288,84 @@ module stdlib_stats
     #:for k1, t1 in RC_KINDS_TYPES
       #:for rank in RANKS
         #:set RName = rname("moment_all",rank, t1, k1)
-        module function ${RName}$(x, order, center, mask) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          integer, intent(in) :: order
-          ${t1}$, intent(in), optional :: center
-          logical, intent(in), optional :: mask
-          ${t1}$ :: res
-        end function ${RName}$
+        procedure :: ${RName}$
       #:endfor
     #:endfor
 
     #:for k1, t1 in INT_KINDS_TYPES
       #:for rank in RANKS
         #:set RName = rname("moment_all",rank, t1, k1, 'dp')
-        module function ${RName}$(x, order, center, mask) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          integer, intent(in) :: order
-          real(dp), intent(in), optional :: center
-          logical, intent(in), optional :: mask
-          real(dp) :: res
-        end function ${RName}$
+        procedure :: ${RName}$
       #:endfor
     #:endfor
 
     #:for k1, t1 in RC_KINDS_TYPES
       #:for rank in REDRANKS
         #:set RName = rname("moment_scalar",rank, t1, k1)
-        module function ${RName}$(x, order, dim, center, mask) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          integer, intent(in) :: order
-          integer, intent(in) :: dim
-          ${t1}$, intent(in) :: center
-          logical, intent(in), optional :: mask
-          ${t1}$ :: res${reduced_shape('x', rank, 'dim')}$
-        end function ${RName}$
+        procedure :: ${RName}$
       #:endfor
     #:endfor
 
     #:for k1, t1 in RC_KINDS_TYPES
       #:for rank in RANKS
         #:set RName = rname("moment",rank, t1, k1)
-        module function ${RName}$(x, order, dim, center, mask) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          integer, intent(in) :: order
-          integer, intent(in) :: dim
-          ${t1}$, intent(in), optional :: center${reduced_shape('x', rank, 'dim')}$
-          logical, intent(in), optional :: mask
-          ${t1}$ :: res${reduced_shape('x', rank, 'dim')}$
-        end function ${RName}$
+        procedure :: ${RName}$
       #:endfor
     #:endfor
 
     #:for k1, t1 in INT_KINDS_TYPES
       #:for rank in REDRANKS
         #:set RName = rname("moment_scalar",rank, t1, k1, 'dp')
-        module function ${RName}$(x, order, dim, center, mask) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          integer, intent(in) :: order
-          integer, intent(in) :: dim
-          real(dp),intent(in) :: center
-          logical, intent(in), optional :: mask
-          real(dp) :: res${reduced_shape('x', rank, 'dim')}$
-        end function ${RName}$
+        procedure :: ${RName}$
       #:endfor
     #:endfor
 
     #:for k1, t1 in INT_KINDS_TYPES
       #:for rank in RANKS
         #:set RName = rname("moment",rank, t1, k1, 'dp')
-        module function ${RName}$(x, order, dim, center, mask) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          integer, intent(in) :: order
-          integer, intent(in) :: dim
-          real(dp),intent(in), optional :: center${reduced_shape('x', rank, 'dim')}$
-          logical, intent(in), optional :: mask
-          real(dp) :: res${reduced_shape('x', rank, 'dim')}$
-        end function ${RName}$
+        procedure :: ${RName}$
       #:endfor
     #:endfor
 
     #:for k1, t1 in RC_KINDS_TYPES
       #:for rank in RANKS
         #:set RName = rname("moment_mask_all",rank, t1, k1)
-        module function ${RName}$(x, order, center, mask) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          integer, intent(in) :: order
-          ${t1}$, intent(in), optional :: center
-          logical, intent(in) :: mask${ranksuffix(rank)}$
-          ${t1}$ :: res
-        end function ${RName}$
+        procedure :: ${RName}$
       #:endfor
     #:endfor
 
     #:for k1, t1 in INT_KINDS_TYPES
       #:for rank in RANKS
         #:set RName = rname("moment_mask_all",rank, t1, k1, 'dp')
-        module function ${RName}$(x, order, center, mask) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          integer, intent(in) :: order
-          real(dp),intent(in), optional :: center
-          logical, intent(in) :: mask${ranksuffix(rank)}$
-          real(dp) :: res
-        end function ${RName}$
+        procedure :: ${RName}$
       #:endfor
     #:endfor
 
     #:for k1, t1 in RC_KINDS_TYPES
       #:for rank in REDRANKS
         #:set RName = rname("moment_mask_scalar",rank, t1, k1)
-        module function ${RName}$(x, order, dim, center, mask) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          integer, intent(in) :: order
-          integer, intent(in) :: dim
-          ${t1}$, intent(in) :: center
-          logical, intent(in) :: mask${ranksuffix(rank)}$
-          ${t1}$ :: res${reduced_shape('x', rank, 'dim')}$
-        end function ${RName}$
+        procedure :: ${RName}$
       #:endfor
     #:endfor
 
     #:for k1, t1 in RC_KINDS_TYPES
       #:for rank in RANKS
         #:set RName = rname("moment_mask",rank, t1, k1)
-        module function ${RName}$(x, order, dim, center, mask) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          integer, intent(in) :: order
-          integer, intent(in) :: dim
-          ${t1}$, intent(in), optional :: center${reduced_shape('x', rank, 'dim')}$
-          logical, intent(in) :: mask${ranksuffix(rank)}$
-          ${t1}$ :: res${reduced_shape('x', rank, 'dim')}$
-        end function ${RName}$
+        procedure :: ${RName}$
       #:endfor
     #:endfor
 
     #:for k1, t1 in INT_KINDS_TYPES
       #:for rank in REDRANKS
         #:set RName = rname("moment_mask_scalar",rank, t1, k1, 'dp')
-        module function ${RName}$(x, order, dim, center, mask) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          integer, intent(in) :: order
-          integer, intent(in) :: dim
-          real(dp), intent(in) :: center
-          logical, intent(in) :: mask${ranksuffix(rank)}$
-          real(dp) :: res${reduced_shape('x', rank, 'dim')}$
-        end function ${RName}$
+        procedure :: ${RName}$
       #:endfor
     #:endfor
 
     #:for k1, t1 in INT_KINDS_TYPES
       #:for rank in RANKS
         #:set RName = rname("moment_mask",rank, t1, k1, 'dp')
-        module function ${RName}$(x, order, dim, center, mask) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          integer, intent(in) :: order
-          integer, intent(in) :: dim
-          real(dp), intent(in), optional :: center${reduced_shape('x', rank, 'dim')}$
-          logical, intent(in) :: mask${ranksuffix(rank)}$
-          real(dp) :: res${reduced_shape('x', rank, 'dim')}$
-        end function ${RName}$
+        procedure :: ${RName}$
       #:endfor
     #:endfor
   end interface moment
@@ -1484,6 +1387,673 @@ module stdlib_stats
         res = res / (n - merge(1, 0, (optval(corrected, .true.) .and. n > 0)))
 
       end function ${RName}$
+    #:endfor
+  #:endfor
+
+  #:for k1, t1 in RC_KINDS_TYPES
+    #:for rank in RANKS
+      #:set RName = rname("moment",rank, t1, k1)
+      module function ${RName}$(x, order, dim, center, mask) result(res)
+        ${t1}$, intent(in) :: x${ranksuffix(rank)}$
+        integer, intent(in) :: order
+        integer, intent(in) :: dim
+        ${t1}$, intent(in), optional :: center${reduced_shape('x', rank, 'dim')}$
+        logical, intent(in), optional :: mask
+        ${t1}$ :: res${reduced_shape('x', rank, 'dim')}$
+
+        integer :: i
+        real(${k1}$) :: n
+        ${t1}$, allocatable :: mean_${ranksuffix(rank-1)}$
+
+        if (.not.optval(mask, .true.)) then
+          res = ieee_value(1._${k1}$, ieee_quiet_nan)
+          return
+        end if
+
+        n = real(size(x, dim), ${k1}$)
+
+        res = 0
+        select case(dim)
+          #:for fi in range(1, rank+1)
+          case(${fi}$)
+            if (present(center)) then
+              do i = 1, size(x, ${fi}$)
+                res = res + (x${select_subarray(rank, [(fi, 'i')])}$ - center)**order
+              end do
+            else
+              allocate(mean_, source = mean(x, ${fi}$))
+              do i = 1, size(x, ${fi}$)
+                res = res + (x${select_subarray(rank, [(fi, 'i')])}$ - mean_)**order
+              end do
+              deallocate(mean_)
+            end if
+          #:endfor
+          case default
+            call error_stop("ERROR (moment): wrong dimension")
+        end select
+        res = res / n
+
+      end function ${RName}$
+    #:endfor
+  #:endfor
+
+
+  #:for k1, t1 in INT_KINDS_TYPES
+    #:for rank in RANKS
+      #:set RName = rname("moment",rank, t1, k1, 'dp')
+      module function ${RName}$(x, order, dim, center, mask) result(res)
+        ${t1}$, intent(in) :: x${ranksuffix(rank)}$
+        integer, intent(in) :: order
+        integer, intent(in) :: dim
+        real(dp),intent(in), optional :: center${reduced_shape('x', rank, 'dim')}$
+        logical, intent(in), optional :: mask
+        real(dp) :: res${reduced_shape('x', rank, 'dim')}$
+
+        integer :: i
+        real(dp) :: n
+        real(dp), allocatable :: mean_${ranksuffix(rank-1)}$
+
+        if (.not.optval(mask, .true.)) then
+          res = ieee_value(1._dp, ieee_quiet_nan)
+          return
+        end if
+
+        n = real(size(x, dim), dp)
+
+        res = 0
+        select case(dim)
+          #:for fi in range(1, rank+1)
+          case(${fi}$)
+            if (present(center)) then
+              do i = 1, size(x, ${fi}$)
+                res = res + (real(x${select_subarray(rank, [(fi, 'i')])}$, dp) -&
+                  center)**order
+              end do
+            else
+              allocate(mean_, source = mean(x, ${fi}$))
+              do i = 1, size(x, ${fi}$)
+                res = res + (real(x${select_subarray(rank, [(fi, 'i')])}$, dp) - mean_)**order
+              end do
+              deallocate(mean_)
+            end if
+          #:endfor
+          case default
+            call error_stop("ERROR (moment): wrong dimension")
+        end select
+        res = res / n
+
+      end function ${RName}$
+    #:endfor
+  #:endfor
+
+  #:for k1, t1 in RC_KINDS_TYPES
+    #:for rank in RANKS
+      #:set RName = rname("moment_mask",rank, t1, k1)
+      module function ${RName}$(x, order, dim, center, mask) result(res)
+        ${t1}$, intent(in) :: x${ranksuffix(rank)}$
+        integer, intent(in) :: order
+        integer, intent(in) :: dim
+        ${t1}$, intent(in), optional :: center${reduced_shape('x', rank, 'dim')}$
+        logical, intent(in) :: mask${ranksuffix(rank)}$
+        ${t1}$ :: res${reduced_shape('x', rank, 'dim')}$
+
+        integer :: i
+        real(${k1}$) :: n${reduced_shape('x', rank, 'dim')}$
+        ${t1}$, allocatable :: mean_${ranksuffix(rank-1)}$
+
+        n = real(count(mask, dim), ${k1}$)
+
+        res = 0
+        select case(dim)
+          #:for fi in range(1, rank+1)
+          case(${fi}$)
+            if (present(center)) then
+              do i = 1, size(x, ${fi}$)
+                res = res + merge( (x${select_subarray(rank, [(fi, 'i')])}$ -&
+                  center)**order,&
+                  #:if t1[0] == 'r'
+                    0._${k1}$,&
+                  #:else
+                    cmplx(0,0,kind=${k1}$),&
+                  #:endif
+                    mask${select_subarray(rank, [(fi, 'i')])}$)
+              end do
+            else
+              allocate(mean_, source = mean(x, ${fi}$, mask))
+              do i = 1, size(x, ${fi}$)
+                res = res + merge( (x${select_subarray(rank, [(fi, 'i')])}$ - mean_)**order,&
+                  #:if t1[0] == 'r'
+                    0._${k1}$,&
+                  #:else
+                    cmplx(0,0,kind=${k1}$),&
+                  #:endif
+                    mask${select_subarray(rank, [(fi, 'i')])}$)
+              end do
+              deallocate(mean_)
+            end if
+          #:endfor
+          case default
+            call error_stop("ERROR (moment): wrong dimension")
+        end select
+        res = res / n
+
+      end function ${RName}$
+    #:endfor
+  #:endfor
+
+
+  #:for k1, t1 in INT_KINDS_TYPES
+    #:for rank in RANKS
+      #:set RName = rname("moment_mask",rank, t1, k1, 'dp')
+      module function ${RName}$(x, order, dim, center, mask) result(res)
+        ${t1}$, intent(in) :: x${ranksuffix(rank)}$
+        integer, intent(in) :: order
+        integer, intent(in) :: dim
+        real(dp), intent(in), optional :: center${reduced_shape('x', rank, 'dim')}$
+        logical, intent(in) :: mask${ranksuffix(rank)}$
+        real(dp) :: res${reduced_shape('x', rank, 'dim')}$
+
+        integer :: i
+        real(dp) :: n${reduced_shape('x', rank, 'dim')}$
+        real(dp), allocatable :: mean_${ranksuffix(rank-1)}$
+
+        n = real(count(mask, dim), dp)
+
+        res = 0
+        select case(dim)
+          #:for fi in range(1, rank+1)
+          case(${fi}$)
+            if (present(center)) then
+              do i = 1, size(x, ${fi}$)
+                res = res + merge((real(x${select_subarray(rank, [(fi, 'i')])}$, dp) -&
+                                    center)**order,&
+                                    0._dp, mask${select_subarray(rank, [(fi, 'i')])}$)
+              end do
+            else
+              allocate(mean_, source = mean(x, ${fi}$, mask))
+              do i = 1, size(x, ${fi}$)
+                res = res + merge((real(x${select_subarray(rank, [(fi, 'i')])}$, dp) - mean_)&
+                                    **order,&
+                                    0._dp, mask${select_subarray(rank, [(fi, 'i')])}$)
+              end do
+              deallocate(mean_)
+            end if
+          #:endfor
+          case default
+            call error_stop("ERROR (moment): wrong dimension")
+        end select
+        res = res / n
+
+      end function ${RName}$
+    #:endfor
+  #:endfor
+
+  #:for k1, t1 in RC_KINDS_TYPES
+    #:for rank in RANKS
+      #:set RName = rname("moment_all",rank, t1, k1)
+      module function ${RName}$(x, order, center, mask) result(res)
+        ${t1}$, intent(in) :: x${ranksuffix(rank)}$
+        integer, intent(in) :: order
+        ${t1}$, intent(in), optional :: center
+        logical, intent(in), optional :: mask
+        ${t1}$ :: res
+
+        real(${k1}$) :: n
+        ${t1}$ :: center_
+
+        if (.not.optval(mask, .true.)) then
+          res = ieee_value(1._${k1}$, ieee_quiet_nan)
+          return
+        end if
+
+        n = real(size(x, kind = int64), ${k1}$)
+
+        if (present(center)) then
+          center_ = center
+        else
+          center_ = mean(x)
+        end if
+        res = sum((x - center_)**order) / n
+
+      end function ${RName}$
+    #:endfor
+  #:endfor
+
+
+  #:for k1, t1 in INT_KINDS_TYPES
+    #:for rank in RANKS
+      #:set RName = rname("moment_all",rank, t1, k1, 'dp')
+      module function ${RName}$(x, order, center, mask) result(res)
+        ${t1}$, intent(in) :: x${ranksuffix(rank)}$
+        integer, intent(in) :: order
+        real(dp), intent(in), optional :: center
+        logical, intent(in), optional :: mask
+        real(dp) :: res
+
+        real(dp) :: n
+        real(dp) :: center_
+
+        if (.not.optval(mask, .true.)) then
+          res = ieee_value(1._dp, ieee_quiet_nan)
+          return
+        end if
+
+        n = real(size(x, kind = int64), dp)
+
+        if (present(center)) then
+          center_ = center
+        else
+          center_ = mean(x)
+        end if
+        res = sum((real(x, dp) - center_)**order) / n
+
+      end function ${RName}$
+    #:endfor
+  #:endfor
+
+
+  #:for k1, t1 in RC_KINDS_TYPES
+    #:for rank in RANKS
+      #:set RName = rname("moment_mask_all",rank, t1, k1)
+      module function ${RName}$(x, order, center, mask) result(res)
+        ${t1}$, intent(in) :: x${ranksuffix(rank)}$
+        integer, intent(in) :: order
+        ${t1}$, intent(in), optional :: center
+        logical, intent(in) :: mask${ranksuffix(rank)}$
+        ${t1}$ :: res
+
+        real(${k1}$) :: n
+        ${t1}$ :: center_
+
+        n = real(count(mask, kind = int64), ${k1}$)
+
+        if (present(center)) then
+          center_ = center
+        else
+          center_ = mean(x, mask)
+        end if
+        res = sum((x - center_)**order, mask) / n
+
+      end function ${RName}$
+    #:endfor
+  #:endfor
+
+
+  #:for k1, t1 in INT_KINDS_TYPES
+    #:for rank in RANKS
+      #:set RName = rname("moment_mask_all",rank, t1, k1, 'dp')
+      module function ${RName}$(x, order, center, mask) result(res)
+        ${t1}$, intent(in) :: x${ranksuffix(rank)}$
+        integer, intent(in) :: order
+        real(dp),intent(in), optional :: center
+        logical, intent(in) :: mask${ranksuffix(rank)}$
+        real(dp) :: res
+
+        real(dp) :: n
+        real(dp) :: center_
+
+        n = real(count(mask, kind = int64), dp)
+
+        if (present(center)) then
+          center_ = center
+        else
+          center_ = mean(x, mask)
+        end if
+        res = sum((real(x, dp) - center_)**order, mask) / n
+
+      end function ${RName}$
+    #:endfor
+  #:endfor
+
+
+  #:for k1, t1 in RC_KINDS_TYPES
+    #:for rank in REDRANKS
+      #:set RName = rname("moment_scalar",rank, t1, k1)
+      module function ${RName}$(x, order, dim, center, mask) result(res)
+        ${t1}$, intent(in) :: x${ranksuffix(rank)}$
+        integer, intent(in) :: order
+        integer, intent(in) :: dim
+        ${t1}$, intent(in) :: center
+        logical, intent(in), optional :: mask
+        ${t1}$ :: res${reduced_shape('x', rank, 'dim')}$
+
+        if (.not.optval(mask, .true.)) then
+          res = ieee_value(1._${k1}$, ieee_quiet_nan)
+          return
+        end if
+
+        if (dim >= 1 .and. dim <= ${rank}$) then
+          res = sum((x - center)**order, dim) / size(x, dim)
+        else
+          call error_stop("ERROR (moment): wrong dimension")
+        end if
+
+      end function ${RName}$
+    #:endfor
+  #:endfor
+
+  #:for k1, t1 in INT_KINDS_TYPES
+    #:for rank in REDRANKS
+      #:set RName = rname("moment_scalar",rank, t1, k1, 'dp')
+      module function ${RName}$(x, order, dim, center, mask) result(res)
+        ${t1}$, intent(in) :: x${ranksuffix(rank)}$
+        integer, intent(in) :: order
+        integer, intent(in) :: dim
+        real(dp),intent(in) :: center
+        logical, intent(in), optional :: mask
+        real(dp) :: res${reduced_shape('x', rank, 'dim')}$
+
+        if (.not.optval(mask, .true.)) then
+          res = ieee_value(1._dp, ieee_quiet_nan)
+          return
+        end if
+
+        if (dim >= 1 .and. dim <= ${rank}$) then
+          res = sum( (real(x, dp) - center)**order, dim) / size(x, dim)
+        else
+          call error_stop("ERROR (moment): wrong dimension")
+        end if
+
+      end function ${RName}$
+    #:endfor
+  #:endfor
+
+
+  #:for k1, t1 in RC_KINDS_TYPES
+    #:for rank in REDRANKS
+      #:set RName = rname("moment_mask_scalar",rank, t1, k1)
+      module function ${RName}$(x, order, dim, center, mask) result(res)
+        ${t1}$, intent(in) :: x${ranksuffix(rank)}$
+        integer, intent(in) :: order
+        integer, intent(in) :: dim
+        ${t1}$, intent(in) :: center
+        logical, intent(in) :: mask${ranksuffix(rank)}$
+        ${t1}$ :: res${reduced_shape('x', rank, 'dim')}$
+
+        if (dim >= 1 .and. dim <= ${rank}$) then
+          res = sum((x - center)**order, dim, mask) / count(mask, dim)
+        else
+          call error_stop("ERROR (moment): wrong dimension")
+        end if
+
+      end function ${RName}$
+    #:endfor
+  #:endfor
+
+
+  #:for k1, t1 in INT_KINDS_TYPES
+    #:for rank in REDRANKS
+      #:set RName = rname("moment_mask_scalar",rank, t1, k1, 'dp')
+      module function ${RName}$(x, order, dim, center, mask) result(res)
+        ${t1}$, intent(in) :: x${ranksuffix(rank)}$
+        integer, intent(in) :: order
+        integer, intent(in) :: dim
+        real(dp), intent(in) :: center
+        logical, intent(in) :: mask${ranksuffix(rank)}$
+        real(dp) :: res${reduced_shape('x', rank, 'dim')}$
+
+        if (dim >= 1 .and. dim <= ${rank}$) then
+          res = sum(( real(x, dp) - center)**order, dim, mask) / count(mask, dim)
+        else
+          call error_stop("ERROR (moment): wrong dimension")
+        end if
+
+      end function ${RName}$
+    #:endfor
+  #:endfor
+
+
+  #:for k1, t1, o1 in IR_KINDS_TYPES_OUTPUT
+    #:for rank in RANKS
+      #:set name = rname("median_all",rank, t1, k1, o1)
+      module function ${name}$ (x, mask) result(res)
+        ${t1}$, intent(in) :: x${ranksuffix(rank)}$
+        logical, intent(in), optional :: mask
+        real(${o1}$) :: res
+
+        integer(kind = int64) :: c, n
+        ${t1}$ :: val, val1
+        ${t1}$, allocatable :: x_tmp(:)
+
+        if (.not.optval(mask, .true.) .or. size(x) == 0) then
+          res = ieee_value(1._${o1}$, ieee_quiet_nan)
+          return
+        end if
+
+        #:if t1[0] == 'r'
+          if (any(ieee_is_nan(x))) then
+            res = ieee_value(1._${o1}$, ieee_quiet_nan)
+            return
+          end if
+        #:endif
+
+        n = size(x, kind=int64)
+        c = floor( (n + 1) / 2._${o1}$, kind=int64 )
+
+        x_tmp = reshape(x, [n])
+
+        call select(x_tmp, c, val)
+
+        if (mod(n, 2_int64) == 0) then
+          val1 = minval(x_tmp(c+1:n))  !instead of call select(x_tmp, c+1, val1, left = c)
+          #:if t1[0] == 'r'
+            res = (val + val1) / 2._${o1}$
+          #:else
+            res = (real(val, kind=${o1}$) + &
+                   real(val1, kind=${o1}$)) / 2._${o1}$
+          #:endif
+        else
+            res = val
+        end if
+
+      end function ${name}$
+    #:endfor
+  #:endfor
+
+  #:for k1, t1, o1 in IR_KINDS_TYPES_OUTPUT
+    #:for rank in RANKS
+      #:set name = rname("median",rank, t1, k1, o1)
+      module function ${name}$(x, dim, mask) result(res)
+        ${t1}$, intent(in) :: x${ranksuffix(rank)}$
+        integer, intent(in) :: dim
+        logical, intent(in), optional :: mask
+        real(${o1}$) :: res${reduced_shape('x', rank, 'dim')}$
+
+        integer :: c, n
+        #:if rank > 1
+        #:for fj in range(1, rank+1)
+        integer :: j${fj}$
+        #:endfor
+        #:endif
+        ${t1}$ :: val, val1
+        ${t1}$, allocatable :: x_tmp(:)
+
+        if (.not.optval(mask, .true.) .or. size(x) == 0) then
+          res = ieee_value(1._${o1}$, ieee_quiet_nan)
+          return
+        end if
+
+        n = size(x, dim)
+        c = floor( (n + 1) / 2._${o1}$ )
+
+        allocate(x_tmp(n))
+
+        select case(dim)
+          #:for fi in range(1, rank+1)
+          case(${fi}$)
+            ! Loop over every dimension of the array except "dim"
+            #:for fj in list(range(1, fi)) + list(range(fi+1, rank+1))
+              do j${fj}$ = 1, size(x, ${fj}$)
+            #:endfor
+                x_tmp(:) = x${select_subvector('j', rank, fi)}$
+
+                #:if t1[0] == 'r'
+                  if (any(ieee_is_nan(x_tmp))) then
+                    res${reduce_subvector('j', rank, fi)}$ = &
+                      ieee_value(1._${o1}$, ieee_quiet_nan)
+                    #:if fi == 1
+                      return
+                    #:else
+                      cycle
+                    #:endif
+                  end if
+                #:endif
+
+                call select(x_tmp, c, val)
+
+                if (mod(n, 2) == 0) then
+                    val1 = minval(x_tmp(c+1:n))
+                    res${reduce_subvector('j', rank, fi)}$ = &
+                    #:if t1[0] == 'r'
+                        (val + val1) / 2._${o1}$
+                    #:else
+                        (real(val, kind=${o1}$) + real(val1, kind=${o1}$)) / 2._${o1}$
+                    #:endif
+                else
+                    res${reduce_subvector('j', rank, fi)}$ = val
+                end if
+            #:for fj in range(1, rank)
+              end do
+            #:endfor
+          #:endfor
+          case default
+            call error_stop("ERROR (median): wrong dimension")
+        end select
+
+      end function ${name}$
+    #:endfor
+  #:endfor
+
+
+  #:for k1, t1, o1 in IR_KINDS_TYPES_OUTPUT
+    #:for rank in RANKS
+      #:set name = rname('median_all_mask',rank, t1, k1, o1)
+      module function ${name}$(x, mask) result(res)
+        ${t1}$, intent(in) :: x${ranksuffix(rank)}$
+        logical, intent(in) :: mask${ranksuffix(rank)}$
+        real(${o1}$) :: res
+
+        integer(kind = int64) :: c, n
+        ${t1}$ :: val, val1
+        ${t1}$, allocatable   :: x_tmp(:)
+
+        if (any(shape(x) .ne. shape(mask))) then
+            call error_stop("ERROR (median): shapes of x and mask are different")
+        end if
+
+        #:if t1[0] == 'r'
+          if (any(ieee_is_nan(x))) then
+            res = ieee_value(1._${o1}$, ieee_quiet_nan)
+            return
+          end if
+        #:endif
+
+        x_tmp = pack(x, mask)
+
+        n = size(x_tmp, kind=int64)
+
+        if (n == 0) then
+            res = ieee_value(1._${o1}$, ieee_quiet_nan)
+            return
+        end if
+
+        c = floor( (n + 1) / 2._${o1}$, kind=int64)
+
+        call select(x_tmp, c, val)
+
+        if (mod(n, 2_int64) == 0) then
+          val1 = minval(x_tmp(c+1:n))
+          #:if t1[0] == 'r'
+            res = (val + val1) / 2._${o1}$
+          #:else
+            res = (real(val, kind=${o1}$) + real(val1, kind=${o1}$)) / 2._${o1}$
+          #:endif
+        else if (mod(n, 2_int64) == 1) then
+            res = val
+        end if
+
+      end function ${name}$
+    #:endfor
+  #:endfor
+
+  #:for k1, t1, o1 in IR_KINDS_TYPES_OUTPUT
+    #:for rank in RANKS
+      #:set name = rname('median_mask',rank, t1, k1, o1)
+      module function ${name}$(x, dim, mask) result(res)
+        ${t1}$, intent(in) :: x${ranksuffix(rank)}$
+        integer, intent(in) :: dim
+        logical, intent(in) :: mask${ranksuffix(rank)}$
+        real(${o1}$) :: res${reduced_shape('x', rank, 'dim')}$
+
+        integer(kind = int64) :: c, n
+        #:if rank > 1
+        #:for fj in range(1, rank+1)
+        integer :: j${fj}$
+        #:endfor
+        #:endif
+        ${t1}$ :: val, val1
+        ${t1}$, allocatable :: x_tmp(:)
+
+        if (any(shape(x) .ne. shape(mask))) then
+            call error_stop("ERROR (median): shapes of x and mask are different")
+        end if
+
+        select case(dim)
+          #:for fi in range(1, rank+1)
+          case(${fi}$)
+            ! Loop over every dimension of the array except "dim"
+            #:for fj in list(range(1, fi)) + list(range(fi+1, rank+1))
+              do j${fj}$ = 1, size(x, ${fj}$)
+            #:endfor
+                x_tmp = pack(x${select_subvector('j', rank, fi)}$, &
+                              mask${select_subvector('j', rank, fi)}$)
+
+                #:if t1[0] == 'r'
+                  if (any(ieee_is_nan(x_tmp))) then
+                    res${reduce_subvector('j', rank, fi)}$ = &
+                      ieee_value(1._${o1}$, ieee_quiet_nan)
+                    #:if rank == 1
+                      return
+                    #:else
+                      cycle
+                    #:endif
+                  end if
+                #:endif
+
+                n = size(x_tmp, kind=int64)
+
+                if (n == 0) then
+                    res${reduce_subvector('j', rank, fi)}$ = &
+                        ieee_value(1._${o1}$, ieee_quiet_nan)
+                    return
+                end if
+
+                c = floor( (n + 1) / 2._${o1}$, kind=int64 )
+
+                call select(x_tmp, c, val)
+
+                if (mod(n, 2_int64) == 0) then
+                    val1 = minval(x_tmp(c+1:n))
+                    res${reduce_subvector('j', rank, fi)}$ = &
+                    #:if t1[0] == 'r'
+                        (val + val1) / 2._${o1}$
+                    #:else
+                        (real(val, kind=${o1}$) + real(val1, kind=${o1}$)) / 2._${o1}$
+                    #:endif
+                else if (mod(n, 2_int64) == 1) then
+                    res${reduce_subvector('j', rank, fi)}$ = val
+                end if
+
+                deallocate(x_tmp)
+            #:for fj in range(1, rank)
+              end do
+            #:endfor
+          #:endfor
+          case default
+            call error_stop("ERROR (median): wrong dimension")
+        end select
+
+      end function ${name}$
     #:endfor
   #:endfor
 
