@@ -15,6 +15,7 @@ set(fppFiles
     stdlib_linalg.fypp
     stdlib_selection.fypp
     stdlib_math.fypp
+    stdlib_stats.fypp
 )
 
 
@@ -36,6 +37,7 @@ set(SRC
     stdlib_selection.f90
     stdlib_specialfunctions_gamma.f90
     stdlib_math.f90
+    stdlib_stats.f90
     ${outFiles}
 )
 
