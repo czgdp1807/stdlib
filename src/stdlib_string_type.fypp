@@ -429,8 +429,8 @@ contains
         character(len=buffer_len) :: buffer
         integer :: pos
         integer(ik) :: n
-        character(len=1), parameter :: numbers(-9:0) = &
-            ["9", "8", "7", "6", "5", "4", "3", "2", "1", "0"]
+        character(len=1) :: numbers(-9:0)
+        numbers = ["9", "8", "7", "6", "5", "4", "3", "2", "1", "0"]
 
         if (value == 0_ik) then
             string = numbers(0)
