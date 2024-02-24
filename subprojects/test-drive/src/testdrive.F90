@@ -1818,7 +1818,7 @@ contains
     integer, parameter :: buffer_len = 128
     character(len=buffer_len) :: buffer
 
-    write(buffer, '(g0)') val
+    write(buffer, '(f0.6)') val
     string = trim(buffer)
 
   end function real_sp_to_string
@@ -1830,7 +1830,7 @@ contains
     integer, parameter :: buffer_len = 128
     character(len=buffer_len) :: buffer
 
-    write(buffer, '(g0)') val
+    write(buffer, '(f0.6)') val
     string = trim(buffer)
 
   end function real_dp_to_string
@@ -1843,7 +1843,7 @@ contains
     integer, parameter :: buffer_len = 128
     character(len=buffer_len) :: buffer
 
-    write(buffer, '(g0)') val
+    write(buffer, '(f0.6)') val
     string = trim(buffer)
 
   end function real_xdp_to_string
@@ -1857,7 +1857,7 @@ contains
     integer, parameter :: buffer_len = 128
     character(len=buffer_len) :: buffer
 
-    write(buffer, '(g0)') val
+    write(buffer, '(f0.6)') val
     string = trim(buffer)
 
   end function real_qp_to_string

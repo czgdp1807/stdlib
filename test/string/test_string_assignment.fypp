@@ -35,57 +35,57 @@ contains
         type(error_type), allocatable, intent(out) :: error
         character(len=128) :: flc
 
-        write(flc, '(g0)') -1026191
+        write(flc, '(i0)') -1026191
         call check(error, construct_string_type(-1026191) == trim(flc))
         if (allocated(error)) return
 
-        write(flc, '(g0)') 124787
+        write(flc, '(i0)') 124787
         call check(error, construct_string_type(124787) == trim(flc))
         if (allocated(error)) return
 
-        write(flc, '(g0)') -2_int8
+        write(flc, '(i0)') -2_int8
         call check(error, construct_string_type(-2_int8) == trim(flc))
         if (allocated(error)) return
 
-        write(flc, '(g0)') 5_int8
+        write(flc, '(i0)') 5_int8
         call check(error, construct_string_type(5_int8) == trim(flc))
         if (allocated(error)) return
 
-        write(flc, '(g0)') -72_int16
+        write(flc, '(i0)') -72_int16
         call check(error, construct_string_type(-72_int16) == trim(flc))
         if (allocated(error)) return
 
-        write(flc, '(g0)') -8924889_int32
+        write(flc, '(i0)') -8924889_int32
         call check(error, construct_string_type(-8924889_int32) == trim(flc))
         if (allocated(error)) return
 
-        write(flc, '(g0)') 2378405_int32
+        write(flc, '(i0)') 2378405_int32
         call check(error, construct_string_type(2378405_int32) == trim(flc))
         if (allocated(error)) return
 
-        write(flc, '(g0)') 921092378411_int64
+        write(flc, '(i0)') 921092378411_int64
         call check(error, construct_string_type(921092378411_int64) == trim(flc))
         if (allocated(error)) return
 
-        write(flc, '(g0)') -1272835761_int64
+        write(flc, '(i0)') -1272835761_int64
         call check(error, construct_string_type(-1272835761_int64) == trim(flc))
         if (allocated(error)) return
 
-        write(flc, '(g0)') "T"
+        write(flc, '(a)') "T"
         call check(error, construct_string_type(.true.) == trim(flc))
         if (allocated(error)) return
 
-        write(flc, '(g0)') "F"
+        write(flc, '(a)') "F"
         call check(error, construct_string_type(.false.) == trim(flc))
         if (allocated(error)) return
 
 #:if WITH_CBOOL
-        write(flc, '(g0)') "F"
+        write(flc, '(a)') "F"
         call check(error, construct_string_type(.false._c_bool) == trim(flc))
         if (allocated(error)) return
 #:endif
 
-        write(flc, '(g0)') "T"
+        write(flc, '(a)') "T"
         call check(error, construct_string_type(.true._lk) == trim(flc))
     end subroutine test_constructor
 

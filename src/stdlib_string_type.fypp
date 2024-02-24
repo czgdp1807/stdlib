@@ -396,7 +396,7 @@ contains
         character(len=buffer_len) :: buffer
         integer :: stat
 
-        write(buffer, '(' // optval(format, "g0") // ')', iostat=stat) value
+        write(buffer, '(' // optval(format, "f0.6") // ')', iostat=stat) value
         if (stat == 0) then
             string = trim(buffer)
         else
