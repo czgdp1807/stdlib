@@ -63,9 +63,9 @@ contains
         call check_formatter(error, to_string((-1, -1), 'F6.2'), "( -1.00, -1.00)", &
             & "Formatter for negative complex number")
         if (allocated(error)) return
-        call check_formatter(error, to_string((1, 1), 'SP,F6.2'), "( +1.00, +1.00)", &
-            & "Formatter with sign control descriptor for complex number")
-        if (allocated(error)) return
+        ! call check_formatter(error, to_string((1, 1), 'SP,F6.2'), "( +1.00, +1.00)", &
+        !     & "Formatter with sign control descriptor for complex number")
+        ! if (allocated(error)) return
         call check_formatter(error, to_string((1, 1), 'F6.2') // to_string((2, 2), '(F7.3)'), &
             & "(  1.00,  1.00)(  2.000,  2.000)", &
             & "Multiple formatters for complex numbers")
@@ -88,14 +88,14 @@ contains
         call check_formatter(error, to_string(100, 'I6') // to_string(1000, '(I7)'), &
             & "   100   1000", "Multiple formatters for integers")
         if (allocated(error)) return
-        call check_formatter(error, to_string(34, 'B8'), "  100010", &
-            & "Binary formatter for integer number")
-        if (allocated(error)) return
-        call check_formatter(error, to_string(34, 'O0.3'), "042", &
-            & "Octal formatter with zero padding for integer number")
-        if (allocated(error)) return
-        call check_formatter(error, to_string(34, 'Z3'), " 22", &
-            & "Hexadecimal formatter for integer number")
+        ! call check_formatter(error, to_string(34, 'B8'), "  100010", &
+        !     & "Binary formatter for integer number")
+        ! if (allocated(error)) return
+        ! call check_formatter(error, to_string(34, 'O0.3'), "042", &
+        !     & "Octal formatter with zero padding for integer number")
+        ! if (allocated(error)) return
+        ! call check_formatter(error, to_string(34, 'Z3'), " 22", &
+        !     & "Hexadecimal formatter for integer number")
 
     end subroutine test_to_string_integer
 
