@@ -7,8 +7,8 @@ set(fppFiles
 
 fypp_f90("${fyppFlags}" "${fppFiles}" outFiles)
 
-# ADDTEST(string_assignment)
-# ADDTEST(string_operator)
+ADDTEST(string_assignment)
+ADDTEST(string_operator)
 # ADDTEST(string_intrinsic)
 # ADDTEST(string_match)
 # ADDTEST(string_derivedtype_io)
