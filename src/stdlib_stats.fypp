@@ -1139,6 +1139,9 @@ module stdlib_stats
 
         real(${k1}$) :: n
         ${t1}$ :: mean
+        ${t1}$ :: temp${shape_create(rank)}$
+
+        temp = abs(x - mean)**2
 
         if (.not.optval(mask, .true.)) then
           res = ieee_value(1._${k1}$, ieee_quiet_nan)
@@ -1151,7 +1154,7 @@ module stdlib_stats
         #:if t1[0] == 'r'
           res = sum((x - mean)**2) / (n - merge(1, 0 , optval(corrected, .true.)))
         #:else
-          res = sum(abs(x - mean)**2) / (n - merge(1, 0, optval(corrected, .true.)))
+          res = sum(temp) / (n - merge(1, 0, optval(corrected, .true.)))
         #:endif
 
       end function ${RName}$
@@ -1278,6 +1281,9 @@ module stdlib_stats
 
         real(${k1}$) :: n
         ${t1}$ :: mean
+        ${t1}$ :: temp${shape_create(rank)}$
+
+        temp = abs(x - mean)**2
 
         n = real(count(mask, kind = int64), ${k1}$)
         mean = sum(x, mask) / n
@@ -1285,7 +1291,7 @@ module stdlib_stats
         #:if t1[0] == 'r'
           res = sum((x - mean)**2, mask) / (n -&
         #:else
-          res = sum(abs(x - mean)**2, mask) / (n -&
+          res = sum(temp, mask) / (n -&
         #:endif
                 merge(1, 0, (optval(corrected, .true.) .and. n > 0)))
 
