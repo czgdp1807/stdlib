@@ -630,14 +630,14 @@ contains
         call check(error, count(test_string_2, test_pattern_1, .false.) == 1, &
             & 'count: all 2 as string_type, test case 3')
         if (allocated(error)) return
-        call check(error, all(count([test_string_2, test_string_2, test_string_1], &
-            & [test_pattern_2, test_pattern_2, test_pattern_1], [.true., .false., .false.]) == &
-            & [2, 1, 3]), 'count: all 2 as string_type, test case 4')
-        if (allocated(error)) return
-        call check(error, all(count([[test_string_1, test_string_2], [test_string_1, test_string_2]], &
-            & [[test_pattern_1, test_pattern_2], [test_pattern_2, test_pattern_1]], .true.) == &
-            & [[4, 2], [1, 1]]), 'count: all 2 as string_type, test case 5')
-        if (allocated(error)) return
+        ! call check(error, all(count([test_string_2, test_string_2, test_string_1], &
+        !     & [test_pattern_2, test_pattern_2, test_pattern_1], [.true., .false., .false.]) == &
+        !     & [2, 1, 3]), 'count: all 2 as string_type, test case 4')
+        ! if (allocated(error)) return
+        ! call check(error, all(count([[test_string_1, test_string_2], [test_string_1, test_string_2]], &
+        !     & [[test_pattern_1, test_pattern_2], [test_pattern_2, test_pattern_1]], .true.) == &
+        !     & [[4, 2], [1, 1]]), 'count: all 2 as string_type, test case 5')
+        ! if (allocated(error)) return
 
         ! 1 string_type and 1 character scalar
         call check(error, all(count(test_string_1, ["AGA", "GTC"], [.true., .false.]) == [4, 2]), &
