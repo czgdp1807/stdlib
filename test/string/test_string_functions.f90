@@ -384,6 +384,7 @@ contains
         integer, intent(in), optional :: stride
         character(len=:), allocatable :: sliced_string
         character(len=1), allocatable :: carray(:)
+        integer :: i
 
         integer :: first_, last_, stride_
 
@@ -404,9 +405,16 @@ contains
             last_ = min(max(optval(last, len(string)), 0), len(string))
         end if
 
-        carray = string_to_carray(string)
+        allocate(carray(len(string)))
+        do i = 1, len(string)
+            carray(i) = string(i:i)
+        end do
+
         carray = carray(first_:last_:stride_)
-        sliced_string = carray_to_string(carray)
+        allocate(character(len(carray)) :: sliced_string)
+        do i = 1, len(carray)
+            sliced_string(i:i) = carray(i)
+        end do
 
     end function reference_slice
 
