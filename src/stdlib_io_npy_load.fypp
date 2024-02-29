@@ -144,7 +144,7 @@ contains
         call parse_header(header, major, stat, msg)
         if (stat /= 0) return
 
-        read(io, iostat=stat) buf(1:merge(4, 2, major > 1))
+        read(io, iostat=stat) buf
         if (stat /= 0) return
 
         if (major > 1) then
