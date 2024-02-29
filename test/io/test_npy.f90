@@ -243,11 +243,12 @@ contains
         !> Error handling
         type(error_type), allocatable, intent(out) :: error
 
-        integer :: stat, i
+        integer :: stat, i, tmp(40)
         character(len=*), parameter :: filename = ".test-i2-r4-rt.npy"
-        integer(int16), allocatable :: input(:, :, :, :), output(:, :, :, :)
+        integer(int32), allocatable :: input(:, :, :, :), output(:, :, :, :)
 
-        input = reshape([(i*(i+1)/2, i = 1, 40)], [2, 5, 2, 2])
+        tmp = [(i*(i+1)/2, i = 1, 40)]
+        input = reshape(tmp, [2, 5, 2, 2])
         call save_npy(filename, input, stat)
 
         call check(error, stat, "Writing of npy file failed")
