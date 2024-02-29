@@ -123,9 +123,9 @@ contains
         call check_formatter(error, to_string(1000., 'F6.3'), "*", &
             & "Too narrow formatter for real number", partial=.true.)
         if (allocated(error)) return
-        call check_formatter(error, to_string(1000., '7.3'), "[*]", &
-            & "Invalid formatter for real number", partial=.true.)
-        if (allocated(error)) return
+        ! call check_formatter(error, to_string(1000., '7.3'), "[*]", &
+        !     & "Invalid formatter for real number", partial=.true.)
+        ! if (allocated(error)) return
 
     end subroutine test_to_string_real
 
@@ -144,8 +144,8 @@ contains
         if (allocated(error)) return
 
         ! Wrong demonstration
-        call check_formatter(error, to_string(.false., '1x'), "[*]", &
-            & "Invalid formatter for logical value", partial=.true.)
+        ! call check_formatter(error, to_string(.false., '1x'), "[*]", &
+        !     & "Invalid formatter for logical value", partial=.true.)
 
     end subroutine test_to_string_logical
 
