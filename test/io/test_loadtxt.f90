@@ -206,6 +206,7 @@ contains
         complex(dp), allocatable :: input(:,:), expected(:,:)
         real(dp), allocatable :: re(:,:), im(:,:)
         integer :: n
+        integer :: i, j
 
         allocate(re(10,10))
         allocate(im(10,10))
@@ -215,7 +216,11 @@ contains
         do n = 1, 10
             call random_number(re)
             call random_number(im)
-            input = cmplx(re, im)
+            do i = 1, 10
+                do j = 1, 10
+                    input(i, j) = cmplx(re(i, j), im(i, j))
+                end do
+            end do
             call savetxt('test_complex.txt', input)
             call loadtxt('test_complex.txt', expected)
             call check(error, all(input == expected))

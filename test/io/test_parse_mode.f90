@@ -7,26 +7,6 @@ module test_parse_mode
     private
     public :: collect_parse_mode
 
-    character(3), parameter :: parse_modes_input(*) = [ &
-        "   ", &
-        "r  ", "w  ", "a  ", "x  ", &
-        "rt ", "wt ", "at ", "xt ", &
-        "rb ", "wb ", "ab ", "xb ", &
-        "r+ ", "w+ ", "a+ ", "x+ ", &
-        "r+t", "w+t", "a+t", "x+t", &
-        "r+b", "w+b", "a+b", "x+b"  &
-    ]
-
-    character(3), parameter :: parse_modes_expected(*) = [ &
-        "r t", &
-        "r t", "w t", "a t", "x t", &
-        "r t", "w t", "a t", "x t", &
-        "r b", "w b", "a b", "x b", &
-        "r+t", "w+t", "a+t", "x+t", &
-        "r+t", "w+t", "a+t", "x+t", &
-        "r+b", "w+b", "a+b", "x+b"  &
-    ]
-
 contains
 
     !> Collect all exported unit tests
@@ -50,6 +30,27 @@ contains
         type(error_type), allocatable, intent(out) :: error
         integer :: n
 
+        character(3), parameter :: parse_modes_input(*) = [ &
+            "   ", &
+            "r  ", "w  ", "a  ", "x  ", &
+            "rt ", "wt ", "at ", "xt ", &
+            "rb ", "wb ", "ab ", "xb ", &
+            "r+ ", "w+ ", "a+ ", "x+ ", &
+            "r+t", "w+t", "a+t", "x+t", &
+            "r+b", "w+b", "a+b", "x+b"  &
+        ]
+
+
+        character(3), parameter :: parse_modes_expected(*) = [ &
+            "r t", &
+            "r t", "w t", "a t", "x t", &
+            "r t", "w t", "a t", "x t", &
+            "r b", "w b", "a b", "x b", &
+            "r+t", "w+t", "a+t", "x+t", &
+            "r+t", "w+t", "a+t", "x+t", &
+            "r+b", "w+b", "a+b", "x+b"  &
+        ]
+
         do n = 1, size(parse_modes_input)
             call check(error, parse_mode(trim(parse_modes_input(n))) == &
                               parse_modes_expected(n))
@@ -65,6 +66,25 @@ contains
 
         integer :: n
 
+        character(3), parameter :: parse_modes_input(*) = [ &
+            "   ", &
+            "r  ", "w  ", "a  ", "x  ", &
+            "rt ", "wt ", "at ", "xt ", &
+            "rb ", "wb ", "ab ", "xb ", &
+            "r+ ", "w+ ", "a+ ", "x+ ", &
+            "r+t", "w+t", "a+t", "x+t", &
+            "r+b", "w+b", "a+b", "x+b"  &
+        ]
+
+        character(3), parameter :: parse_modes_expected(*) = [ &
+            "r t", &
+            "r t", "w t", "a t", "x t", &
+            "r t", "w t", "a t", "x t", &
+            "r b", "w b", "a b", "x b", &
+            "r+t", "w+t", "a+t", "x+t", &
+            "r+t", "w+t", "a+t", "x+t", &
+            "r+b", "w+b", "a+b", "x+b"  &
+        ]
         do n = 1, size(parse_modes_input)
             call check(error, &
                        parse_mode(trim(reverse(parse_modes_input(n)))) == &
