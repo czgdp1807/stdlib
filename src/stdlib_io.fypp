@@ -12,7 +12,7 @@ module stdlib_io
   use stdlib_error, only: error_stop
   use stdlib_optval, only: optval
   use stdlib_ascii, only: is_blank
-  use stdlib_string_type, only : string_type
+  use stdlib_string_type, only : string_type, construct_string_type
   implicit none
   private
   ! Public API
@@ -447,7 +447,7 @@ contains
     character(len=:), allocatable :: buffer
 
     call getline(unit, buffer, iostat, iomsg)
-    line = string_type(buffer)
+    line = construct_string_type(buffer)
   end subroutine getline_string
 
   !> Version: experimental
