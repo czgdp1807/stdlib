@@ -1,7 +1,6 @@
 #:include "common.fypp"
-module stdlib_strings_to_string
-    use stdlib_kinds, only: sp, dp, xdp, qp, int8, int16, int32, int64, lk, c_bool
-    use stdlib_optval, only: optval
+submodule(stdlib_strings) stdlib_strings_to_string
+
     integer, parameter :: buffer_len = 128
     character(len=*), parameter :: err_sym = "[*]"
         !!TODO: [*]?
@@ -10,7 +9,7 @@ contains
 
     #:for k1, t1 in REAL_KINDS_TYPES
     !> Format or transfer a ${t1}$ scalar as a string.
-    pure function to_string_${t1[0]}$_${k1}$(value, format) result(string)
+    pure module function to_string_${t1[0]}$_${k1}$(value, format) result(string)
         ${t1}$, intent(in) :: value
         character(len=*), intent(in), optional :: format
         character(len=:), allocatable :: string
@@ -30,7 +29,7 @@ contains
 
     #:for k1, t1 in CMPLX_KINDS_TYPES
     !> Format or transfer a ${t1}$ scalar as a string.
-    pure function to_string_${t1[0]}$_${k1}$(value, format) result(string)
+    pure module function to_string_${t1[0]}$_${k1}$(value, format) result(string)
         ${t1}$, intent(in) :: value
         character(len=*), intent(in), optional :: format
         character(len=:), allocatable :: string
@@ -43,7 +42,7 @@ contains
 
     #:for k1, t1 in INT_KINDS_TYPES
     !> Represent an integer of kind ${k1}$ as character sequence.
-    pure function to_string_1_${t1[0]}$_${k1}$(value) result(string)
+    pure module function to_string_1_${t1[0]}$_${k1}$(value) result(string)
         integer, parameter :: ik = ${k1}$
         integer(ik), intent(in) :: value
         character(len=:), allocatable :: string
@@ -76,7 +75,7 @@ contains
         string = buffer(pos:)
     end function to_string_1_${t1[0]}$_${k1}$
 
-    pure function to_string_2_${t1[0]}$_${k1}$(value, format) result(string)
+    pure module function to_string_2_${t1[0]}$_${k1}$(value, format) result(string)
         ${t1}$, intent(in) :: value
         character(len=*), intent(in) :: format
         character(len=:), allocatable :: string
@@ -96,7 +95,7 @@ contains
 
     #:for k1, t1 in LOG_KINDS_TYPES
     !> Represent an logical of kind ${k1}$ as character sequence.
-    pure function to_string_1_${t1[0]}$_${k1}$(value) result(string)
+    pure module function to_string_1_${t1[0]}$_${k1}$(value) result(string)
         ${t1}$, intent(in) :: value
         character(len=1) :: string
 
@@ -104,7 +103,7 @@ contains
 
     end function to_string_1_${t1[0]}$_${k1}$
 
-    pure function to_string_2_${t1[0]}$_${k1}$(value, format) result(string)
+    pure module function to_string_2_${t1[0]}$_${k1}$(value, format) result(string)
         ${t1}$, intent(in) :: value
         character(len=*), intent(in) :: format
         character(len=:), allocatable :: string
@@ -122,4 +121,4 @@ contains
     end function to_string_2_${t1[0]}$_${k1}$
     #:endfor
 
-end module stdlib_strings_to_string
+end submodule stdlib_strings_to_string

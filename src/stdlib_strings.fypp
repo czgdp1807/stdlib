@@ -8,7 +8,6 @@ module stdlib_strings
     use stdlib_string_type, only: string_type, char, verify, repeat, len, to_string, construct_string_type
     use stdlib_optval, only: optval
     use stdlib_kinds, only: sp, dp, xdp, qp, int8, int16, int32, int64, lk, c_bool
-    use stdlib_strings_to_string
     implicit none
     private
 
@@ -16,22 +15,6 @@ module stdlib_strings
     public :: strip, chomp
     public :: starts_with, ends_with
     public :: slice, find, replace_all, padl, padr, count, zfill
-
-    !> Version: experimental
-    !>
-    !> Format or transfer other types as a string.
-    !> ([Specification](../page/specs/stdlib_strings.html#to_string))
-    interface to_string
-        #:set RC_KINDS_TYPES = REAL_KINDS_TYPES + CMPLX_KINDS_TYPES
-        #:set IL_KINDS_TYPES = INT_KINDS_TYPES + LOG_KINDS_TYPES
-        #:for k1, t1 in RC_KINDS_TYPES
-        module procedure :: to_string_${t1[0]}$_${k1}$
-        #:endfor
-        #:for k1, t1 in IL_KINDS_TYPES
-        module procedure :: to_string_1_${t1[0]}$_${k1}$
-        module procedure :: to_string_2_${t1[0]}$_${k1}$
-        #:endfor
-    end interface to_string
 
     !> Remove leading and trailing whitespace characters.
     !>
