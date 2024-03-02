@@ -145,9 +145,9 @@ contains
 
       do i = 1, max_rows_
         #:if 'real' in t1
-          read(s, "(*"//FMT_REAL_${k1}$(1:len(FMT_REAL_${k1}$)-1)//",1x))") d(i, :)
+          read(s, *) d(i, :)
         #:elif 'complex' in t1
-          read(s, "(*"//FMT_COMPLEX_${k1}$(1:len(FMT_COMPLEX_${k1}$)-1)//",1x))") d(i, :)
+          read(s, *) d(i, :)
         #:else
           read(s, *) d(i, :)
         #:endif

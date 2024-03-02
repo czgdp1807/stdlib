@@ -5,7 +5,7 @@ set(
 )
 fypp_f90("${fyppFlags}" "${fppFiles}" outFiles)
 
-# ADDTEST(loadtxt)
+ADDTEST(loadtxt)
 # ADDTEST(savetxt)
 
 ADDTEST(loadtxt_qp)
