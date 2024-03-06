@@ -142,11 +142,15 @@ contains
         type(error_type), allocatable, intent(out) :: error
         type(string_type), intent(in) :: str1, str2
         character(len=*), intent(in) :: chr1, chr2
-        call check(error, lgt(str1, str2) .eqv. lgt(chr1, chr2))
+        logical :: res1, res2, res3
+        res1 = lgt(str1, str2)
+        res2 = lgt(str1, chr2)
+        res3 = lgt(chr1, str2)
+        call check(error, res1 .eqv. lgt(chr1, chr2))
         if (allocated(error)) return
-        call check(error, lgt(str1, chr2) .eqv. lgt(chr1, chr2))
+        call check(error, res2 .eqv. lgt(chr1, chr2))
         if (allocated(error)) return
-        call check(error, lgt(chr1, str2) .eqv. lgt(chr1, chr2))
+        call check(error, res3 .eqv. lgt(chr1, chr2))
     end subroutine gen_lgt
 
     subroutine test_lgt(error)
