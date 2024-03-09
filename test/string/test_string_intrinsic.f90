@@ -186,11 +186,15 @@ contains
         type(error_type), allocatable, intent(out) :: error
         type(string_type), intent(in) :: str1, str2
         character(len=*), intent(in) :: chr1, chr2
-        call check(error, llt(str1, str2) .eqv. llt(chr1, chr2))
+        logical :: res1, res2, res3
+        res1 = llt(str1, str2)
+        res2 = llt(str1, chr2)
+        res3 = llt(chr1, str2)
+        call check(error, res1 .eqv. llt(chr1, chr2))
         if (allocated(error)) return
-        call check(error, llt(str1, chr2) .eqv. llt(chr1, chr2))
+        call check(error, res2 .eqv. llt(chr1, chr2))
         if (allocated(error)) return
-        call check(error, llt(chr1, str2) .eqv. llt(chr1, chr2))
+        call check(error, res3 .eqv. llt(chr1, chr2))
     end subroutine gen_llt
 
     subroutine test_llt(error)
@@ -226,11 +230,15 @@ contains
         type(error_type), allocatable, intent(out) :: error
         type(string_type), intent(in) :: str1, str2
         character(len=*), intent(in) :: chr1, chr2
-        call check(error, lge(str1, str2) .eqv. lge(chr1, chr2))
+        logical :: res1, res2, res3
+        res1 = lge(str1, str2)
+        res2 = lge(str1, chr2)
+        res3 = lge(chr1, str2)
+        call check(error, res1 .eqv. lge(chr1, chr2))
         if (allocated(error)) return
-        call check(error, lge(str1, chr2) .eqv. lge(chr1, chr2))
+        call check(error, res2 .eqv. lge(chr1, chr2))
         if (allocated(error)) return
-        call check(error, lge(chr1, str2) .eqv. lge(chr1, chr2))
+        call check(error, res3 .eqv. lge(chr1, chr2))
     end subroutine gen_lge
 
     subroutine test_lge(error)
@@ -266,11 +274,15 @@ contains
         type(error_type), allocatable, intent(out) :: error
         type(string_type), intent(in) :: str1, str2
         character(len=*), intent(in) :: chr1, chr2
-        call check(error, lle(str1, str2) .eqv. lle(chr1, chr2))
+        logical :: res1, res2, res3
+        res1 = lle(str1, str2)
+        res2 = lle(str1, chr2)
+        res3 = lle(chr1, str2)
+        call check(error, res1 .eqv. lle(chr1, chr2))
         if (allocated(error)) return
-        call check(error, lle(str1, chr2) .eqv. lle(chr1, chr2))
+        call check(error, res2 .eqv. lle(chr1, chr2))
         if (allocated(error)) return
-        call check(error, lle(chr1, str2) .eqv. lle(chr1, chr2))
+        call check(error, res3 .eqv. lle(chr1, chr2))
     end subroutine gen_lle
 
     subroutine test_lle(error)
