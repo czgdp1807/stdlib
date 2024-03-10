@@ -170,6 +170,10 @@ ${prefix + joinstr.join([line.strip() for line in txt.split("\n")]) + suffix}$
   $:"{0}_{1}_{2}{3}_{2}{3}".format(gname, rank, type[0], kind) if suffix == '' else "{0}_{1}_{2}{3}_{4}".format(gname, rank, type[0], kind, suffix)
 #:enddef
 
+#:def rname1(gname, rank)
+  $:"{0}_{1}".format(gname, rank)
+#:enddef
+
 
 #! Generates an array rank suffix for subarrays reducing the dimension
 #!

@@ -1,14 +1,139 @@
 #:include "common.fypp"
 #:set RC_KINDS_TYPES = REAL_KINDS_TYPES + CMPLX_KINDS_TYPES
-submodule (stdlib_stats) stdlib_stats_corr
+#:set RANKS = range(1, MAXRANK + 1)
+module stdlib_stats_corr
 
-  use, intrinsic:: ieee_arithmetic, only: ieee_value, ieee_quiet_nan
   use stdlib_error, only: error_stop
   use stdlib_linalg, only: diag
   use stdlib_optval, only: optval
+  use stdlib_kinds, only: sp, dp, xdp, qp, &
+      int8, int16, int32, int64
   implicit none
 
+  interface mean
+    !! version: experimental
+    !!
+    !! Mean of array elements
+    !! ([Specification](../page/specs/stdlib_stats.html#mean-mean-of-array-elements))
+    #:for k1, t1 in RC_KINDS_TYPES
+      #:for rank in RANKS
+        #:set RName = rname("mean_all",rank, t1, k1)
+        procedure ${RName}$
+      #:endfor
+    #:endfor
+
+    #:for k1, t1 in INT_KINDS_TYPES
+      #:for rank in RANKS
+      #:set RName = rname('mean_all', rank, t1, k1,'dp')
+        procedure ${RName}$
+      #:endfor
+    #:endfor
+
+    #:for k1, t1 in RC_KINDS_TYPES
+      #:for rank in RANKS
+      #:set RName = rname("mean",rank, t1, k1)
+        procedure ${RName}$
+      #:endfor
+    #:endfor
+
+    #:for k1, t1 in INT_KINDS_TYPES
+      #:for rank in RANKS
+        #:set RName = rname("mean",rank, t1, k1,'dp')
+        procedure ${RName}$
+      #:endfor
+    #:endfor
+
+    #:for k1, t1 in RC_KINDS_TYPES
+      #:for rank in RANKS
+        #:set RName = rname('mean_mask_all',rank, t1, k1)
+        procedure ${RName}$
+      #:endfor
+    #:endfor
+
+    #:for k1, t1 in INT_KINDS_TYPES
+      #:for rank in RANKS
+      #:set RName = rname('mean_mask_all',rank, t1, k1, 'dp')
+        procedure ${RName}$
+      #:endfor
+    #:endfor
+
+    #:for k1, t1 in RC_KINDS_TYPES
+      #:for rank in RANKS
+      #:set RName = rname('mean_mask',rank, t1, k1)
+        procedure ${RName}$
+      #:endfor
+    #:endfor
+
+    #:for k1, t1 in INT_KINDS_TYPES
+      #:for rank in RANKS
+      #:set RName = rname('mean_mask',rank, t1, k1, 'dp')
+        procedure ${RName}$
+      #:endfor
+    #:endfor
+
+  end interface mean
+
+  interface corr
+    !! version: experimental
+    !!
+    !! Pearson correlation of array elements
+    !! ([Specification](../page/specs/stdlib_stats.html#corr-pearson-correlation-of-array-elements))
+    #:for k1, t1 in RC_KINDS_TYPES
+      #:set RName = rname("corr",1, t1, k1)
+      procedure ${RName}$
+    #:endfor
+
+    #:for k1, t1 in INT_KINDS_TYPES
+      #:set RName = rname("corr",1, t1, k1, 'dp')
+      procedure ${RName}$
+    #:endfor
+
+    #:for k1, t1 in RC_KINDS_TYPES
+      #:set RName = rname("corr_mask",1, t1, k1)
+      procedure ${RName}$
+    #:endfor
+
+    #:for k1, t1 in INT_KINDS_TYPES
+      #:set RName = rname("corr_mask",1, t1, k1, 'dp')
+      procedure ${RName}$
+    #:endfor
+
+    #:for k1, t1 in RC_KINDS_TYPES
+      #:set RName = rname("corr",2, t1, k1)
+      procedure ${RName}$
+    #:endfor
+
+    #:for k1, t1 in INT_KINDS_TYPES
+      #:set RName = rname("corr",2, t1, k1, 'dp')
+      procedure ${RName}$
+    #:endfor
+
+    #:for k1, t1 in RC_KINDS_TYPES
+      #:set RName = rname("corr_mask",2, t1, k1)
+      procedure ${RName}$
+    #:endfor
+
+    #:for k1, t1 in INT_KINDS_TYPES
+      #:set RName = rname("corr_mask",2, t1, k1, 'dp')
+      procedure ${RName}$
+    #:endfor
+
+  end interface corr
+
 contains
+
+  pure function my_merge(val1, val2, mask) result(merged_value)
+    integer, intent(in) :: val1, val2
+    logical, intent(in) :: mask
+    integer :: merged_value
+
+    if (mask) then
+      merged_value = val1
+    else
+      merged_value = val2
+    end if
+
+  end function my_merge
 
   #:for k1, t1 in RC_KINDS_TYPES
     #:set RName = rname("corr",1, t1, k1)
@@ -19,7 +144,8 @@ contains
       real(${k1}$) :: res
 
       if (.not.optval(mask, .true.) .or. size(x) < 2) then
-        res = ieee_value(1._${k1}$, ieee_quiet_nan)
+        res = -1
+        res = sqrt(res)
         return
       end if
 
@@ -38,7 +164,8 @@ contains
       real(dp) :: res
 
       if (.not.optval(mask, .true.) .or. size(x) < 2) then
-        res = ieee_value(1._dp, ieee_quiet_nan)
+        res = -1
+        res = sqrt(res)
         return
       end if
 
@@ -57,7 +184,8 @@ contains
       real(${k1}$) :: res
 
       if (count(mask) < 2) then
-        res = ieee_value(1._${k1}$, ieee_quiet_nan)
+        res = -1
+        res = sqrt(res)
         return
       end if
 
@@ -76,7 +204,8 @@ contains
       real(dp) :: res
 
       if (count(mask) < 2) then
-        res = ieee_value(1._dp, ieee_quiet_nan)
+        res = -1
+        res = sqrt(res)
         return
       end if
 
@@ -92,15 +221,17 @@ contains
       ${t1}$, intent(in) :: x(:, :)
       integer, intent(in) :: dim
       logical, intent(in), optional :: mask
-      ${t1}$ :: res(merge(size(x, 1), size(x, 2), mask = 1<dim)&
-                          , merge(size(x, 1), size(x, 2), mask = 1<dim))
+      ${t1}$ :: res(my_merge(size(x, 1), size(x, 2), mask = 1<dim)&
+                          , my_merge(size(x, 1), size(x, 2), mask = 1<dim))
 
       integer :: i, j
-      ${t1}$ :: mean_(merge(size(x, 1), size(x, 2), mask = 1<dim))
+      ${t1}$ :: mean_(my_merge(size(x, 1), size(x, 2), mask = 1<dim))
+      ${t1}$ :: diagres(my_merge(size(x, 1), size(x, 2), mask = 1<dim))
       ${t1}$ :: center(size(x, 1),size(x, 2))
 
       if (.not.optval(mask, .true.) .or. size(x) < 2) then
-        res = ieee_value(1._${k1}$, ieee_quiet_nan)
+        res = -1
+        res = sqrt(res)
         return
       end if
 
@@ -128,7 +259,8 @@ contains
           call error_stop("ERROR (corr): wrong dimension")
       end select
 
-      mean_ = 1 / sqrt(diag(res))
+      diagres = diag(res)
+      mean_ = 1 / sqrt(diagres)
       do i = 1, size(res, 1)
         do j = 1, size(res, 2)
           res(j, i) = res(j, i) * mean_(i) * mean_(j)
@@ -145,15 +277,17 @@ contains
       ${t1}$, intent(in) :: x(:, :)
       integer, intent(in) :: dim
       logical, intent(in), optional :: mask
-      real(dp) :: res(merge(size(x, 1), size(x, 2), mask = 1<dim)&
-                      , merge(size(x, 1), size(x, 2), mask = 1<dim))
+      real(dp) :: res(my_merge(size(x, 1), size(x, 2), mask = 1<dim)&
+                      , my_merge(size(x, 1), size(x, 2), mask = 1<dim))
 
       integer :: i, j
-      real(dp) :: mean_(merge(size(x, 1), size(x, 2), mask = 1<dim))
+      real(dp) :: mean_(my_merge(size(x, 1), size(x, 2), mask = 1<dim))
+      real(dp) :: diagres(my_merge(size(x, 1), size(x, 2), mask = 1<dim))
       real(dp) :: center(size(x, 1),size(x, 2))
 
       if (.not.optval(mask, .true.) .or. size(x) < 2) then
-        res = ieee_value(1._dp, ieee_quiet_nan)
+        res = -1
+        res = sqrt(res)
         return
       end if
 
@@ -173,7 +307,8 @@ contains
           call error_stop("ERROR (corr): wrong dimension")
       end select
 
-      mean_ = 1 / sqrt(diag(res))
+      diagres = diag(res)
+      mean_ = 1 / sqrt(diagres)
       do i = 1, size(res, 1)
         do j = 1, size(res, 2)
           res(j, i) = res(j, i) * mean_(i) * mean_(j)
@@ -190,13 +325,13 @@ contains
       ${t1}$, intent(in) :: x(:, :)
       integer, intent(in) :: dim
       logical, intent(in) :: mask(:,:)
-      ${t1}$ :: res(merge(size(x, 1), size(x, 2), mask = 1<dim)&
-                          , merge(size(x, 1), size(x, 2), mask = 1<dim))
+      ${t1}$ :: res(my_merge(size(x, 1), size(x, 2), mask = 1<dim)&
+                          , my_merge(size(x, 1), size(x, 2), mask = 1<dim))
 
       integer :: i, j
-      ${t1}$ :: centeri_(merge(size(x, 2), size(x, 1), mask = 1<dim))
-      ${t1}$ :: centerj_(merge(size(x, 2), size(x, 1), mask = 1<dim))
-      logical :: mask_(merge(size(x, 2), size(x, 1), mask = 1<dim))
+      ${t1}$ :: centeri_(my_merge(size(x, 2), size(x, 1), mask = 1<dim))
+      ${t1}$ :: centerj_(my_merge(size(x, 2), size(x, 1), mask = 1<dim))
+      logical :: mask_(my_merge(size(x, 2), size(x, 1), mask = 1<dim))
 
       select case(dim)
         case(1)
@@ -262,13 +397,13 @@ contains
       ${t1}$, intent(in) :: x(:, :)
       integer, intent(in) :: dim
       logical, intent(in) :: mask(:,:)
-      real(dp) :: res(merge(size(x, 1), size(x, 2), mask = 1<dim)&
-                          , merge(size(x, 1), size(x, 2), mask = 1<dim))
+      real(dp) :: res(my_merge(size(x, 1), size(x, 2), mask = 1<dim)&
+                          , my_merge(size(x, 1), size(x, 2), mask = 1<dim))
 
       integer :: i, j
-      real(dp) :: centeri_(merge(size(x, 2), size(x, 1), mask = 1<dim))
-      real(dp) :: centerj_(merge(size(x, 2), size(x, 1), mask = 1<dim))
-      logical :: mask_(merge(size(x, 2), size(x, 1), mask = 1<dim))
+      real(dp) :: centeri_(my_merge(size(x, 2), size(x, 1), mask = 1<dim))
+      real(dp) :: centerj_(my_merge(size(x, 2), size(x, 1), mask = 1<dim))
+      logical :: mask_(my_merge(size(x, 2), size(x, 1), mask = 1<dim))
 
       select case(dim)
         case(1)
@@ -307,5 +442,302 @@ contains
     end function ${RName}$
   #:endfor
 
+  #:for k1, t1 in RC_KINDS_TYPES
+    #:for rank in RANKS
+      #:set RName = rname("mean_all",rank, t1, k1)
+      module function ${RName}$ (x, mask) result(res)
+        ${t1}$, intent(in) :: x${ranksuffix(rank)}$
+        logical, intent(in), optional :: mask
+        ${t1}$ :: res
 
-end submodule
+        if (.not.optval(mask, .true.)) then
+          res = -1
+          res = sqrt(res)
+          return
+        end if
+
+        res = sum(x) / real(size(x, kind = int64), ${k1}$)
+
+      end function ${RName}$
+    #:endfor
+  #:endfor
+
+  #:for k1, t1 in INT_KINDS_TYPES
+    #:for rank in RANKS
+      #:set RName = rname('mean_all', rank, t1, k1,'dp')
+      module function ${RName}$(x, mask) result(res)
+        ${t1}$, intent(in) :: x${ranksuffix(rank)}$
+        logical, intent(in), optional :: mask
+        real(dp) :: res
+        real(dp) :: xr(&
+        #:for r in range(1, rank + 1)
+          #:if r < rank
+          size(x, ${r}$), &
+          #:else
+          size(x, ${r}$) &
+          #:endif
+        #:endfor
+        )
+
+        if (.not.optval(mask, .true.)) then
+          res = -1
+          res = sqrt(res)
+          return
+        end if
+
+        xr = x * 1.0_dp
+        res = sum(xr) / real(size(x, kind = int64), dp)
+
+      end function ${RName}$
+    #:endfor
+  #:endfor
+
+
+  #:for k1, t1 in RC_KINDS_TYPES
+    #:for rank in RANKS
+      #:set RName = rname("mean",rank, t1, k1)
+      module function ${RName}$(x, dim, mask) result(res)
+        ${t1}$, intent(in) :: x${ranksuffix(rank)}$
+        integer, intent(in) :: dim
+        logical, intent(in), optional :: mask
+        ${t1}$ :: res${reduced_shape('x', rank, 'dim')}$
+
+        if (.not.optval(mask, .true.)) then
+          res = -1
+          res = sqrt(res)
+          return
+        end if
+
+        if (dim >= 1 .and. dim <= ${rank}$) then
+          #:for r in range(1, rank + 1)
+            if( dim == ${r}$ ) then
+              res = sum(x, ${r}$)
+              res = res / real(size(x, ${r}$), ${k1}$)
+            #:if r < rank
+            else &
+            #:endif
+          #:endfor
+            endif
+        else
+          call error_stop("ERROR (mean): wrong dimension")
+        end if
+
+      end function ${RName}$
+    #:endfor
+  #:endfor
+
+
+  #:for k1, t1 in INT_KINDS_TYPES
+    #:for rank in RANKS
+      #:set RName = rname("mean",rank, t1, k1,'dp')
+      module function ${RName}$(x, dim, mask) result(res)
+        ${t1}$, intent(in) :: x${ranksuffix(rank)}$
+        integer, intent(in) :: dim
+        logical, intent(in), optional :: mask
+        real(dp) :: res${reduced_shape('x', rank, 'dim')}$
+        real(dp) :: xr(&
+        #:for r in range(1, rank + 1)
+          #:if r < rank
+          size(x, ${r}$), &
+          #:else
+          size(x, ${r}$) &
+          #:endif
+        #:endfor
+        )
+
+        if (.not.optval(mask, .true.)) then
+          res = -1
+          res = sqrt(res)
+          return
+        end if
+
+        if (dim >= 1 .and. dim <= ${rank}$) then
+          #:for r in range(1, rank + 1)
+            if( dim == ${r}$ ) then
+              xr = x * 1.0_dp
+              res = sum(xr, ${r}$)
+              res = res / real(size(x, ${r}$), dp)
+            #:if r < rank
+            else &
+            #:endif
+          #:endfor
+            endif
+        else
+          call error_stop("ERROR (mean): wrong dimension")
+        end if
+
+      end function ${RName}$
+    #:endfor
+  #:endfor
+
+  #:for k1, t1 in RC_KINDS_TYPES
+    #:for rank in RANKS
+      #:set RName = rname('mean_mask_all',rank, t1, k1)
+      module function ${RName}$(x, mask) result(res)
+        ${t1}$, intent(in) :: x${ranksuffix(rank)}$
+        logical, intent(in) :: mask${ranksuffix(rank)}$
+        ${t1}$ :: res
+
+        res = sum(x${ranksuffix(rank)}$, mask) / real(count(mask, kind = int64), ${k1}$)
+
+      end function ${RName}$
+    #:endfor
+  #:endfor
+
+
+  #:for k1, t1 in INT_KINDS_TYPES
+    #:for rank in RANKS
+      #:set RName = rname('mean_mask_all',rank, t1, k1, 'dp')
+      module function ${RName}$(x, mask) result(res)
+        ${t1}$, intent(in) :: x${ranksuffix(rank)}$
+        logical, intent(in) :: mask${ranksuffix(rank)}$
+        real(dp) :: res
+        real(dp) :: xr(&
+        #:for r in range(1, rank + 1)
+          #:if r < rank
+          size(x, ${r}$), &
+          #:else
+          size(x, ${r}$) &
+          #:endif
+        #:endfor
+        )
+
+        xr = x * 1.0_dp
+        res = sum(xr, mask) / real(count(mask, kind = int64), dp)
+
+      end function ${RName}$
+    #:endfor
+  #:endfor
+
+  #:for rank in RANKS
+    #:set RName = rname1('count_user_defined', rank)
+    module function ${RName}$(x, dim) result(res)
+      logical, intent(in) :: x${ranksuffix(rank)}$
+      integer, intent(in) :: dim
+      integer, intent(in) :: res${reduced_shape('x', rank, 'dim')}$
+      logical :: xv
+      integer :: xiv
+
+      integer :: intx(&
+        #:for r in range(1, rank + 1)
+          #:if r < rank
+          size(x, ${r}$), &
+          #:else
+          size(x, ${r}$) &
+          #:endif
+        #:endfor
+        )
+      #:for r in range(1, rank + 1)
+        #:set varName = rname1('i', r)
+        integer :: ${varName}$
+      #:endfor
+
+      #:for r in range(1, rank + 1)
+        #:set varName = rname1('i', r)
+        do ${varName}$ = 1, size(x, ${r}$)
+      #:endfor
+        xv = x(&
+        #:for r in range(1, rank + 1)
+          #:set varName = rname1('i', r)
+          #:if r < rank
+          ${varName}$, &
+          #:else
+          ${varName}$ &
+          #:endif
+        #:endfor
+        )
+        xiv = 0
+        if( xv ) xiv = 1
+        intx(&
+        #:for r in range(1, rank + 1)
+          #:set varName = rname1('i', r)
+          #:if r < rank
+          ${varName}$, &
+          #:else
+          ${varName}$ &
+          #:endif
+        #:endfor
+        ) = xiv
+      #:for r in range(1, rank + 1)
+        end do
+      #:endfor
+
+      #:for r in range(1, rank + 1)
+        if( dim == ${r}$ ) then
+          res = sum(intx, ${r}$)
+        #:if r < rank
+        else &
+        #:endif
+      #:endfor
+        endif
+
+    end function ${RName}$
+  #:endfor
+
+  #:for k1, t1 in RC_KINDS_TYPES
+    #:for rank in RANKS
+      #:set RName = rname('mean_mask',rank, t1, k1)
+      #:set countName = rname1('count_user_defined', rank)
+      module function  ${RName}$(x, dim, mask) result(res)
+        ${t1}$, intent(in) :: x${ranksuffix(rank)}$
+        integer, intent(in) :: dim
+        logical, intent(in) :: mask${ranksuffix(rank)}$
+        ${t1}$ :: res${reduced_shape('x', rank, 'dim')}$
+
+        if (dim >= 1 .and. dim <= ${rank}$) then
+          #:for r in range(1, rank + 1)
+            if( dim == ${r}$ ) then
+              res = sum(x, ${r}$, mask) / real(${countName}$(mask, ${r}$), ${k1}$)
+            #:if r < rank
+            else &
+            #:endif
+          #:endfor
+            endif
+        else
+          call error_stop("ERROR (mean): wrong dimension")
+        end if
+
+      end function ${RName}$
+    #:endfor
+  #:endfor
+
+
+  #:for k1, t1 in INT_KINDS_TYPES
+    #:for rank in RANKS
+      #:set RName = rname('mean_mask',rank, t1, k1, 'dp')
+      #:set countName = rname1('count_user_defined', rank)
+      module function ${RName}$(x, dim, mask) result(res)
+        ${t1}$, intent(in) :: x${ranksuffix(rank)}$
+        integer, intent(in) :: dim
+        logical, intent(in) :: mask${ranksuffix(rank)}$
+        real(dp) :: res${reduced_shape('x', rank, 'dim')}$
+        real(dp) :: xr(&
+        #:for r in range(1, rank + 1)
+          #:if r < rank
+          size(x, ${r}$), &
+          #:else
+          size(x, ${r}$) &
+          #:endif
+        #:endfor
+        )
+
+        if (dim >= 1 .and. dim <= ${rank}$) then
+          #:for r in range(1, rank + 1)
+            if( dim == ${r}$ ) then
+              xr = x * 1.0_dp
+              res = sum(xr, ${r}$, mask) / real(${countName}$(mask, ${r}$), dp)
+            #:if r < rank
+            else &
+            #:endif
+          #:endfor
+            endif
+        else
+          call error_stop("ERROR (mean): wrong dimension")
+        end if
+
+      end function ${RName}$
+    #:endfor
+  #:endfor
+
+
+end module
