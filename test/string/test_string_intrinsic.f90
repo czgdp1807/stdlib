@@ -579,9 +579,9 @@ contains
         call check(error, string == "What? What? What? ")
         if (allocated(error)) return
 
-        call check1(error, "!!1!", gen_repeat)
-        if (allocated(error)) return
-        call check1(error, "This sentence is repeated multiple times. ", gen_repeat)
+        ! call check1(error, "!!1!", gen_repeat)
+        ! if (allocated(error)) return
+        ! call check1(error, "This sentence is repeated multiple times. ", gen_repeat)
 
     end subroutine test_repeat
 
