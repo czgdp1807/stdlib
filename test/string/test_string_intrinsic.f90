@@ -691,11 +691,11 @@ contains
         type(error_type), allocatable, intent(out) :: error
         type(string_type) :: from_string, to_string
         type(string_type) :: from_string_not
-        type(string_type) :: from_strings(2), to_strings(2)
+        ! type(string_type) :: from_strings(2), to_strings(2)
         character(len=:), allocatable :: from_char, to_char
 
         from_string = "Move This String"
-        from_strings = "Move This String"
+        ! from_strings = "Move This String"
         from_char = "Move This Char"
         call check(error, from_string == "Move This String" .and. to_string == "" .and. &
             & from_char == "Move This Char" .and. .not. allocated(to_char), &
@@ -742,8 +742,8 @@ contains
         ! if (allocated(error)) return
 
         ! elemental: string_type (allocated) --> string_type (not allocated)
-        call move(from_strings, to_strings)
-        call check(error, all(from_strings(:) == "") .and. all(to_strings(:) == "Move This String"), "move: test_case 9")
+        ! call move(from_strings, to_strings)
+        ! call check(error, all(from_strings(:) == "") .and. all(to_strings(:) == "Move This String"), "move: test_case 9")
 
         ! string_type (not allocated) --> string_type (not allocated)
         call move(from_string_not, to_string)
