@@ -591,17 +591,24 @@ contains
         type(error_type), allocatable, intent(out) :: error
         type(string_type), intent(in) :: str1, str2
         character(len=*), intent(in) :: chr1, chr2
-        call check(error, index(str1, str2) == index(chr1, chr2))
+        integer :: pos1, pos2, pos3, pos4, pos5, pos6
+        pos1 = index(str1, str2)
+        pos2 = index(str1, chr2)
+        pos3 = index(chr1, str2)
+        pos4 = index(str1, str2, back=.true.)
+        pos5 = index(str1, chr2, back=.true.)
+        pos6 = index(chr1, str2, back=.true.)
+        call check(error, pos1 == index(chr1, chr2))
         if (allocated(error)) return
-        call check(error, index(str1, chr2) == index(chr1, chr2))
+        call check(error, pos2 == index(chr1, chr2))
         if (allocated(error)) return
-        call check(error, index(chr1, str2) == index(chr1, chr2))
+        call check(error, pos3 == index(chr1, chr2))
         if (allocated(error)) return
-        call check(error, index(str1, str2, back=.true.) == index(chr1, chr2, back=.true.))
+        call check(error, pos4 == index(chr1, chr2, back=.true.))
         if (allocated(error)) return
-        call check(error, index(str1, chr2, back=.true.) == index(chr1, chr2, back=.true.))
+        call check(error, pos5 == index(chr1, chr2, back=.true.))
         if (allocated(error)) return
-        call check(error, index(chr1, str2, back=.true.) == index(chr1, chr2, back=.true.))
+        call check(error, pos6 == index(chr1, chr2, back=.true.))
     end subroutine gen_index
 
     subroutine test_index(error)
