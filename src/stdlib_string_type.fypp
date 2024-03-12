@@ -834,8 +834,15 @@ contains
         type(string_type), intent(inout) :: to
         character(:), allocatable :: tmp
 
-        call move_alloc(from%raw, tmp)
-        call move_alloc(tmp, to%raw)
+        !call move_alloc(from%raw, tmp)
+        !call move_alloc(tmp, to%raw)
+        if (.not. allocated(from%raw)) then
+            to%raw = ""
+            return
+        end if
+        allocate(character(len=len(from%raw)) :: to%raw)
+        to%raw = from%raw
+        deallocate(from%raw)
 
     end subroutine move_string_string
 
@@ -845,7 +852,14 @@ contains
         type(string_type), intent(inout) :: from
         character(len=:), intent(out), allocatable :: to
 
-        call move_alloc(from%raw, to)
+        !call move_alloc(from%raw, to)
+        if (.not. allocated(from%raw)) then
+            to = ""
+            return
+        end if
+        allocate(character(len=len(from%raw)) :: to)
+        to = from%raw
+        deallocate(from%raw)
 
     end subroutine move_string_char
 
@@ -855,7 +869,14 @@ contains
         character(len=:), intent(inout), allocatable :: from
         type(string_type), intent(out) :: to
 
-        call move_alloc(from, to%raw)
+        !call move_alloc(from, to%raw)
+        if (.not. allocated(from)) then
+            to%raw = ""
+            return
+        end if
+        allocate(character(len=len(from)) :: to%raw)
+        to%raw = from
+        deallocate(from)
 
     end subroutine move_char_string
 
