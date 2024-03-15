@@ -614,7 +614,7 @@ contains
     module function ${RName}$(x, dim) result(res)
       logical, intent(in) :: x${ranksuffix(rank)}$
       integer, intent(in) :: dim
-      integer, intent(in) :: res${reduced_shape('x', rank, 'dim')}$
+      integer :: res${reduced_shape('x', rank, 'dim')}$
       logical :: xv
       integer :: xiv
 

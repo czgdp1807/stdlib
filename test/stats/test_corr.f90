@@ -230,11 +230,11 @@ contains
         integer(int32), intent(in) :: x(:)
         integer(int32), intent(in) :: x2(:, :)
         real(dp), allocatable :: y1(:, :), y2(:, :), y3(:, :), y4(:, :), error(:, :)
+        integer :: yshape(2)
         allocate(y1(size(x2, 2), size(x2, 2)), &
             y2(size(x2, 1), size(x2, 1)), &
             y3(size(x2, 2), size(x2, 2)), &
             y4(size(x2, 1), size(x2, 1)))
-        integer :: yshape(2)
 
         call check( abs(corr(x, 1) - 1._dp) < dptol&
             , 'int32 check 1')
