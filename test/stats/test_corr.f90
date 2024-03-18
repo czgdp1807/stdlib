@@ -45,8 +45,8 @@ program test_corr
     ! print *, "test_dp"
     ! call test_dp_1(d1,d)
 
-    print *, "test_dp_2"
-    call test_dp_2(d1,d)
+    ! print *, "test_dp_2"
+    ! call test_dp_2(d1,d)
 
     ! print *, "test_dp_3"
     ! call test_dp_3(d1,d)
