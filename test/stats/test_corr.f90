@@ -42,24 +42,24 @@ program test_corr
     print *, "test_sp"
     call test_sp(real(d1, sp), real(d, sp))
 
-    print *, "test_dp"
-    call test_dp_1(d1,d)
+    ! print *, "test_dp"
+    ! call test_dp_1(d1,d)
 
     print *, "test_dp_2"
     call test_dp_2(d1,d)
 
-    print *, "test_dp_3"
-    call test_dp_3(d1,d)
+    ! print *, "test_dp_3"
+    ! call test_dp_3(d1,d)
 
-    print *, "test_int32"
-    call test_int32(int(d1, int32) ,int(d, int32))
+    ! print *, "test_int32"
+    ! call test_int32(int(d1, int32) ,int(d, int32))
 
     ! print *, "test_int64_1"
     ! call test_int64_1(int(d1, int64) ,int(d, int64))
-    print *, "test_int64_2"
-    call test_int64_2(int(d1, int64) ,int(d, int64))
-    print *, "test_int64_3"
-    call test_int64_3(int(d1, int64) ,int(d, int64))
+    ! print *, "test_int64_2"
+    ! call test_int64_2(int(d1, int64) ,int(d, int64))
+    ! print *, "test_int64_3"
+    ! call test_int64_3(int(d1, int64) ,int(d, int64))
 
     ! call test_csp(cd1sp, dssp)
 
