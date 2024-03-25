@@ -1,7 +1,7 @@
 module test_var
     use testdrive, only : new_unittest, unittest_type, error_type, check
     use stdlib_kinds, only: sp, dp, int32, int64
-    use stdlib_stats, only: var
+    use stdlib_stats_var, only: var
     use,intrinsic :: ieee_arithmetic, only : ieee_is_nan
     implicit none
 
