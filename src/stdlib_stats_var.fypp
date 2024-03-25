@@ -22,100 +22,56 @@ module stdlib_stats_var
     #:for k1, t1 in RC_KINDS_TYPES
       #:for rank in RANKS
         #:set RName = rname("var_all",rank, t1, k1)
-        module function ${RName}$(x, mask, corrected) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          logical, intent(in), optional :: mask
-          logical, intent(in), optional :: corrected
-          real(${k1}$) :: res
-        end function ${RName}$
+        procedure :: ${RName}$
       #:endfor
     #:endfor
 
     #:for k1, t1 in INT_KINDS_TYPES
       #:for rank in RANKS
         #:set RName = rname("var_all",rank, t1, k1, 'dp')
-        module function ${RName}$(x, mask, corrected) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          logical, intent(in), optional :: mask
-          logical, intent(in), optional :: corrected
-          real(dp) :: res
-        end function ${RName}$
+        procedure :: ${RName}$
       #:endfor
     #:endfor
 
     #:for k1, t1 in RC_KINDS_TYPES
       #:for rank in RANKS
         #:set RName = rname("var",rank, t1, k1)
-        module function ${RName}$(x, dim, mask, corrected) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          integer, intent(in) :: dim
-          logical, intent(in), optional :: mask
-          logical, intent(in), optional :: corrected
-          real(${k1}$) :: res${reduced_shape('x', rank, 'dim')}$
-        end function ${RName}$
+        procedure :: ${RName}$
       #:endfor
     #:endfor
 
     #:for k1, t1 in INT_KINDS_TYPES
       #:for rank in RANKS
         #:set RName = rname("var",rank, t1, k1, 'dp')
-        module function ${RName}$(x, dim, mask, corrected) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          integer, intent(in) :: dim
-          logical, intent(in), optional :: mask
-          logical, intent(in), optional :: corrected
-          real(dp) :: res${reduced_shape('x', rank, 'dim')}$
-        end function ${RName}$
+        procedure :: ${RName}$
       #:endfor
     #:endfor
 
     #:for k1, t1 in RC_KINDS_TYPES
       #:for rank in RANKS
         #:set RName = rname("var_mask_all",rank, t1, k1)
-        module function ${RName}$(x, mask, corrected) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          logical, intent(in) :: mask${ranksuffix(rank)}$
-          logical, intent(in), optional :: corrected
-          real(${k1}$) :: res
-        end function ${RName}$
+        procedure :: ${RName}$
       #:endfor
     #:endfor
 
     #:for k1, t1 in INT_KINDS_TYPES
       #:for rank in RANKS
         #:set RName = rname("var_mask_all",rank, t1, k1, 'dp')
-        module function ${RName}$(x, mask, corrected) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          logical, intent(in) :: mask${ranksuffix(rank)}$
-          logical, intent(in), optional :: corrected
-          real(dp) :: res
-        end function ${RName}$
+        procedure :: ${RName}$
       #:endfor
     #:endfor
 
     #:for k1, t1 in RC_KINDS_TYPES
       #:for rank in RANKS
         #:set RName = rname("var_mask",rank, t1, k1)
-        module function ${RName}$(x, dim, mask, corrected) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          integer, intent(in) :: dim
-          logical, intent(in) :: mask${ranksuffix(rank)}$
-          logical, intent(in), optional :: corrected
-          real(${k1}$) :: res${reduced_shape('x', rank, 'dim')}$
-        end function ${RName}$
+        procedure :: ${RName}$
       #:endfor
     #:endfor
 
     #:for k1, t1 in INT_KINDS_TYPES
       #:for rank in RANKS
         #:set RName = rname("var_mask",rank, t1, k1, 'dp')
-        module function ${RName}$(x, dim, mask, corrected) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          integer, intent(in) :: dim
-          logical, intent(in) :: mask${ranksuffix(rank)}$
-          logical, intent(in), optional :: corrected
-          real(dp) :: res${reduced_shape('x', rank, 'dim')}$
-        end function ${RName}$
+        procedure :: ${RName}$
       #:endfor
     #:endfor
 
@@ -147,6 +103,7 @@ contains
 
         real(${k1}$) :: n
         ${t1}$ :: mean
+        ${t1}$ :: temp${shape_create(rank)}$
 
         if (.not.optval(mask, .true.)) then
           res = ieee_value(1._${k1}$, ieee_quiet_nan)
@@ -156,10 +113,12 @@ contains
         n = real(size(x, kind = int64), ${k1}$)
         mean = sum(x) / n
 
+        temp = abs(x - mean) ** 2
+
         #:if t1[0] == 'r'
           res = sum((x - mean)**2) / (n - merge(1, 0 , optval(corrected, .true.)))
         #:else
-          res = sum(abs(x - mean)**2) / (n - merge(1, 0, optval(corrected, .true.)))
+          res = sum(temp) / (n - merge(1, 0, optval(corrected, .true.)))
         #:endif
 
       end function ${RName}$
@@ -286,14 +245,16 @@ contains
 
         real(${k1}$) :: n
         ${t1}$ :: mean
+        ${t1}$ :: temp${shape_create(rank)}$
 
         n = real(count(mask, kind = int64), ${k1}$)
         mean = sum(x, mask) / n
+        temp = abs(x - mean)**2
 
         #:if t1[0] == 'r'
           res = sum((x - mean)**2, mask) / (n -&
         #:else
-          res = sum(abs(x - mean)**2, mask) / (n -&
+          res = sum(temp, mask) / (n -&
         #:endif
                 merge(1, 0, (optval(corrected, .true.) .and. n > 0)))
 
