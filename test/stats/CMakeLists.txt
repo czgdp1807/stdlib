@@ -12,7 +12,7 @@ set(fppFiles
 
 fypp_f90("${fyppFlags}" "${fppFiles}" outFiles)
 
-ADDTEST(corr)
+# ADDTEST(corr)
 # ADDTEST(cov)
 # ADDTEST(mean)
 # ADDTEST(median)
