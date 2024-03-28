@@ -34,7 +34,7 @@ set(fppFiles
     # stdlib_stats.fypp
     stdlib_stats_corr.fypp
     # stdlib_stats_cov.fypp
-    # stdlib_stats_mean.fypp
+    stdlib_stats_mean.fypp
     # stdlib_stats_median.fypp
     # stdlib_stats_moment.fypp
     # stdlib_stats_moment_all.fypp
