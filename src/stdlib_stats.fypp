@@ -12,7 +12,7 @@ module stdlib_stats
   implicit none
   private
   ! Public API
-  public :: corr, cov, mean, median, moment
+  public :: corr, cov, median, moment
 
 
   interface corr
@@ -204,107 +204,6 @@ module stdlib_stats
       end function ${RName}$
     #:endfor
   end interface cov
-
-
-  interface mean
-    !! version: experimental
-    !!
-    !! Mean of array elements
-    !! ([Specification](../page/specs/stdlib_stats.html#mean-mean-of-array-elements))
-    #:for k1, t1 in RC_KINDS_TYPES
-      #:for rank in RANKS
-        #:set RName = rname("mean_all",rank, t1, k1)
-        module function ${RName}$ (x, mask) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          logical, intent(in), optional :: mask
-          ${t1}$ :: res
-        end function ${RName}$
-      #:endfor
-    #:endfor
-
-    #:for k1, t1 in INT_KINDS_TYPES
-      #:for rank in RANKS
-      #:set RName = rname('mean_all', rank, t1, k1,'dp')
-        module function ${RName}$(x, mask) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          logical, intent(in), optional :: mask
-          real(dp) :: res
-        end function ${RName}$
-      #:endfor
-    #:endfor
-
-    #:for k1, t1 in RC_KINDS_TYPES
-      #:for rank in RANKS
-      #:set RName = rname("mean",rank, t1, k1)
-        module function ${RName}$(x, dim, mask) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          integer, intent(in) :: dim
-          logical, intent(in), optional :: mask
-          ${t1}$ :: res${reduced_shape('x', rank, 'dim')}$
-        end function ${RName}$
-      #:endfor
-    #:endfor
-
-    #:for k1, t1 in INT_KINDS_TYPES
-      #:for rank in RANKS
-        #:set RName = rname("mean",rank, t1, k1,'dp')
-        module function ${RName}$(x, dim, mask) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          integer, intent(in) :: dim
-          logical, intent(in), optional :: mask
-          real(dp) :: res${reduced_shape('x', rank, 'dim')}$
-        end function ${RName}$
-      #:endfor
-    #:endfor
-
-    #:for k1, t1 in RC_KINDS_TYPES
-      #:for rank in RANKS
-        #:set RName = rname('mean_mask_all',rank, t1, k1)
-        module function ${RName}$(x, mask) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          logical, intent(in) :: mask${ranksuffix(rank)}$
-          ${t1}$ :: res
-          end function ${RName}$
-      #:endfor
-    #:endfor
-
-    #:for k1, t1 in INT_KINDS_TYPES
-      #:for rank in RANKS
-      #:set RName = rname('mean_mask_all',rank, t1, k1, 'dp')
-        module function ${RName}$(x, mask) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          logical, intent(in) :: mask${ranksuffix(rank)}$
-          real(dp) :: res
-        end function ${RName}$
-      #:endfor
-    #:endfor
-
-    #:for k1, t1 in RC_KINDS_TYPES
-      #:for rank in RANKS
-      #:set RName = rname('mean_mask',rank, t1, k1)
-        module function ${RName}$(x, dim, mask) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          integer, intent(in) :: dim
-          logical, intent(in) :: mask${ranksuffix(rank)}$
-          ${t1}$ :: res${reduced_shape('x', rank, 'dim')}$
-        end function ${RName}$
-      #:endfor
-    #:endfor
-
-    #:for k1, t1 in INT_KINDS_TYPES
-      #:for rank in RANKS
-      #:set RName = rname('mean_mask',rank, t1, k1, 'dp')
-        module function ${RName}$(x, dim, mask) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          integer, intent(in) :: dim
-          logical, intent(in) :: mask${ranksuffix(rank)}$
-          real(dp) :: res${reduced_shape('x', rank, 'dim')}$
-        end function ${RName}$
-      #:endfor
-    #:endfor
-
-  end interface mean
-
 
   interface median
     !! version: experimental
