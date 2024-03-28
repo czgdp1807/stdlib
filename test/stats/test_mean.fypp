@@ -5,7 +5,7 @@
 
 module test_stats_mean
     use testdrive, only : new_unittest, unittest_type, error_type, check
-    use stdlib_stats, only: mean
+    use stdlib_stats_mean, only: mean
     use stdlib_kinds, only : int8, int16, int32, int64, sp, dp, xdp, qp
     use, intrinsic :: ieee_arithmetic, only : ieee_is_nan
     implicit none
