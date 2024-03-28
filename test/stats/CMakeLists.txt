@@ -14,7 +14,7 @@ fypp_f90("${fyppFlags}" "${fppFiles}" outFiles)
 
 # ADDTEST(corr)
 # ADDTEST(cov)
-# ADDTEST(mean)
+ADDTEST(mean)
 # ADDTEST(median)
 # ADDTEST(moment)
 # ADDTEST(rawmoment)
