@@ -1,7 +1,8 @@
 program test_cov
     use stdlib_error, only: check
     use stdlib_kinds, only: sp, dp, int32, int64
-    use stdlib_stats, only: cov, var
+    use stdlib_stats_cov, only: cov
+    use stdlib_stats_var, only: var
     use,intrinsic :: ieee_arithmetic, only : ieee_is_nan
     implicit none
 
