@@ -2,15 +2,66 @@
 #:set RANKS = range(1, MAXRANK + 1)
 #:set IR_KINDS_TYPES_OUTPUT = list(zip(INT_KINDS,INT_TYPES, ['dp']*len(INT_KINDS))) + list(zip(REAL_KINDS, REAL_TYPES, REAL_KINDS))
 
-submodule (stdlib_stats) stdlib_stats_median
+module stdlib_stats_median
 
   use, intrinsic:: ieee_arithmetic, only: ieee_value, ieee_quiet_nan, ieee_is_nan
   use stdlib_error, only: error_stop
   use stdlib_optval, only: optval
   use stdlib_selection, only: select
+  use stdlib_kinds, only: sp, dp, xdp, qp, &
+      int8, int16, int32, int64
   implicit none
 
+  public :: median
+
+  interface median
+    !! version: experimental
+    !!
+    !! Median of array elements
+    !! ([Specification](../page/specs/stdlib_stats.html#median-median-of-array-elements))
+    #:for k1, t1, o1 in IR_KINDS_TYPES_OUTPUT
+      #:for rank in RANKS
+        #:set name = rname("median_all",rank, t1, k1, o1)
+        procedure :: ${name}$
+      #:endfor
+    #:endfor
+
+    #:for k1, t1, o1 in IR_KINDS_TYPES_OUTPUT
+      #:for rank in RANKS
+        #:set name = rname("median",rank, t1, k1, o1)
+        procedure :: ${name}$
+      #:endfor
+    #:endfor
+
+    #:for k1, t1, o1 in IR_KINDS_TYPES_OUTPUT
+      #:for rank in RANKS
+        #:set name = rname('median_all_mask',rank, t1, k1, o1)
+        procedure :: ${name}$
+      #:endfor
+    #:endfor
+
+    #:for k1, t1, o1 in IR_KINDS_TYPES_OUTPUT
+      #:for rank in RANKS
+        #:set name = rname('median_mask',rank, t1, k1, o1)
+        procedure :: ${name}$
+      #:endfor
+    #:endfor
+
+  end interface
 contains
+
+  pure function my_merge(val1, val2, mask) result(merged_value)
+    integer, intent(in) :: val1, val2
+    logical, intent(in) :: mask
+    integer :: merged_value
+
+    if (mask) then
+      merged_value = val1
+    else
+      merged_value = val2
+    end if
+
+  end function my_merge
 
   #:for k1, t1, o1 in IR_KINDS_TYPES_OUTPUT
     #:for rank in RANKS
@@ -266,4 +317,4 @@ contains
     #:endfor
   #:endfor
 
-end submodule
+end module
