@@ -1,7 +1,7 @@
 module test_moment
     use,intrinsic :: ieee_arithmetic, only : ieee_is_nan
     use stdlib_kinds, only: sp, dp, int32, int64
-    use stdlib_stats, only: moment
+    use stdlib_stats_moment, only: moment
     use testdrive, only: new_unittest, unittest_type, error_type, check
 
     implicit none
