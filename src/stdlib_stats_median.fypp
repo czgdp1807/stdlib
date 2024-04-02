@@ -265,8 +265,18 @@ contains
             #:for fj in list(range(1, fi)) + list(range(fi+1, rank+1))
               do j${fj}$ = 1, size(x, ${fj}$)
             #:endfor
-                x_tmp = pack(x${select_subvector('j', rank, fi)}$, &
+                #:if rank == 1
+                    #:if fi == 1
+                        x_tmp = pack(x, mask)
+                    #:else
+                        x_tmp = pack(x${select_subvector('j', rank, fi)}$, &
                               mask${select_subvector('j', rank, fi)}$)
+                    #:endif
+                #:else
+                    x_tmp = pack(x${select_subvector('j', rank, fi)}$, &
+                              mask${select_subvector('j', rank, fi)}$)
+                #:endif
+
 
                 #:if t1[0] == 'r'
                   if (any(ieee_is_nan(x_tmp))) then
