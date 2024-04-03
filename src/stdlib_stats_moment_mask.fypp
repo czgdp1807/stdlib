@@ -65,7 +65,10 @@ contains
         real(${k1}$) :: n${reduced_shape('x', rank, 'dim')}$
         ${t1}$, allocatable :: mean_${ranksuffix(rank-1)}$
 
-        n = real(count(mask, dim), ${k1}$)
+        #:for n_ in range(1, rank+1)
+          if (dim == ${n_}$) n = real(count(mask, ${n_}$), ${k1}$)
+        #:endfor
+        
 
         res = 0
         select case(dim)
@@ -121,7 +124,9 @@ contains
         real(dp) :: n${reduced_shape('x', rank, 'dim')}$
         real(dp), allocatable :: mean_${ranksuffix(rank-1)}$
 
-        n = real(count(mask, dim), dp)
+        #:for n_ in range(1, rank+1)
+          if (dim == ${n_}$) n = real(count(mask, ${n_}$), dp)
+        #:endfor
 
         res = 0
         select case(dim)
