@@ -2,13 +2,36 @@
 #:set RANKS = range(1, MAXRANK + 1)
 #:set REDRANKS = range(2, MAXRANK + 1)
 #:set RC_KINDS_TYPES = REAL_KINDS_TYPES + CMPLX_KINDS_TYPES
-submodule (stdlib_stats) stdlib_stats_moment_all
+module stdlib_stats_moment_all
 
   use, intrinsic:: ieee_arithmetic, only: ieee_value, ieee_quiet_nan
   use stdlib_error, only: error_stop
   use stdlib_optval, only: optval
+  use stdlib_stats_mean, only: mean
+  use stdlib_kinds, only: sp, dp, xdp, qp, &
+      int8, int16, int32, int64
   implicit none
+  public :: moment
 
+  interface moment
+    !! version: experimental
+    !!
+    !! Central moment of array elements
+    !! ([Specification](../page/specs/stdlib_stats.html#moment-central-moments-of-array-elements))
+    #:for k1, t1 in RC_KINDS_TYPES
+      #:for rank in RANKS
+        #:set RName = rname("moment_all",rank, t1, k1)
+        procedure :: ${RName}$
+      #:endfor
+    #:endfor
+
+    #:for k1, t1 in INT_KINDS_TYPES
+      #:for rank in RANKS
+        #:set RName = rname("moment_all",rank, t1, k1, 'dp')
+        procedure :: ${RName}$
+      #:endfor
+    #:endfor
+  end interface
 contains
 
   #:for k1, t1 in RC_KINDS_TYPES
@@ -128,4 +151,4 @@ contains
     #:endfor
   #:endfor
 
-end submodule
+end module
