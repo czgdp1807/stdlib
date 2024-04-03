@@ -207,20 +207,6 @@ module stdlib_stats
       #:endfor
     #:endfor
 
-    #:for k1, t1 in RC_KINDS_TYPES
-      #:for rank in RANKS
-        #:set RName = rname("moment_mask",rank, t1, k1)
-        module function ${RName}$(x, order, dim, center, mask) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          integer, intent(in) :: order
-          integer, intent(in) :: dim
-          ${t1}$, intent(in), optional :: center${reduced_shape('x', rank, 'dim')}$
-          logical, intent(in) :: mask${ranksuffix(rank)}$
-          ${t1}$ :: res${reduced_shape('x', rank, 'dim')}$
-        end function ${RName}$
-      #:endfor
-    #:endfor
-
     #:for k1, t1 in INT_KINDS_TYPES
       #:for rank in REDRANKS
         #:set RName = rname("moment_mask_scalar",rank, t1, k1, 'dp')
@@ -234,21 +220,6 @@ module stdlib_stats
         end function ${RName}$
       #:endfor
     #:endfor
-
-    #:for k1, t1 in INT_KINDS_TYPES
-      #:for rank in RANKS
-        #:set RName = rname("moment_mask",rank, t1, k1, 'dp')
-        module function ${RName}$(x, order, dim, center, mask) result(res)
-          ${t1}$, intent(in) :: x${ranksuffix(rank)}$
-          integer, intent(in) :: order
-          integer, intent(in) :: dim
-          real(dp), intent(in), optional :: center${reduced_shape('x', rank, 'dim')}$
-          logical, intent(in) :: mask${ranksuffix(rank)}$
-          real(dp) :: res${reduced_shape('x', rank, 'dim')}$
-        end function ${RName}$
-      #:endfor
-    #:endfor
-  end interface moment
 
   contains
 
