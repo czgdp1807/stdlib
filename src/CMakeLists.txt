@@ -38,7 +38,7 @@ set(fppFiles
     stdlib_stats_median.fypp
     # stdlib_stats_moment.fypp
     stdlib_stats_moment_all.fypp
-    # stdlib_stats_moment_mask.fypp
+    stdlib_stats_moment_mask.fypp
     # stdlib_stats_moment_scalar.fypp
     stdlib_stats_distribution_uniform.fypp
     stdlib_stats_distribution_normal.fypp
