@@ -110,6 +110,24 @@
 #{if rank > 0}#(${":" + ",:" * (rank - 1)}$)#{endif}#
 #:enddef
 
+#! Generates an array suffix like size(x, 1), size(x, 2), etc.
+#!
+#! Args:
+#!     rank (int): Rank of the variable
+#!
+#! Returns:
+#!     Array suffix string (size(x,1), size(x,2)) for rank = 2
+#!
+#:def arraysuffix(rank)
+  #:if rank > 0
+    #:call join_lines(joinstr=", ", prefix="(", suffix=")")
+      #:for i in range(rank)
+        size(x, ${i + 1}$)
+      #:endfor
+    #:endcall
+  #:endif
+#:enddef
+
 
 #! Joins stripped lines with given character string
 #!
