@@ -167,7 +167,7 @@ contains
           temp = (real(x, dp) - center)
           temp = temp**order
           #:for n_ in range(1, rank+1)
-            if (dim == ${n_}$) res = sum(temp, dim, mask) / count(mask, ${n_}$)
+            if (dim == ${n_}$) res = sum(temp, dim, mask) / real(count(mask, ${n_}$), dp)
           #:endfor
         else
           call error_stop("ERROR (moment): wrong dimension")
