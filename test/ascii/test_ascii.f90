@@ -456,7 +456,7 @@ contains
         integer :: i
         character(len=:), allocatable :: clist
 
-        do i = 0, 31
+        do i = 1, 31
             call check(error, is_control(achar(i)))
             if (allocated(error)) return
         end do
