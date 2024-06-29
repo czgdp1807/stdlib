@@ -169,7 +169,7 @@ contains
         end if
 
         if (dim >= 1 .and. dim <= ${rank}$) then
-          res = sum(real(x, dp), dim) / real(size(x, dim), dp)
+          res = sum(x, dim) / real(size(x, dim), dp)
         else
           call error_stop("ERROR (mean): wrong dimension")
         end if
@@ -237,7 +237,7 @@ contains
         real(dp) :: res${reduced_shape('x', rank, 'dim')}$
 
         if (dim >= 1 .and. dim <= ${rank}$) then
-          res = sum(real(x, dp), dim, mask) / real(count(mask), dp)
+          res = sum(x, dim, mask) / real(count(mask), dp)
         else
           call error_stop("ERROR (mean): wrong dimension")
         end if
