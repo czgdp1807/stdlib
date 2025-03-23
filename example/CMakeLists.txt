@@ -7,7 +7,7 @@ macro(ADD_EXAMPLE name)
 endmacro(ADD_EXAMPLE)
 
 # add_subdirectory(array)
-# add_subdirectory(ascii)
+add_subdirectory(ascii)
 # add_subdirectory(bitsets)
 # add_subdirectory(error)
 # add_subdirectory(hashmaps)

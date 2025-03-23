@@ -16,7 +16,7 @@ list(
 )
 
 # add_subdirectory(array)
-# add_subdirectory(ascii)
+add_subdirectory(ascii)
 # add_subdirectory(bitsets)
 # add_subdirectory(hash_functions)
 # add_subdirectory(hash_functions_perf)
