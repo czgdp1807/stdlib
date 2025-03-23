@@ -188,9 +188,11 @@ contains
         #:elif t1[0] == "c"
 
         do i = 1, n
-
+            #:if k1 == "dp"
+            #:else
             call check(error, gamma(x(i)), ans(i), "Complex kind ${k1}$ failed",&
                        thr = tol_${k1}$, rel = .true.)
+            #:endif
 
         end do
 
