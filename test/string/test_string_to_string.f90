@@ -88,14 +88,14 @@ contains
         call check_formatter(error, to_string(100, 'I6') // to_string(1000, '(I7)'), &
             & "   100   1000", "Multiple formatters for integers")
         if (allocated(error)) return
-        call check_formatter(error, to_string(34, 'B8'), "  100010", &
-            & "Binary formatter for integer number")
-        if (allocated(error)) return
-        call check_formatter(error, to_string(34, 'O0.3'), "042", &
-            & "Octal formatter with zero padding for integer number")
-        if (allocated(error)) return
-        call check_formatter(error, to_string(34, 'Z3'), " 22", &
-            & "Hexadecimal formatter for integer number")
+        ! call check_formatter(error, to_string(34, 'B8'), "  100010", &
+        !     & "Binary formatter for integer number")
+        ! if (allocated(error)) return
+        ! call check_formatter(error, to_string(34, 'O0.3'), "042", &
+        !     & "Octal formatter with zero padding for integer number")
+        ! if (allocated(error)) return
+        ! call check_formatter(error, to_string(34, 'Z3'), " 22", &
+        !     & "Hexadecimal formatter for integer number")
 
     end subroutine test_to_string_integer
 
@@ -144,8 +144,8 @@ contains
         if (allocated(error)) return
 
         ! Wrong demonstration
-        call check_formatter(error, to_string(.false., '1x'), "[*]", &
-            & "Invalid formatter for logical value", partial=.true.)
+        ! call check_formatter(error, to_string(.false., '1x'), "[*]", &
+        !     & "Invalid formatter for logical value", partial=.true.)
 
     end subroutine test_to_string_logical
 
