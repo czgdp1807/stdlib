@@ -55,10 +55,10 @@ set(fppFiles
     # stdlib_math_is_close.fypp
     # stdlib_math_all_close.fypp
     # stdlib_math_diff.fypp
-    # stdlib_string_type.fypp
+    stdlib_string_type.fypp
     # stdlib_string_type_constructor.fypp
-    # stdlib_strings_to_string.fypp
-    # stdlib_strings.fypp
+    stdlib_strings_to_string.fypp
+    stdlib_strings.fypp
     # stdlib_version.fypp
 )
 
@@ -68,14 +68,14 @@ fypp_f90("${fyppFlags}" "${fppFiles}" outFiles)
 set(SRC
     # stdlib_ansi.f90
     # stdlib_ansi_operator.f90
-    # stdlib_ansi_to_string.f90
+    stdlib_ansi_to_string.f90
     # stdlib_array.f90
     stdlib_error.f90
     # stdlib_hashmap_wrappers.f90
     # stdlib_hashmaps.f90
     # stdlib_hashmap_chaining.f90
     # stdlib_hashmap_open.f90
-    # stdlib_logger.f90
+    stdlib_logger.f90
     # stdlib_sorting_radix_sort.f90
     # stdlib_system.F90
     stdlib_specialfunctions.f90
