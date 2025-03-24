@@ -12,7 +12,7 @@ program example_to_string
 !> Example for `integer` type
   print *, to_string(-3)                  !! "-3"
   print *, to_string(42, '(I4)')          !! "  42"
-  print *, to_string(1, '(I0.4)'), to_string(2, '(B4)')           !! "0001""  10"
+  print *, to_string(1, '(I0.4)'), to_string(2, '(i4)')           !! "0001""  10"
 
 !> Example for `real` type
   print *, to_string(1.)                  !! "1.00000000"

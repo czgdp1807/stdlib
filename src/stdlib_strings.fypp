@@ -168,7 +168,7 @@ contains
         character(len=128) :: buffer
         integer :: stat
 
-        write(buffer, '(' // optval(format, "g0") // ')', iostat=stat) value
+        write(buffer, '(' // optval(format, "i0") // ')', iostat=stat) value
         if (stat == 0) then
             string = trim(buffer)
         else

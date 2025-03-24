@@ -7,7 +7,7 @@ program example_zfill
   string = "left pad this string with zeros"
 ! string <-- "left pad this string with zeros"
 
-  print '(dt)', zfill(string, 36) ! "00000left pad this string with zeros"
+  print *, zfill(string, 36) ! "00000left pad this string with zeros"
 
   string = zfill(string, 36)
 ! string <-- "00000left pad this string with zeros"
