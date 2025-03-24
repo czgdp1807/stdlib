@@ -79,9 +79,9 @@ module stdlib_strings
         module procedure :: ends_with_char_string
         module procedure :: ends_with_char_char
     end interface ends_with
-    
+
     !> Extracts characters from the input string to return a new string
-    !> 
+    !>
     !> Version: experimental
     interface slice
         module procedure :: slice_string
@@ -90,7 +90,7 @@ module stdlib_strings
 
     !> Finds the starting index of substring 'pattern' in the input 'string'
     !> [Specifications](link to the specs - to be completed)
-    !> 
+    !>
     !> Version: experimental
     interface find
         module procedure :: find_string_string
@@ -274,7 +274,7 @@ contains
 
     !> Remove leading and trailing whitespace characters.
     pure function strip_string(string) result(stripped_string)
-        ! Avoid polluting the module scope and use the assignment only in this scope 
+        ! Avoid polluting the module scope and use the assignment only in this scope
         use stdlib_string_type, only : assignment(=)
         type(string_type), intent(in) :: string
         type(string_type) :: stripped_string
@@ -302,7 +302,7 @@ contains
     !> Remove trailing characters in set from string.
     !> Default character set variant where trailing whitespace is removed.
     pure function chomp_string(string) result(chomped_string)
-        ! Avoid polluting the module scope and use the assignment only in this scope 
+        ! Avoid polluting the module scope and use the assignment only in this scope
         use stdlib_string_type, only : assignment(=)
         type(string_type), intent(in) :: string
         type(string_type) :: chomped_string
@@ -325,7 +325,7 @@ contains
 
     !> Remove trailing characters in set from string.
     pure function chomp_set_string_char(string, set) result(chomped_string)
-        ! Avoid polluting the module scope and use the assignment only in this scope 
+        ! Avoid polluting the module scope and use the assignment only in this scope
         use stdlib_string_type, only : assignment(=)
         type(string_type), intent(in) :: string
         character(len=1), intent(in) :: set(:)
@@ -348,7 +348,7 @@ contains
 
     !> Remove trailing substrings from string.
     pure function chomp_substring_string_string(string, substring) result(chomped_string)
-        ! Avoid polluting the module scope and use the assignment only in this scope 
+        ! Avoid polluting the module scope and use the assignment only in this scope
         use stdlib_string_type, only : assignment(=)
         type(string_type), intent(in) :: string
         type(string_type), intent(in) :: substring
@@ -359,7 +359,7 @@ contains
 
     !> Remove trailing substrings from string.
     pure function chomp_substring_string_char(string, substring) result(chomped_string)
-        ! Avoid polluting the module scope and use the assignment only in this scope 
+        ! Avoid polluting the module scope and use the assignment only in this scope
         use stdlib_string_type, only : assignment(=)
         type(string_type), intent(in) :: string
         character(len=*), intent(in) :: substring
@@ -401,8 +401,10 @@ contains
     pure function set_to_string(set) result(string)
         character(len=1), intent(in) :: set(:)
         character(len=size(set)) :: string
-
-        string = transfer(set, string)
+        integer :: i
+        do i = 1, size(set)
+            string(i:i) = set(i)
+        end do
     end function set_to_string
 
 
@@ -548,7 +550,7 @@ contains
         if (present(last)) then
             last_index = last
         end if
-        
+
         if (stride_vector > 0) then
             first_index = max(first_index, 1)
             last_index = min(last_index, length_string)
@@ -556,10 +558,10 @@ contains
             first_index = min(first_index, length_string)
             last_index = max(last_index, 1)
         end if
-        
+
         strides_taken = floor( real(last_index - first_index)/real(stride_vector) )
         allocate(character(len=max(0, strides_taken + 1)) :: sliced_string)
-        
+
         j = 1
         do i = first_index, last_index, stride_vector
             sliced_string(j:j) = string(i:i)
@@ -625,7 +627,7 @@ contains
         length_string = len(string)
         length_pattern = len(pattern)
 
-        if (length_pattern > 0 .and. length_pattern <= length_string & 
+        if (length_pattern > 0 .and. length_pattern <= length_string &
             & .and. occurrence_ > 0) then
             lps_array = compute_lps(pattern)
 
@@ -653,17 +655,17 @@ contains
                 end if
             end do
         end if
-    
+
     end function find_char_char
 
     !> Computes longest prefix suffix for each index of the input 'string'
-    !> 
+    !>
     !> Returns an array of integers
     pure function compute_lps(string) result(lps_array)
         character(len=*), intent(in) :: string
         integer :: lps_array(len(string))
         integer :: i, j, length_string
-        
+
         length_string = len(string)
 
         if (length_string > 0) then
@@ -684,7 +686,7 @@ contains
                 end if
             end do
         end if
-    
+
     end function compute_lps
 
     !> Replaces all occurrences of substring 'pattern' in the input 'string'
@@ -696,7 +698,7 @@ contains
         type(string_type), intent(in) :: replacement
         type(string_type) :: res
 
-        res = construct_string_type(replace_all(char(string), & 
+        res = construct_string_type(replace_all(char(string), &
                 & char(pattern), char(replacement)))
 
     end function replace_all_string_string_string
@@ -794,7 +796,7 @@ contains
         length_string = len(string)
         length_pattern = len(pattern)
         last = 1
-        
+
         if (length_pattern > 0 .and. length_pattern <= length_string) then
             lps_array = compute_lps(pattern)
 
@@ -818,7 +820,7 @@ contains
                 end if
             end do
         end if
-        
+
         res = res // string(last : length_string)
 
     end function replace_all_char_char_char
@@ -1021,7 +1023,7 @@ contains
                 end if
             end do
         end if
-    
+
     end function count_char_char
 
     !> Left pad the input string with zeros
