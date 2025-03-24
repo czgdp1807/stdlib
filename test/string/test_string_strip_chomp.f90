@@ -3,7 +3,7 @@ module test_strip_chomp
     use stdlib_ascii, only : TAB, VT, NUL, LF, CR, FF
     use testdrive, only : new_unittest, unittest_type, error_type, check
     use stdlib_strings, only : strip, chomp
-    use stdlib_string_type, only : string_type, operator(==), operator(//)
+    use stdlib_string_type, only : string_type, operator(==), operator(//), construct_string_type
     implicit none
 
 contains
@@ -47,17 +47,17 @@ contains
         !> Error handling
         type(error_type), allocatable, intent(out) :: error
 
-        call check(error, strip(string_type("   hello   ")) == "hello")
+        call check(error, strip(construct_string_type("   hello   ")) == "hello")
         if (allocated(error)) return
-        call check(error, strip(string_type(TAB//"goodbye"//CR//LF)) == "goodbye")
+        call check(error, strip(construct_string_type(TAB//"goodbye"//CR//LF)) == "goodbye")
         if (allocated(error)) return
-        call check(error, strip(string_type(NUL//TAB//LF//VT//FF//CR)) == NUL)
+        call check(error, strip(construct_string_type(NUL//TAB//LF//VT//FF//CR)) == NUL)
         if (allocated(error)) return
-        call check(error, strip(string_type(" "//TAB//LF//VT//FF//CR)) == "")
+        call check(error, strip(construct_string_type(" "//TAB//LF//VT//FF//CR)) == "")
         if (allocated(error)) return
-        call check(error, strip(string_type("  !  "))//"!" == "!!")
+        call check(error, strip(construct_string_type("  !  "))//"!" == "!!")
         if (allocated(error)) return
-        call check(error, strip(string_type("Hello")) == "Hello")
+        call check(error, strip(construct_string_type("Hello")) == "Hello")
     end subroutine test_strip_string
 
     subroutine test_chomp_char(error)
@@ -91,27 +91,27 @@ contains
         !> Error handling
         type(error_type), allocatable, intent(out) :: error
 
-        call check(error, chomp(string_type("hello")) == "hello")
+        call check(error, chomp(construct_string_type("hello")) == "hello")
         if (allocated(error)) return
-        call check(error, chomp(string_type("hello"//LF)) == "hello")
+        call check(error, chomp(construct_string_type("hello"//LF)) == "hello")
         if (allocated(error)) return
-        call check(error, chomp(string_type("hello"//CR//LF)) == "hello")
+        call check(error, chomp(construct_string_type("hello"//CR//LF)) == "hello")
         if (allocated(error)) return
-        call check(error, chomp(string_type("hello"//LF//CR)) == "hello")
+        call check(error, chomp(construct_string_type("hello"//LF//CR)) == "hello")
         if (allocated(error)) return
-        call check(error, chomp(string_type("hello"//CR)) == "hello")
+        call check(error, chomp(construct_string_type("hello"//CR)) == "hello")
         if (allocated(error)) return
-        call check(error, chomp(string_type("hello "//LF//" there")) == "hello "//LF//" there")
+        call check(error, chomp(construct_string_type("hello "//LF//" there")) == "hello "//LF//" there")
         if (allocated(error)) return
-        call check(error, chomp(string_type("hello"//CR//LF//CR//LF)) == "hello")
+        call check(error, chomp(construct_string_type("hello"//CR//LF//CR//LF)) == "hello")
         if (allocated(error)) return
-        call check(error, chomp(string_type("hello"//CR//LF//CR//CR//LF)) == "hello")
+        call check(error, chomp(construct_string_type("hello"//CR//LF//CR//CR//LF)) == "hello")
         if (allocated(error)) return
-        call check(error, chomp(string_type(NUL//TAB//LF//VT//FF//CR)) == NUL)
+        call check(error, chomp(construct_string_type(NUL//TAB//LF//VT//FF//CR)) == NUL)
         if (allocated(error)) return
-        call check(error, chomp(string_type(" "//TAB//LF//VT//FF//CR)) == "")
+        call check(error, chomp(construct_string_type(" "//TAB//LF//VT//FF//CR)) == "")
         if (allocated(error)) return
-        call check(error, chomp(string_type("  !  "))//"!" == "  !!")
+        call check(error, chomp(construct_string_type("  !  "))//"!" == "  !!")
     end subroutine test_chomp_string
 
     subroutine test_chomp_set_char(error)
@@ -127,9 +127,9 @@ contains
         !> Error handling
         type(error_type), allocatable, intent(out) :: error
 
-        call check(error, chomp(string_type("hello"), ["l", "o"]) == "he")
+        call check(error, chomp(construct_string_type("hello"), ["l", "o"]) == "he")
         if (allocated(error)) return
-        call check(error, chomp(string_type("hello"), set=["l", "o"]) == "he")
+        call check(error, chomp(construct_string_type("hello"), set=["l", "o"]) == "he")
         if (allocated(error)) return
         call check(error, chomp("hellooooo", ["o", "o"]) == "hell")
         if (allocated(error)) return
@@ -157,33 +157,33 @@ contains
         !> Error handling
         type(error_type), allocatable, intent(out) :: error
 
-        call check(error, chomp(string_type("hello"), "") == "hello")
+        call check(error, chomp(construct_string_type("hello"), "") == "hello")
         if (allocated(error)) return
-        call check(error, chomp(string_type("hello"), substring="") == "hello")
+        call check(error, chomp(construct_string_type("hello"), substring="") == "hello")
         if (allocated(error)) return
-        call check(error, chomp(string_type("hello"), "lo") == "hel")
+        call check(error, chomp(construct_string_type("hello"), "lo") == "hel")
         if (allocated(error)) return
-        call check(error, chomp(string_type("hello"), substring="lo") == "hel")
+        call check(error, chomp(construct_string_type("hello"), substring="lo") == "hel")
         if (allocated(error)) return
-        call check(error, chomp("hello", string_type("lo")) == "hel")
+        call check(error, chomp("hello", construct_string_type("lo")) == "hel")
         if (allocated(error)) return
-        call check(error, chomp("hello", substring=string_type("lo")) == "hel")
+        call check(error, chomp("hello", substring=construct_string_type("lo")) == "hel")
         if (allocated(error)) return
-        call check(error, chomp(string_type("hello"), string_type("lo")) == "hel")
+        call check(error, chomp(construct_string_type("hello"), construct_string_type("lo")) == "hel")
         if (allocated(error)) return
-        call check(error, chomp(string_type("hello"), substring=string_type("lo")) == "hel")
+        call check(error, chomp(construct_string_type("hello"), substring=construct_string_type("lo")) == "hel")
         if (allocated(error)) return
-        call check(error, chomp(string_type("hellooooo"), "oo") == "hello")
+        call check(error, chomp(construct_string_type("hellooooo"), "oo") == "hello")
         if (allocated(error)) return
-        call check(error, chomp(string_type("hellooooo"), substring="oo") == "hello")
+        call check(error, chomp(construct_string_type("hellooooo"), substring="oo") == "hello")
         if (allocated(error)) return
-        call check(error, chomp("hellooooo", string_type("oo")) == "hello")
+        call check(error, chomp("hellooooo", construct_string_type("oo")) == "hello")
         if (allocated(error)) return
-        call check(error, chomp("hellooooo", substring=string_type("oo")) == "hello")
+        call check(error, chomp("hellooooo", substring=construct_string_type("oo")) == "hello")
         if (allocated(error)) return
-        call check(error, chomp(string_type("hellooooo"), string_type("oo")) == "hello")
+        call check(error, chomp(construct_string_type("hellooooo"), construct_string_type("oo")) == "hello")
         if (allocated(error)) return
-        call check(error, chomp(string_type("hellooooo"), substring=string_type("oo")) == "hello")
+        call check(error, chomp(construct_string_type("hellooooo"), substring=construct_string_type("oo")) == "hello")
     end subroutine test_chomp_substring_string
 
 end module test_strip_chomp

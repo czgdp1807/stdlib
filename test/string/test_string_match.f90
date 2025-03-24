@@ -3,7 +3,7 @@ module test_string_match
     use testdrive, only : new_unittest, unittest_type, error_type, check
     use stdlib_ascii, only : reverse
     use stdlib_strings, only : starts_with, ends_with
-    use stdlib_string_type, only : string_type
+    use stdlib_string_type, only : string_type, construct_string_type
     implicit none
 
 contains
@@ -36,11 +36,11 @@ contains
 
         call check(error, starts_with(string, substring) .eqv. match, message)
         if (allocated(error)) return
-        call check(error, starts_with(string_type(string), substring) .eqv. match, message)
+        call check(error, starts_with(construct_string_type(string), substring) .eqv. match, message)
         if (allocated(error)) return
-        call check(error, starts_with(string, string_type(substring)) .eqv. match, message)
+        call check(error, starts_with(string, construct_string_type(substring)) .eqv. match, message)
         if (allocated(error)) return
-        call check(error, starts_with(string_type(string), string_type(substring)) .eqv. match, message)
+        call check(error, starts_with(construct_string_type(string), construct_string_type(substring)) .eqv. match, message)
     end subroutine check_starts_with
 
     subroutine test_starts_with(error)
@@ -70,11 +70,11 @@ contains
 
         call check(error, ends_with(string, substring) .eqv. match, message)
         if (allocated(error)) return
-        call check(error, ends_with(string_type(string), substring) .eqv. match, message)
+        call check(error, ends_with(construct_string_type(string), substring) .eqv. match, message)
         if (allocated(error)) return
-        call check(error, ends_with(string, string_type(substring)) .eqv. match, message)
+        call check(error, ends_with(string, construct_string_type(substring)) .eqv. match, message)
         if (allocated(error)) return
-        call check(error, ends_with(string_type(string), string_type(substring)) .eqv. match, message)
+        call check(error, ends_with(construct_string_type(string), construct_string_type(substring)) .eqv. match, message)
     end subroutine check_ends_with
 
     subroutine test_ends_with(error)
