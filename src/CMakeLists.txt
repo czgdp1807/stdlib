@@ -44,9 +44,9 @@ set(fppFiles
     # stdlib_stats_distribution_normal.fypp
     # stdlib_stats_distribution_exponential.fypp
     # stdlib_stats_var.fypp
-    # stdlib_quadrature.fypp
-    # stdlib_quadrature_trapz.fypp
-    # stdlib_quadrature_simps.fypp
+    stdlib_quadrature.fypp
+    stdlib_quadrature_trapz.fypp
+    stdlib_quadrature_simps.fypp
     # stdlib_random.fypp
     stdlib_math.fypp
     stdlib_math_linspace.fypp
