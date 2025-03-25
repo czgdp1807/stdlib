@@ -32,7 +32,7 @@ add_subdirectory(specialfunctions)
 add_subdirectory(string)
 # add_subdirectory(system)
 # add_subdirectory(quadrature)
-# add_subdirectory(math)
+add_subdirectory(math)
 # add_subdirectory(stringlist)
 # add_subdirectory(terminal)
 
