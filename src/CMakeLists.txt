@@ -25,7 +25,7 @@ set(fppFiles
     # stdlib_linalg_kronecker.fypp
     # stdlib_linalg_cross_product.fypp
     stdlib_optval.fypp
-    # stdlib_selection.fypp
+    stdlib_selection.fypp
     # stdlib_sorting.fypp
     # stdlib_sorting_ord_sort.fypp
     # stdlib_sorting_sort.fypp
