@@ -17,7 +17,7 @@ program example_fmt_constants
   c32 = cmplx(100.0_sp, kind=sp)
   c64 = cmplx(100.0_dp, kind=dp)
 
-  print "(2("//FMT_INT//",1x))", i32, i64 ! outputs: 100 100
+  print "(2(i0,1x))", i32, i64 ! outputs: 100 100
   print FMT_REAL_SP, r32                  ! outputs: 1.00000000E+02
   print FMT_REAL_DP, r64                  ! outputs: 1.0000000000000000E+002
   print FMT_COMPLEX_SP, c32               ! outputs: 1.00000000E+02  0.00000000E+00
