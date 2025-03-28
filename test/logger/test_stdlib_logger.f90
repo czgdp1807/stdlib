@@ -14,7 +14,7 @@ program test_stdlib_logger
     integer, allocatable :: log_units(:)
     integer              :: level, max_width, stat
     integer              :: unit1, unit2, unit3, unit4, unit5, unit6
-    logical              :: add_blank_line, exist, indent, time_stamp
+    logical              :: add_blank_line, exist, indent, time_stamp1
 
     if ( global % log_units_assigned() == 0 ) then
         write(*,*) 'Start off with 0 LOG_UNITS as expected.'
@@ -80,7 +80,7 @@ contains
         print *, 'running test_logging_configuration'
 
         call global % configuration( add_blank_line=add_blank_line, &
-            indent=indent, max_width=max_width, time_stamp=time_stamp, &
+            indent=indent, max_width=max_width, time_stamp=time_stamp1, &
             log_units=log_units )
 
         if ( .not. add_blank_line ) then
@@ -109,11 +109,11 @@ contains
 
         end if
 
-        if ( time_stamp ) then
-            write(*,*) 'TIME_STAMP starts off as .TRUE. as expected.'
+        if ( time_stamp1 ) then
+            write(*,*) 'TIME_STAMP1 starts off as .TRUE. as expected.'
 
         else
-            error stop 'TIME_STAMP starts off as .FALSE. contrary to ' // &
+            error stop 'TIME_STAMP1 starts off as .FALSE. contrary to ' // &
                 'expectations.'
 
         end if
@@ -160,13 +160,13 @@ contains
 
         end if
 
-        call global % configuration( time_stamp=time_stamp )
+        call global % configuration( time_stamp=time_stamp1 )
 
-        if ( time_stamp ) then
-            write(*,*) 'TIME_STAMP starts off as .TRUE. as expected.'
+        if ( time_stamp1 ) then
+            write(*,*) 'TIME_STAMP1 starts off as .TRUE. as expected.'
 
         else
-            error stop 'TIME_STAMP starts off as .FALSE. contrary to ' // &
+            error stop 'TIME_STAMP1 starts off as .FALSE. contrary to ' // &
                 'expectations.'
 
         end if
@@ -219,7 +219,7 @@ contains
             max_width=72, time_stamp=.false. )
 
         call global % configuration( add_blank_line=add_blank_line,    &
-            indent=indent, max_width=max_width, time_stamp=time_stamp, &
+            indent=indent, max_width=max_width, time_stamp=time_stamp1, &
             log_units=log_units )
 
         if ( add_blank_line ) then
@@ -246,11 +246,11 @@ contains
 
         end if
 
-        if ( .not. time_stamp ) then
-            write(*,*) 'TIME_STAMP is now .FALSE. as expected.'
+        if ( .not. time_stamp1 ) then
+            write(*,*) 'TIME_STAMP1 is now .FALSE. as expected.'
 
         else
-            error stop 'TIME_STAMP starts off as .FALSE. contrary to ' // &
+            error stop 'TIME_STAMP1 starts off as .FALSE. contrary to ' // &
                 'expectations.'
 
         end if
