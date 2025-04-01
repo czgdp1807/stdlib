@@ -93,6 +93,7 @@ contains
       character(len=*), intent(in) :: filename
       !! The array 'd' will be automatically allocated with the correct dimensions
       ${t1}$, allocatable, intent(out) :: d(:,:)
+      ${t1}$, allocatable :: tmp(:)
       !! Skip the first `skiprows` lines. If skipping more rows than present, a 0-sized array will be returned. The default is 0.
       integer, intent(in), optional :: skiprows
       !! Read `max_rows` lines of content after `skiprows` lines.
@@ -119,7 +120,10 @@ contains
       !!
       integer :: s
       integer :: nrow, ncol, i, skiprows_, max_rows_
-
+      #:if 'complex' in t1
+        integer :: j
+        real(${k1}$), allocatable :: tmp_real(:)
+      #:endif
       skiprows_ = max(optval(skiprows, 0), 0)
       max_rows_ = optval(max_rows, -1)
 
@@ -135,21 +139,31 @@ contains
       if ( skiprows_ < nrow ) ncol = number_of_columns(s, skiprows=skiprows_)
       #:if 'complex' in t1
       ncol = ncol / 2
+      allocate(tmp_real(2*ncol))
       #:endif
 
       allocate(d(max_rows_, ncol))
-
+      allocate(tmp(ncol))
       do i = 1, skiprows_
         read(s, *)
       end do
 
       do i = 1, max_rows_
         #:if 'real' in t1
-          read(s, *) d(i, :)
+          read(s, *) tmp 
+          ! read(s, "(*"//FMT_REAL_${k1}$(1:len(FMT_REAL_${k1}$)-1)//",1x))") tmp
         #:elif 'complex' in t1
-          read(s, "(*"//FMT_COMPLEX_${k1}$(1:len(FMT_COMPLEX_${k1}$)-1)//",1x))") d(i, :)
+          read(s, *) tmp_real
+          ! read(s, "(*"//FMT_COMPLEX_${k1}$(1:len(FMT_COMPLEX_${k1}$)-1)//",1x))") tmp
         #:else
-          read(s, *) d(i, :)
+          read(s, *) tmp
+        #:endif
+        #:if 'complex' in t1
+          do j = 1, size(d,2)
+            d(i, j) = cmplx(tmp_real(2*j-1), tmp_real(2*j))
+          end do
+        #:else
+          d(i, :) = tmp
         #:endif
       end do
       close(s)
@@ -169,6 +183,7 @@ contains
       !!
       character(len=*), intent(in) :: filename  ! File to save the array to
       ${t1}$, intent(in) :: d(:,:)           ! The 2D array to save
+      ${t1}$, allocatable :: tmp(:)           ! The 2D array to save
       !!
       !! Example
       !! -------
@@ -178,18 +193,30 @@ contains
       !! call savetxt("log.txt", data)
       !!```
       !!
-
       integer :: s, i
+      #:if 'complex' in t1
+        integer :: j
+        real(${k1}$), allocatable :: tmp_real(:)
+        allocate(tmp_real(2*size(d,2)))
+      #:endif
+      allocate(tmp(size(d,2)))
       s = open(filename, "w")
       do i = 1, size(d, 1)
+          tmp = d(i, :)
         #:if 'real' in t1
-          write(s, "(*"//FMT_REAL_${k1}$(1:len(FMT_REAL_${k1}$)-1)//",1x))") d(i, :)
+          write(s, *) tmp
+          ! write(s, "(*"//FMT_REAL_${k1}$(1:len(FMT_REAL_${k1}$)-1)//",1x))") tmp 
         #:elif 'complex' in t1
-          write(s, "(*"//FMT_COMPLEX_${k1}$(1:len(FMT_COMPLEX_${k1}$)-1)//",1x))") d(i, :)
+          do j = 1, size(tmp)
+            tmp_real(2*j-1) = real(tmp(j)) 
+            tmp_real(2*j) = aimag(tmp(j)) 
+          end do
+          write(s, *) tmp_real
+          ! write(s, "(*"//FMT_COMPLEX_${k1}$(1:len(FMT_COMPLEX_${k1}$)-1)//",1x))") tmp
         #:elif 'integer' in t1
-          write(s, "(*"//FMT_INT(1:len(FMT_INT)-1)//",1x))") d(i, :)
+          write(s, "(*"//FMT_INT(1:len(FMT_INT)-1)//",1x))") tmp
         #:else
-          write(s, *) d(i, :)
+          write(s, *) tmp
         #:endif
       end do
       close(s)
