@@ -6,7 +6,6 @@
 module stdlib_hashmaps
 
     use, intrinsic :: iso_fortran_env, only: &
-        character_storage_size,              &
         error_unit
 
     use stdlib_kinds, only: &
@@ -55,7 +54,7 @@ module stdlib_hashmaps
     integer, parameter ::             &
 ! Should be 8
         int8_bits = bit_size(0_int8), &
-        char_bits = character_storage_size
+        char_bits = 8
 
 !! The hash map load factor
     real, parameter, public ::      &
