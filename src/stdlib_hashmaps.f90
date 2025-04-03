@@ -94,14 +94,14 @@ module stdlib_hashmaps
         procedure, non_overridable, pass(map) :: num_slots
         procedure, non_overridable, pass(map) :: slots_bits
         procedure(get_all_keys), deferred, pass(map) :: get_all_keys
-        procedure(get_other), deferred, pass(map)    :: get_other_data
+        procedure(get_other_duplicate), deferred, pass(map)    :: get_other_data
         procedure(init_map), deferred, pass(map)     :: init
         procedure(key_test), deferred, pass(map)     :: key_test
         procedure(loading), deferred, pass(map)      :: loading
         procedure(map_entry), deferred, pass(map)    :: map_entry
         procedure(rehash_map), deferred, pass(map)   :: rehash
         procedure(remove_entry), deferred, pass(map) :: remove
-        procedure(set_other), deferred, pass(map)    :: set_other_data
+        procedure(set_other_duplicate), deferred, pass(map)    :: set_other_data
         procedure(total_depth), deferred, pass(map)  :: total_depth
 
     end type hashmap_type
@@ -124,7 +124,7 @@ module stdlib_hashmaps
             type(key_type), allocatable, intent(out) :: all_keys(:)
         end subroutine get_all_keys
 
-        subroutine get_other( map, key, other, exists )
+        subroutine get_other_duplicate( map, key, other, exists )
 !! Version: Experimental
 !!
 !! Returns the other data associated with the inverse table index
@@ -139,7 +139,7 @@ module stdlib_hashmaps
             type(key_type), intent(in)         :: key
             type(other_type), intent(out)      :: other
             logical, intent(out), optional     :: exists
-        end subroutine get_other
+        end subroutine get_other_duplicate
 
         subroutine init_map( map,         &
                              hasher,      &
@@ -242,7 +242,7 @@ module stdlib_hashmaps
             logical, intent(out), optional     :: existed
         end subroutine remove_entry
 
-        subroutine set_other( map, key, other, exists )
+        subroutine set_other_duplicate( map, key, other, exists )
 !! Version: Experimental
 !!
 !! Change the other data associated with the key
@@ -259,7 +259,7 @@ module stdlib_hashmaps
             type(key_type), intent(in)         :: key
             type(other_type), intent(in)       :: other
             logical, intent(out), optional     :: exists
-        end subroutine set_other
+        end subroutine set_other_duplicate
 
         function total_depth( map )
 !! Version: Experimental
