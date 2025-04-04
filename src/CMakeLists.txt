@@ -7,9 +7,9 @@ set(fppFiles
     # stdlib_bitsets_64.fypp
     # stdlib_bitsets_large.fypp
     stdlib_hash_32bit.fypp
-    # stdlib_hash_32bit_fnv.fypp
-    # stdlib_hash_32bit_nm.fypp
-    # stdlib_hash_32bit_water.fypp
+    stdlib_hash_32bit_fnv.fypp
+    stdlib_hash_32bit_nm.fypp
+    stdlib_hash_32bit_water.fypp
     # stdlib_hash_64bit.fypp
     # stdlib_hash_64bit_fnv.fypp
     # stdlib_hash_64bit_pengy.fypp
@@ -73,8 +73,8 @@ set(SRC
     stdlib_error.f90
     stdlib_hashmap_wrappers.f90
     stdlib_hashmaps.f90
-    # stdlib_hashmap_chaining.f90
-    # stdlib_hashmap_open.f90
+    stdlib_hashmap_chaining.f90
+    stdlib_hashmap_open.f90
     stdlib_logger.f90
     # stdlib_sorting_radix_sort.f90
     # stdlib_system.F90
