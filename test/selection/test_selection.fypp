@@ -62,8 +62,10 @@ contains
 
           ! x contains the numbers 1**2, 2**2, .... 10**2, with mixed-up order
           x = (/( i**2, i=1, size(x, kind=ip) )/)
-          x(5:2:-1) = x(2:5)
-          x(10:8:-1) = x(8:10)
+          x_copy = x
+          x_copy(5:2:-1) = x(2:5)
+          x_copy(10:8:-1) = x(8:10)
+          x = x_copy
 
           ! Check that the ith-ranked entry of x really is i**2
           do i = 1, size(x, kind=ip)
@@ -226,6 +228,18 @@ contains
   #:for arraykind, arraytype in ARRAY_KINDS_TYPES
     #:for intkind, inttype in INT_KINDS_TYPES
       #:set name = rname("test_arg_select", 1, arraytype, arraykind, intkind)
+      #:set indexname = rname("index_with_vector", 1, arraytype, arraykind, intkind)
+
+      function ${indexname}$(array, indices) result(r)
+          ${arraytype}$, intent(in) :: array(:)
+          ${inttype}$, intent(in) :: indices(:)
+          ${arraytype}$ :: r(size(indices))
+          integer :: i
+          do i = 1, size(indices)
+              r(i) = array(indices(i))
+          end do
+      end function
+
       subroutine ${name}$(error)
           type(error_type), allocatable, intent(out) :: error
 
@@ -235,7 +249,7 @@ contains
           ${inttype}$, parameter :: Nreps = 2  ! Number of repetitions of random sampling
           ${inttype}$, parameter :: Nr = 25_ip ! Size of random array, must be < HUGE(N)
 
-          ${arraytype}$ :: x(N), mat(Nm), len1(1), len2(2), random_vals(Nr), one=1
+          ${arraytype}$ :: x(N), y(N), mat(Nm), len1(1), len2(2), random_vals(Nr), one=1
 
           integer(ip) :: indx(N), indx_copy(N), indx_mat(Nm), indx_mat_copy(Nm), &
               indx_len1(1), indx_len2(2), indx_r(Nr)
@@ -247,8 +261,10 @@ contains
 
           ! Make x contain 1**2, 2**2, .... 10**2, but mix up the order
           x = (/( i**2, i=1, size(x, kind=ip) )/)
-          x(5:2:-1) = x(2:5)
-          x(10:8:-1) = x(8:10)
+          y = x
+          y(5:2:-1) = x(2:5)
+          y(10:8:-1) = x(8:10)
+          x = y
 
           indx = (/(i, i = 1, size(x, kind=ip))/)
 
@@ -380,10 +396,10 @@ contains
                   call arg_select(random_vals, indx_r, p, kth_smallest)
 
                   test1 = random_vals(kth_smallest) == random_vals(indx_r(p))
-                  test2 = all(random_vals(indx_r(1:(p-1))) <= &
+                  test2 = all(${indexname}$(random_vals, indx_r(1:(p-1))) <= &
                       random_vals(indx_r(p)))
                   test3 = all(random_vals(indx_r(p)) <= &
-                      random_vals(indx_r((p+1):size(random_vals, kind=ip))))
+                      ${indexname}$(random_vals, indx_r((p+1):size(random_vals))) )
                   call check(error, (test1 .and. test2 .and. test3), "${name}$: random data regular arg_select")
                   if(allocated(error)) return
 
@@ -394,10 +410,10 @@ contains
 
                   test1 = random_vals(kth_smallest) == &
                       random_vals(indx_r(up_rank))
-                  test2 = all(random_vals(indx_r(1:(up_rank-1))) <= &
+                  test2 = all(${indexname}$(random_vals, indx_r(1:(up_rank-1))) <= &
                       random_vals(indx_r(up_rank)))
                   test3 = all(random_vals(indx_r(up_rank)) <= &
-                      random_vals(indx_r((up_rank+1):size(random_vals, kind=ip))))
+                      ${indexname}$(random_vals, indx_r((up_rank+1):size(random_vals))))
                   call check(error, (test1 .and. test2 .and. test3), "${name}$: random data left-constrained arg_select")
                   if(allocated(error)) return
 
@@ -409,10 +425,10 @@ contains
 
                   test1 = random_vals(kth_smallest) == &
                       random_vals(indx_r(down_rank))
-                  test2 = all(random_vals(indx_r(1:(down_rank-1))) <= &
+                  test2 = all(${indexname}$(random_vals, indx_r(1:(down_rank-1))) <= &
                       random_vals(indx_r(down_rank)))
                   test3 = all(random_vals(indx_r(down_rank)) <= &
-                      random_vals(indx_r((down_rank+1):size(random_vals, kind=ip))))
+                      ${indexname}$(random_vals, indx_r((down_rank+1):size(random_vals))))
                   call check(error, (test1 .and. test2 .and. test3), "${name}$: random data right-constrained arg_select")
                   if(allocated(error)) return
 
@@ -424,10 +440,10 @@ contains
 
                   test1 = random_vals(kth_smallest) == &
                       random_vals(indx_r(mid_rank))
-                  test2 = all(random_vals(indx_r(1:(mid_rank-1))) <= &
+                  test2 = all(${indexname}$(random_vals, indx_r(1:(mid_rank-1))) <= &
                       random_vals(indx_r(mid_rank)))
                   test3 = all(random_vals(indx_r(mid_rank)) <= &
-                      random_vals(indx_r((mid_rank+1):size(random_vals, kind=ip))))
+                      ${indexname}$(random_vals, indx_r((mid_rank+1):size(random_vals))))
                   call check(error, (test1 .and. test2 .and. test3), "${name}$: random data left-right-constrained arg_select")
                   if(allocated(error)) return
 
