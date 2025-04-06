@@ -441,7 +441,7 @@ contains
 end module
 
 program tester
-    use, intrinsic :: iso_fortran_env, only: compiler_version, error_unit
+    use, intrinsic :: iso_fortran_env!, only: compiler_version, error_unit
     use testdrive, only: new_testsuite, run_testsuite, testsuite_type
     use test_selection, only: collect_selection
 
