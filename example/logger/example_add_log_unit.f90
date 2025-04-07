@@ -9,7 +9,7 @@ program example_add_log_unit
         position='rewind', &
         action='write', iostat=iostat, iomsg=iomsg)
 
-  call global_logger%add_log_unit(unit, stat)
+  ! call global_logger%add_log_unit(unit, stat)
 
   select case (stat)
   case (read_only_error)

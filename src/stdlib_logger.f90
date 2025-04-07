@@ -111,7 +111,7 @@ module stdlib_logger
         private
 
         procedure, public, pass(self) :: add_log_file
-        procedure, public, pass(self) :: add_log_unit
+        ! procedure, public, pass(self) :: add_log_unit
         procedure, public, pass(self) :: configuration
         procedure, public, pass(self) :: configure
         procedure, public, pass(self) :: log_debug
