@@ -1,5 +1,6 @@
 program example_corr
-  use stdlib_stats, only: corr
+  use ieee_arithmetic, only: ieee_quiet_nan
+  use stdlib_stats_corr, only: corr
   implicit none
   real :: x(1:6) = [1., 2., 3., 4., 5., 6.]
   real :: y(1:2, 1:3) = reshape([-1., 40., -3., 4., 10., 6.], [2, 3])
