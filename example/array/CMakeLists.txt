@@ -1,2 +1,2 @@
 ADD_EXAMPLE(falseloc)
-ADD_EXAMPLE(trueloc)
+# ADD_EXAMPLE(trueloc)
