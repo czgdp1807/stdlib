@@ -47,7 +47,7 @@ set(fppFiles
     stdlib_quadrature.fypp
     stdlib_quadrature_trapz.fypp
     stdlib_quadrature_simps.fypp
-    # stdlib_random.fypp
+    stdlib_random.fypp
     stdlib_math.fypp
     stdlib_math_linspace.fypp
     stdlib_math_logspace.fypp
@@ -59,7 +59,7 @@ set(fppFiles
     # stdlib_string_type_constructor.fypp
     stdlib_strings_to_string.fypp
     stdlib_strings.fypp
-    # stdlib_version.fypp
+    stdlib_version.fypp
 )
 
 
@@ -77,7 +77,7 @@ set(SRC
     # stdlib_hashmap_open.f90
     stdlib_logger.f90
     # stdlib_sorting_radix_sort.f90
-    # stdlib_system.F90
+    stdlib_system.F90
     stdlib_specialfunctions.f90
     stdlib_specialfunctions_legendre.f90
     # stdlib_quadrature_gauss.f90
