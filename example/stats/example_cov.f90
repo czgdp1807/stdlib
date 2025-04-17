@@ -1,5 +1,6 @@
 program example_cov
-  use stdlib_stats, only: cov
+  use ieee_arithmetic, only: ieee_quiet_nan
+  use stdlib_stats_cov, only: cov
   implicit none
   real :: x(1:6) = [1., 2., 3., 4., 5., 6.]
   real :: y(1:2, 1:3) = reshape([1., 2., 3., 4., 5., 6.], [2, 3])

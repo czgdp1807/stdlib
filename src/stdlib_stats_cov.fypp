@@ -1,11 +1,64 @@
 #:include "common.fypp"
 #:set RC_KINDS_TYPES = REAL_KINDS_TYPES + CMPLX_KINDS_TYPES
-submodule (stdlib_stats) stdlib_stats_cov
+module stdlib_stats_cov
 
   use, intrinsic:: ieee_arithmetic, only: ieee_value, ieee_quiet_nan
   use stdlib_error, only: error_stop
   use stdlib_optval, only: optval
+  use stdlib_stats_var, only: var
+  use stdlib_stats_mean, only: mean
+  use stdlib_kinds, only: sp, dp, xdp, qp, &
+    int8, int16, int32, int64
+
   implicit none
+
+  public :: cov
+
+  interface cov
+    !! version: experimental
+    !!
+    !! Covariance of array elements
+    !! ([Specification](../page/specs/stdlib_stats.html#cov-covariance-of-array-elements))
+    #:for k1, t1 in RC_KINDS_TYPES
+      #:set RName = rname("cov",1, t1, k1)
+      procedure :: ${RName}$
+    #:endfor
+
+    #:for k1, t1 in INT_KINDS_TYPES
+      #:set RName = rname("cov",1, t1, k1, 'dp')
+     procedure :: ${RName}$
+    #:endfor
+
+    #:for k1, t1 in RC_KINDS_TYPES
+      #:set RName = rname("cov_mask",1, t1, k1)
+      procedure :: ${RName}$
+    #:endfor
+
+    #:for k1, t1 in INT_KINDS_TYPES
+      #:set RName = rname("cov_mask",1, t1, k1, 'dp')
+      procedure :: ${RName}$
+    #:endfor
+
+    #:for k1, t1 in RC_KINDS_TYPES
+      #:set RName = rname("cov",2, t1, k1)
+      procedure :: ${RName}$
+    #:endfor
+
+    #:for k1, t1 in INT_KINDS_TYPES
+      #:set RName = rname("cov",2, t1, k1, 'dp')
+      procedure :: ${RName}$
+    #:endfor
+
+    #:for k1, t1 in RC_KINDS_TYPES
+      #:set RName = rname("cov_mask",2, t1, k1)
+      procedure :: ${RName}$
+    #:endfor
+
+    #:for k1, t1 in INT_KINDS_TYPES
+      #:set RName = rname("cov_mask",2, t1, k1, 'dp')
+      procedure :: ${RName}$
+    #:endfor
+  end interface cov
 
 contains
 
@@ -295,4 +348,4 @@ contains
   #:endfor
 
 
-end submodule
+end module
