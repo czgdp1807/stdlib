@@ -1,5 +1,6 @@
 program example_mean
-  use stdlib_stats, only: mean
+  use ieee_arithmetic, only: ieee_quiet_nan
+  use stdlib_stats_mean, only: mean
   implicit none
   real :: x(1:6) = [1., 2., 3., 4., 5., 6.]
   real :: y(1:2, 1:3) = reshape([1., 2., 3., 4., 5., 6.], [2, 3])
