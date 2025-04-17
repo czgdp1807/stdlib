@@ -110,6 +110,24 @@
 #{if rank > 0}#(${":" + ",:" * (rank - 1)}$)#{endif}#
 #:enddef
 
+#! Generates an array suffix like size(x, 1), size(x, 2), etc.
+#!
+#! Args:
+#!     rank (int): Rank of the variable
+#!
+#! Returns:
+#!     Array suffix string (size(x,1), size(x,2)) for rank = 2
+#!
+#:def arraysuffix(rank)
+  #:if rank > 0
+    #:call join_lines(joinstr=", ", prefix="(", suffix=")")
+      #:for i in range(rank)
+        size(x, ${i + 1}$)
+      #:endfor
+    #:endcall
+  #:endif
+#:enddef
+
 
 #! Joins stripped lines with given character string
 #!
@@ -147,7 +165,7 @@ ${prefix + joinstr.join([line.strip() for line in txt.split("\n")]) + suffix}$
   #:if origrank > 1
     #:call join_lines(joinstr=", ", prefix="(", suffix=")")
       #:for i in range(1, origrank)
-        merge(size(${varname}$, ${i}$), size(${varname}$, ${i + 1}$), mask=${i}$<${idim}$)
+        my_merge(size(${varname}$, ${i}$), size(${varname}$, ${i + 1}$), mask=${i}$<${idim}$)
       #:endfor
     #:endcall
   #:endif
@@ -170,6 +188,27 @@ ${prefix + joinstr.join([line.strip() for line in txt.split("\n")]) + suffix}$
   $:"{0}_{1}_{2}{3}_{2}{3}".format(gname, rank, type[0], kind) if suffix == '' else "{0}_{1}_{2}{3}_{4}".format(gname, rank, type[0], kind, suffix)
 #:enddef
 
+#:def rname1(gname, rank)
+  $:"{0}_{1}".format(gname, rank)
+#:enddef
+
+#! Generates :,: for rank = 2, :,:,: for rank = 3, etc. 
+#!
+#! Args:
+#!   rank (int): Rank of the variable
+#!
+#! Returns:
+#!   Array rank suffix string (e.g. (:,:) if rank = 2)
+#!
+#:def shape_create(rank)
+  #:if rank > 0
+    #:call join_lines(joinstr=", ", prefix="(", suffix=")")
+      #:for i in range(rank)
+        ubound(x, ${i + 1}$)
+      #:endfor
+    #:endcall
+  #:endif
+#:enddef
 
 #! Generates an array rank suffix for subarrays reducing the dimension
 #!
