@@ -217,7 +217,7 @@ contains
         ${t1}$ :: res${reduced_shape('x', rank, 'dim')}$
 
         if (dim >= 1 .and. dim <= ${rank}$) then
-          res = sum(x, dim, mask) / real(count(mask, dim), ${k1}$)
+          res = sum(x, dim, mask) / real(count(mask), ${k1}$)
         else
           call error_stop("ERROR (mean): wrong dimension")
         end if
