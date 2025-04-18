@@ -1,4 +1,5 @@
 program example_normal_rvs
+  use ieee_arithmetic, only: ieee_is_nan
   use stdlib_random, only: random_seed
   use stdlib_stats_distribution_normal, only: norm => rvs_normal
 
