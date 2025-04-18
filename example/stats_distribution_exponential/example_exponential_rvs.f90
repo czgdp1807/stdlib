@@ -1,4 +1,5 @@
 program example_exponential_rvs
+  use ieee_arithmetic, only: ieee_is_nan
   use stdlib_random, only: random_seed
   use stdlib_stats_distribution_exponential, only: rexp => rvs_exp
 
