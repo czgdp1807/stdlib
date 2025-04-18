@@ -42,7 +42,7 @@ set(fppFiles
     # stdlib_stats_moment_scalar.fypp -- done in stdlib_stats_moment.fypp
     stdlib_stats_distribution_uniform.fypp
     stdlib_stats_distribution_normal.fypp
-    # stdlib_stats_distribution_exponential.fypp
+    stdlib_stats_distribution_exponential.fypp
     stdlib_stats_var.fypp
     stdlib_quadrature.fypp
     stdlib_quadrature_trapz.fypp
