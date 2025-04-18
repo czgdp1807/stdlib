@@ -79,7 +79,8 @@ module stdlib_random
 
         if(.not. seed_initialized) call random_distribution_seed_iint64(si,t)
         res = ishftc(st(2) * 5, 7) * 9
-        t = shiftl(st(2), 17)
+        !t = shiftl(st(2), 17)
+        t = st(2)
         st(3) = ieor(st(3), st(1))
         st(4) = ieor(st(4), st(2))
         st(2) = ieor(st(2), st(3))
