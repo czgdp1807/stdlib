@@ -4,8 +4,8 @@
 set(fppFiles
     stdlib_ascii.fypp
     stdlib_bitsets.fypp
-    # stdlib_bitsets_64.fypp
-    # stdlib_bitsets_large.fypp
+    stdlib_bitsets_64.fypp
+    stdlib_bitsets_large.fypp
     # stdlib_hash_32bit.fypp
     # stdlib_hash_32bit_fnv.fypp
     # stdlib_hash_32bit_nm.fypp
