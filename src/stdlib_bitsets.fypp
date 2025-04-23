@@ -13,7 +13,7 @@ module stdlib_bitsets
            int16,               &
            int32,               &
            int64
-    use stdlib_optval, only : optval
+!    use stdlib_optval, only : optval
 
     use, intrinsic ::          &
         iso_fortran_env, only: &
@@ -2315,7 +2315,7 @@ contains
         end do
 
         read( unit,                           &
-              advance=optval(advance, 'YES'), &
+!              advance=optval(advance, 'YES'), &
               FMT='(A1)',                     &
               err=997,                        &
               end=998,                        &
@@ -2494,7 +2494,7 @@ contains
 
         character(*), parameter :: procedure = 'WRITE_BITSET'
 
-        bit_count = bits(self)
+        ! bit_count = bits(self)
 
         call digit_count( self % num_bits, count_digits )
 
@@ -2574,7 +2574,7 @@ contains
 
         write( unit,                           &
                FMT='(A)',                      &
-               advance=optval(advance, 'YES'), &
+!              advance=optval(advance, 'YES'), &
                iostat=ierr,                    &
                iomsg=message )                 &
                string
@@ -2610,7 +2610,7 @@ contains
         integer(bits_kind) :: block, full_blocks, pos
 
         all = .true.
-        full_blocks = bits(self)/block_size
+        ! full_blocks = bits(self)/block_size
         do block = 1_bits_kind, full_blocks
             if ( self % blocks(block) /= -1_block_kind ) then
                 all = .false.
@@ -2620,12 +2620,12 @@ contains
 
         if ( full_blocks == size(self % blocks) ) return
 
-        do pos=0_bits_kind, modulo( bits(self), block_size )-1
-            if ( .not. btest(self % blocks(full_blocks+1), pos) ) then
-                all = .false.
-                return
-            end if
-        end do
+!        do pos=0_bits_kind, modulo( bits(self), block_size )-1
+!            if ( .not. btest(self % blocks(full_blocks+1), pos) ) then
+!                all = .false.
+!                return
+!            end if
+!        end do
 
     end function all_large
 
@@ -3585,7 +3585,7 @@ contains
         end do
 
         read( unit,                           &
-              advance=optval(advance, 'YES'), &
+!              advance=optval(advance, 'YES'), &
               FMT='(A1)',                     &
               err=997,                        &
               end=998,                        &
@@ -3800,7 +3800,7 @@ contains
 
         character(*), parameter :: procedure = 'WRITE_BITSET'
 
-        bit_count = bits(self)
+        ! bit_count = bits(self)
 
         call digit_count( self % num_bits, count_digits )
 
@@ -3881,7 +3881,7 @@ contains
 
         write( unit,                           &
                FMT='(A)',                      &
-               advance=optval(advance, 'YES'), &
+!               advance=optval(advance, 'YES'), &
                iostat=ierr,                    &
                iomsg=message )                 &
                string
