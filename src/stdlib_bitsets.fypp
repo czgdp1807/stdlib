@@ -129,7 +129,7 @@ module stdlib_bitsets
         procedure(set_bit_abstract), deferred, pass(self)     :: set_bit
         procedure(set_range_abstract), deferred, pass(self)   :: set_range
         generic :: set => set_bit, set_range
-        procedure(test_abstract), deferred, pass(self)        :: test
+!        procedure(test_abstract), deferred, pass(self)        :: test
         procedure(to_string_abstract), deferred, pass(self)   :: to_string
         procedure(value_abstract), deferred, pass(self)       :: value
         procedure(write_bitset_string_abstract), deferred, pass(self) :: &
