@@ -3741,11 +3741,11 @@ contains
         end if
         do bit=0_bits_kind, bit_count-1
             pos = bit_count - bit
-            if ( self % test( bit) ) then
+!            if ( self % test( bit) ) then
                 string( pos:pos ) = '1'
-            else
-                string( pos:pos ) = '0'
-            end if
+!            else
+!                string( pos:pos ) = '0'
+!            end if
         end do
 
         if ( present(status) ) status = success
@@ -3816,11 +3816,11 @@ contains
         string( count_digits + 2:count_digits + 2 ) = "B"
         do bit=0_bits_kind, bit_count-1
             pos = count_digits + 2 + bit_count - bit
-            if ( self % test( bit) ) then
+!            if ( self % test( bit) ) then
                 string( pos:pos ) = '1'
-            else
-                string( pos:pos ) = '0'
-            end if
+!            else
+!                string( pos:pos ) = '0'
+!            end if
         end do
 
         if ( present(status) ) status = success
