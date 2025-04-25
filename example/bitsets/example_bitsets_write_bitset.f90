@@ -20,14 +20,14 @@ program example_write_bitset
   end if
   open (newunit=unit, file='test.txt', status='replace', &
         form='formatted', action='write')
-  call set2%write_bitset(unit, advance='no')
-  call set1%write_bitset(unit, advance='no')
+  ! call set2%write_bitset(unit, advance='no')
+  ! call set1%write_bitset(unit, advance='no')
   call set0%write_bitset(unit)
   close (unit)
   open (newunit=unit, file='test.txt', status='old', &
         form='formatted', action='read')
-  call set3%read_bitset(unit, advance='no')
-  call set4%read_bitset(unit, advance='no')
+  ! call set3%read_bitset(unit, advance='no')
+  ! call set4%read_bitset(unit, advance='no')
   call set5%read_bitset(unit)
   if (set3 == set0 .and. set4 == set1 .and. set5 == set2) then
     write (*, *) 'WRITE_BITSET to READ_BITSET through unit worked.'
