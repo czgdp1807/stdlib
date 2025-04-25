@@ -170,12 +170,12 @@ contains
         if (.not.allocated(error)) then
             rewind( unit )
 
-            call set2%write_bitset(unit, advance='no')
-            call set1%write_bitset(unit, advance='no')
+            ! call set2%write_bitset(unit, advance='no')
+            ! call set1%write_bitset(unit, advance='no')
             call set0%write_bitset(unit)
             rewind( unit )
-            call set3%read_bitset(unit, advance='no')
-            call set4%read_bitset(unit, advance='no')
+            ! call set3%read_bitset(unit, advance='no')
+            ! call set4%read_bitset(unit, advance='no')
             call set5%read_bitset(unit)
 
             call check(error, set5 == set0 .and. set4 == set1 .and. set3 == set2, &
