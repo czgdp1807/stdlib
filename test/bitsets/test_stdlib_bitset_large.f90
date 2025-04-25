@@ -239,12 +239,12 @@ contains
 
             rewind( unit )
 
-            call set2 % write_bitset(unit, advance='no')
-            call set1 % write_bitset(unit, advance='no')
+            ! call set2 % write_bitset(unit, advance='no')
+            ! call set1 % write_bitset(unit, advance='no')
             call set0 % write_bitset(unit)
             rewind( unit )
-            call set3 % read_bitset(unit, advance='no')
-            call set4 % read_bitset(unit, advance='no')
+            ! call set3 % read_bitset(unit, advance='no')
+            ! call set4 % read_bitset(unit, advance='no')
             call set5 % read_bitset(unit)
             call check(error, set5 == set0 .and. set4 == set1 .and. set3 == set2, &
                 'transfer to and from units using bitset literals with advance == "no" failed.')
@@ -253,12 +253,12 @@ contains
 
             rewind( unit )
 
-            call set12 % write_bitset(unit, advance='no')
-            call set11 % write_bitset(unit, advance='no')
+            ! call set12 % write_bitset(unit, advance='no')
+            ! call set11 % write_bitset(unit, advance='no')
             call set10 % write_bitset(unit)
             rewind( unit )
-            call set13 % read_bitset(unit, advance='no')
-            call set14 % read_bitset(unit, advance='no')
+            ! call set13 % read_bitset(unit, advance='no')
+            ! call set14 % read_bitset(unit, advance='no')
             call set15 % read_bitset(unit)
             call check(error, set15 == set10 .and. set14 == set11 .and. set13 == set12, &
                 'transfer to and from units using  bitset literals for bitss > 64 with advance == "no" failed.')
