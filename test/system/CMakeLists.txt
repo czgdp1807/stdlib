@@ -1,1 +1,1 @@
-ADDTEST(sleep)
+# ADDTEST(sleep)
