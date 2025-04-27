@@ -8,7 +8,7 @@ endmacro(ADD_EXAMPLE)
 
 add_subdirectory(array)
 add_subdirectory(ascii)
-# add_subdirectory(bitsets)
+add_subdirectory(bitsets)
 # add_subdirectory(error)
 # add_subdirectory(hashmaps)
 # add_subdirectory(hash_procedures)
