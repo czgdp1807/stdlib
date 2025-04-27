@@ -147,7 +147,11 @@ contains
         call parse_header(header, major, stat, msg)
         if (stat /= 0) return
 
-        read(io, iostat=stat) buf
+        if (major > 1) then 
+            read(io, iostat=stat) buf(1:4)
+        else 
+            read(io, iostat=stat) buf(1:2)
+        endif
         if (stat /= 0) return
 
         if (major > 1) then
