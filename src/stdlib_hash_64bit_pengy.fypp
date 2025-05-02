@@ -39,10 +39,116 @@
 
 #! Integer kinds to be considered during templating
 #:set INT_KINDS = ["int16", "int32", "int64"]
+#:set INT_KINDS2 = ["int8", "int16", "int32", "int64"]
 
-submodule(stdlib_hash_64bit) stdlib_hash_64bit_pengy
+module stdlib_hash_64bit_pengy
+
+    ! implicit none
+    use stdlib_kinds, only: &
+        dp,                 &
+        int8,               &
+        int16,              &
+        int32,              &
+        int64
 
     implicit none
+
+    private
+
+    integer, parameter, public :: &
+        int_hash     = int64
+!! The number of bits in the output hash
+
+! The number of bits used by each integer type
+    integer, parameter, public ::       &
+! Should be 8
+        bits_int8  = bit_size(0_int8),  &
+! Should be 16
+        bits_int16 = bit_size(0_int16), &
+! Should be 32
+        bits_int32 = bit_size(0_int32), &
+! Should be 64
+        bits_int64 = bit_size(0_int64)
+
+    integer, parameter, public ::       &
+! Should be 1
+        bytes_int8  = bits_int8/bits_int8,  &
+! Should be 2
+        bytes_int16 = bits_int16/bits_int8, &
+! Should be 4
+        bytes_int32 = bits_int32/bits_int8, &
+! Should be 8
+        bytes_int64 = bits_int64/bits_int8
+
+    integer, parameter, public :: &
+        bits_char = 8, &
+        bytes_char = bits_char/bits_int8
+
+! Dealing with different endians
+    logical, parameter, public ::                                    &
+        little_endian = ( 1 == transfer( [1_int8, 0_int8], 0_int16) )
+! pow64_over_phi is the odd number that most closely approximates 2**64/phi,
+! where phi is the golden ratio 1.618...
+    integer(int64), parameter ::                        &
+        pow64_over_phi = int(z'9E3779B97F4A7C15', int64)
+
+    integer(int_hash), parameter :: &
+        two_32 = 2_int_hash**32
+
+! constants used by Bob Jenkins' SpookyHash
+    integer(int32), parameter ::                            &
+        sc_numvars = 12,                                    &
+        sc_blocksize = sc_numvars*8,                        &
+        sc_buffsize = 2*sc_blocksize,                       &
+        sc_constsub = int(z'deadbeef', int32)
+        ! twos complement "deadbeef"
+
+    integer(int64), parameter ::                                  &
+        sc_const = transfer( [sc_constsub, sc_constsub], 0_int64 )
+
+     type :: spooky_subhash
+        integer(int8)  :: data(0:2*sc_blocksize-1)
+        integer(int64) :: state(0:sc_numvars-1)
+        integer(int64) :: length
+        integer(int16) :: remainder
+    end type spooky_subhash
+
+    public :: pengy_hash
+    
+ interface pengy_hash
+!! Version: experimental
+!!
+!! PENGY_HASH interfaces
+!! ([Specification](../page/specs/stdlib_hash_procedures.html#pengy_hash-maps-a-character-string-or-integer-vector-to-an-integer))
+#:for k1 in INT_KINDS2
+    pure module function ${k1}$_pengy_hash( key, seed ) result(hash_code)
+!! PENGY_HASH hash function for rank 1 array keys of kind ${k1}$
+        integer(${k1}$), intent(in) :: key(:)
+        integer(int32), intent(in)  :: seed
+        integer(int64)           :: hash_code
+    end function ${k1}$_pengy_hash
+        #:endfor
+
+        elemental module function character_pengy_hash( key, seed ) &
+            result(hash_code)
+!! MIR HASH STRICT function for character strings
+            character(*), intent(in)      :: key
+            integer(int32), intent(in) :: seed
+            integer(int64)             :: hash_code
+        end function character_pengy_hash
+
+    end interface pengy_hash
+
+    interface
+
+        module subroutine new_pengy_hash_seed( seed )
+!! Version: experimental
+!!
+!! Random seed generator for MIR_HASH_STRICT
+            integer(int32), intent(inout) :: seed
+        end subroutine new_pengy_hash_seed
+
+    end interface
 
 contains
 
@@ -146,4 +252,4 @@ contains
 
     end subroutine new_pengy_hash_seed
 
-end submodule stdlib_hash_64bit_pengy
+end module stdlib_hash_64bit_pengy

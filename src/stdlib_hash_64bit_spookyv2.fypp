@@ -12,8 +12,81 @@
 
 #! Integer kinds to be considered during templating
 #:set INT_KINDS = ["int16", "int32", "int64"]
+#:set INT_KINDS2 = ["int8" ,"int16", "int32", "int64"]
 
-submodule(stdlib_hash_64bit) stdlib_hash_64bit_spookyv2
+module stdlib_hash_64bit_spookyv2
+! use stdlib_hash_64bit
+
+use stdlib_kinds, only: &
+        dp,                 &
+        int8,               &
+        int16,              &
+        int32,              &
+        int64
+
+    implicit none
+
+    private
+
+    integer, parameter, public :: &
+        int_hash     = int64
+!! The number of bits in the output hash
+
+! The number of bits used by each integer type
+    integer, parameter, public ::       &
+! Should be 8
+        bits_int8  = bit_size(0_int8),  &
+! Should be 16
+        bits_int16 = bit_size(0_int16), &
+! Should be 32
+        bits_int32 = bit_size(0_int32), &
+! Should be 64
+        bits_int64 = bit_size(0_int64)
+
+    integer, parameter, public ::       &
+! Should be 1
+        bytes_int8  = bits_int8/bits_int8,  &
+! Should be 2
+        bytes_int16 = bits_int16/bits_int8, &
+! Should be 4
+        bytes_int32 = bits_int32/bits_int8, &
+! Should be 8
+        bytes_int64 = bits_int64/bits_int8
+
+    integer, parameter, public :: &
+        bits_char = 8, &
+        bytes_char = bits_char/bits_int8
+
+! Dealing with different endians
+    logical, parameter, public ::                                    &
+        little_endian = ( 1 == transfer( [1_int8, 0_int8], 0_int16) )
+! pow64_over_phi is the odd number that most closely approximates 2**64/phi,
+! where phi is the golden ratio 1.618...
+    integer(int64), parameter ::                        &
+        pow64_over_phi = int(z'9E3779B97F4A7C15', int64)
+
+    integer(int_hash), parameter :: &
+        two_32 = 2_int_hash**32
+
+! constants used by Bob Jenkins' SpookyHash
+    integer(int32), parameter ::                            &
+        sc_numvars = 12,                                    &
+        sc_blocksize = sc_numvars*8,                        &
+        sc_buffsize = 2*sc_blocksize,                       &
+        sc_constsub = int(z'deadbeef', int32)
+        ! twos complement "deadbeef"
+
+    integer(int64), parameter ::                                  &
+        sc_const = transfer( [sc_constsub, sc_constsub], 0_int64 )
+
+     type :: spooky_subhash
+        integer(int8)  :: data(0:2*sc_blocksize-1)
+        integer(int64) :: state(0:sc_numvars-1)
+        integer(int64) :: length
+        integer(int16) :: remainder
+    end type spooky_subhash
+
+    public :: spooky_hash
 
 ! I have tried to make this portable while retaining efficiency. I assume
 ! processors with two's complement integers from 8, 16, 32, and 64 bits.
@@ -21,8 +94,31 @@ submodule(stdlib_hash_64bit) stdlib_hash_64bit_spookyv2
 !     <https://burtleburtle.net/bob/hash/spooky.html>
 ! The code was designed for Little-Endian processors. The output is
 ! different on Big Endian processors, but still probably as good quality.
+interface spooky_hash
+!! Version: experimental
+!!
+!! SPOOKY_HASH interfaces
+!!([Specification](../page/specs/stdlib_hash_procedures.html#spooky_hash-maps-a-character-string-or-integer-vector-to-an-integer))
+        #:for k1 in INT_KINDS2
+           module function ${k1}$_spooky_hash( key, seed ) &
+              result(hash_code)
+!! SPOOKY HASH function for rank 1 arrays of kind ${k1}$
+              integer(${k1}$), intent(in) :: key(0:)
+              integer(int_hash), intent(in)  :: seed(2)
+              integer(int_hash) :: hash_code(2)
+          end function ${k1}$_spooky_hash
+        #:endfor
 
-    implicit none
+         module function character_spooky_hash( key, seed ) &
+            result(hash_code)
+!! SPOOKY hash function for character strings
+            character(*), intent(in)    :: key
+            integer(int_hash), intent(in)  :: seed(2)
+            integer(int_hash) :: hash_code(2)
+        end function character_spooky_hash
+
+    end interface spooky_hash
+    !implicit none
 
 contains
 
@@ -712,4 +808,4 @@ contains
     end subroutine new_spooky_hash_seed
 
 
-end submodule stdlib_hash_64bit_spookyv2
+end module stdlib_hash_64bit_spookyv2
