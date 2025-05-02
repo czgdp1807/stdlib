@@ -66,7 +66,13 @@ contains
                 exit catch
             end if
 
-            call allocator(array, vshape, stat)
+            ! call allocator(array, vshape, stat)
+            allocate(array( &
+            #:for i in range(rank-1)
+            &    vshape(${i+1}$), &
+            #:endfor
+            &    vshape(${rank}$)), &
+            &    stat=stat)
             if (stat /= 0) then
                 msg = "Failed to allocate array of type '"//vtype//"' "//&
                     & "with total size of "//to_string(product(vshape))
