@@ -3,8 +3,8 @@
 
 module stdlib_hash_32bit
 
-    use, intrinsic :: iso_fortran_env, only : &
-        character_storage_size
+    !use, intrinsic :: iso_fortran_env, only : &
+    !    character_storage_size
 
     use stdlib_kinds, only: &
         dp,                 &
@@ -48,7 +48,7 @@ module stdlib_hash_32bit
         bytes_int64 = bits_int64/bits_int8
 
     integer, parameter ::                   &
-        bits_char = character_storage_size, &
+        bits_char = 8, &
         bytes_char = bits_char/bits_int8
 
 ! Dealing with different endians
