@@ -155,6 +155,8 @@ contains
 
         if (major > 1) then 
             read(io, iostat=stat) buf(1:4)
+        else if (len(header) == 8 .and. header(8:8) /= achar(0)) then
+            buf(1:2) = header(8:8) // achar(0)
         else 
             read(io, iostat=stat) buf(1:2)
         endif
@@ -166,8 +168,8 @@ contains
                 &      + ichar(buf(3)) * 256**2 &
                 &      + ichar(buf(4)) * 256**3
         else
-            header_len = ichar(buf(1)) &
-                &      + ichar(buf(2)) * 256**1
+            header_len = ichar(buf(1))
+                ! &      + ichar(buf(2)) * 256**1   !! buf is only size 1
         end if
         allocate(character(header_len) :: dict, stat=stat)
         if (stat /= 0) return
@@ -233,7 +235,11 @@ contains
             return
         end if
 
-        minor = ichar(header(8:8))
+        #ifdef __GFORTRAN__
+            minor = ichar(header(8:8))
+        #else 
+            minor = 0
+        #endif
         if (minor /= 0) then
             stat = 1
             msg = "Unsupported format version "// &
