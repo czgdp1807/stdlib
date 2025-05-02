@@ -9,6 +9,9 @@ program test_32_bit_hash_performance
         int64
 
     use stdlib_hash_32bit
+    use stdlib_hash_32bit_fnv
+    use stdlib_hash_32bit_water
+    use stdlib_hash_32bit_nm
 
     implicit none
 
@@ -60,9 +63,9 @@ contains
 
     subroutine test_fnv_1()
         integer :: index2
-        integer(int_hash) :: hash
+        integer(int32) :: hash
         real :: t1, t2, tdiff
-        integer(int_hash) :: summary(repeat)
+        integer(int32) :: summary(repeat)
 
         do k=1, size(block_size)
             call cpu_time(t1)
@@ -84,9 +87,9 @@ contains
 
     subroutine test_fnv_1a()
         integer :: index2
-        integer(int_hash) :: hash
+        integer(int32) :: hash
         real :: t1, t2, tdiff
-        integer(int_hash) :: summary(repeat)
+        integer(int32) :: summary(repeat)
 
         do k=1, size(block_size)
             call cpu_time(t1)
@@ -108,10 +111,10 @@ contains
 
     subroutine test_nmhash32()
         integer :: index2
-        integer(int_hash) :: hash
+        integer(int32) :: hash
         integer(int32) :: seed = 0_int32
         real :: t1, t2, tdiff
-        integer(int_hash) :: summary(repeat)
+        integer(int32) :: summary(repeat)
 
         call new_nmhash32_seed( seed )
         do k=1, size(block_size)
@@ -135,10 +138,10 @@ contains
 
     subroutine test_nmhash32x()
         integer :: index2
-        integer(int_hash) :: hash
+        integer(int32) :: hash
         integer(int32) :: seed = 0_int32
         real :: t1, t2, tdiff
-        integer(int_hash) :: summary(repeat)
+        integer(int32) :: summary(repeat)
 
         call new_nmhash32x_seed( seed )
         do k=1, size(block_size)
@@ -162,10 +165,10 @@ contains
 
     subroutine test_water()
         integer :: index2
-        integer(int_hash) :: hash
+        integer(int32) :: hash
         integer(int64) :: seed = 0_int64
         real :: t1, t2, tdiff
-        integer(int_hash) :: summary(repeat)
+        integer(int32) :: summary(repeat)
 
         call new_water_hash_seed( seed )
         do k=1, size(block_size)

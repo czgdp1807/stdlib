@@ -9,6 +9,10 @@ program test_64_bit_hash_performance
         int64
 
     use stdlib_hash_64bit
+    use stdlib_hash_64bit_fnv
+    use stdlib_hash_32bit_fnv
+    use stdlib_hash_64bit_spookyv2
+    use stdlib_hash_64bit_pengy
 
     implicit none
 

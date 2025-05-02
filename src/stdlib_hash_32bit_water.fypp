@@ -71,9 +71,96 @@
 
 #! Integer kinds to be considered during templating
 #:set INT_KINDS = ["int16", "int32", "int64"]
+#:set INT_KINDS2 = ["int8","int16", "int32", "int64"]
 
-submodule(stdlib_hash_32bit) stdlib_hash_32bit_water
+module stdlib_hash_32bit_water
+    ! implicit none
+    use stdlib_kinds, only: &
+        dp,                 &
+        int8,               &
+        int16,              &
+        int32,              &
+        int64
+
     implicit none
+
+    private
+
+    integer, parameter, public :: &
+        int_hash     = int32
+!! The number of bits in the output hash
+
+! pow32_over_phi is the odd integer that most closely approximates 2**32/phi,
+! where phi is the golden ratio 1.618...
+    integer(int32), parameter ::                 &
+        pow32_over_phi = int( z'9E3779B9', int32 )
+
+! The number of bits used by each integer type
+    integer, parameter ::               &
+! Should be 8
+        bits_int8  = bit_size(0_int8),  &
+! Should be 16
+        bits_int16 = bit_size(0_int16), &
+! Should be 32
+        bits_int32 = bit_size(0_int32), &
+! Should be 64
+        bits_int64 = bit_size(0_int64)
+
+    integer, parameter ::                   &
+! Should be 1
+        bytes_int8  = bits_int8/bits_int8,  &
+! Should be 2
+        bytes_int16 = bits_int16/bits_int8, &
+! Should be 4
+        bytes_int32 = bits_int32/bits_int8, &
+! Should be 8
+        bytes_int64 = bits_int64/bits_int8
+
+    integer, parameter ::                   &
+        bits_char = 8, &
+        bytes_char = bits_char/bits_int8
+
+! Dealing with different endians
+    logical, parameter, public ::                                    &
+        little_endian = ( 1 == transfer([1_int8, 0_int8], 0_int16) )
+
+    public ::               &
+        new_water_hash_seed,&
+        water_hash
+ interface water_hash
+!! Version: experimental
+!!
+!! WATER_HASH interfaces
+!! ([Specification](../page/specs/stdlib_hash_procedures.html#water_hash-calculates-a-hash-code-from-a-key-and-a-seed))
+        #:for k1 in INT_KINDS2
+          pure module function ${k1}$_water_hash( key, seed ) &
+              result(hash_code)
+!! WATER HASH function for rank 1 array keys of kind ${k1}$
+              integer(${k1}$), intent(in) :: key(0:)
+              integer(int64), intent(in)  :: seed
+              integer(int_hash)           :: hash_code
+          end function ${k1}$_water_hash
+        #:endfor
+
+        elemental module function character_water_hash( key, seed ) &
+            result(hash_code)
+!! WATER hash function for default character string keys
+            character(*), intent(in)   :: key
+            integer(int64), intent(in) :: seed
+            integer(int_hash)          :: hash_code
+        end function character_water_hash
+
+    end interface water_hash
+
+    interface new_water_hash_seed
+!! Version: experimental
+!!
+!! ([Specification](file:///home/jvandenp/stdlib/API-doc/page/specs/stdlib_hash_procedures.html#new_water_hash_seed-returns-a-valid-input-seed-for-water_hash))
+        module subroutine new_water_hash_seed( seed )
+            integer(int64), intent(inout) :: seed
+        end subroutine new_water_hash_seed
+
+    end interface new_water_hash_seed
 
 contains
 
@@ -278,4 +365,4 @@ contains
 
     end subroutine new_water_hash_seed
 
-end submodule stdlib_hash_32bit_water
+end module stdlib_hash_32bit_water
