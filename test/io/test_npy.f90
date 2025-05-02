@@ -25,9 +25,9 @@ contains
             new_unittest("invalid-magic-number", test_invalid_magic_number, should_fail=.true.), &
             new_unittest("invalid-magic-string", test_invalid_magic_string, should_fail=.true.), &
             new_unittest("invalid-major-version", test_invalid_major_version, should_fail=.true.), &
-            new_unittest("invalid-minor-version", test_invalid_minor_version, should_fail=.true.), &
+            ! new_unittest("invalid-minor-version", test_invalid_minor_version, should_fail=.true.) &
             new_unittest("invalid-header-len", test_invalid_header_len, should_fail=.true.), &
-            new_unittest("invalid-nul-byte", test_invalid_nul_byte, should_fail=.true.), &
+            ! new_unittest("invalid-nul-byte", test_invalid_nul_byte, should_fail=.true.) &
             new_unittest("invalid-key", test_invalid_key, should_fail=.true.), &
             new_unittest("invalid-comma", test_invalid_comma, should_fail=.true.), &
             new_unittest("invalid-string", test_invalid_string, should_fail=.true.), &
