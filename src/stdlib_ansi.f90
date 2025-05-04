@@ -34,73 +34,68 @@ module stdlib_ansi
 
 
     !> Identifier for reset style
-    type(ansi_code), parameter :: style_reset = ansi_code(style=0)
+    type(ansi_code) :: style_reset = ansi_code(style=0)
     !> Identifier for bold style
-    type(ansi_code), parameter :: style_bold = ansi_code(style=1)
+    type(ansi_code) :: style_bold = ansi_code(style=1)
     !> Identifier for dim style
-    type(ansi_code), parameter :: style_dim = ansi_code(style=2)
+    type(ansi_code) :: style_dim = ansi_code(style=2)
     !> Identifier for italic style
-    type(ansi_code), parameter :: style_italic = ansi_code(style=3)
+    type(ansi_code) :: style_italic = ansi_code(style=3)
     !> Identifier for underline style
-    type(ansi_code), parameter :: style_underline = ansi_code(style=4)
+    type(ansi_code) :: style_underline = ansi_code(style=4)
     !> Identifier for blink style
-    type(ansi_code), parameter :: style_blink = ansi_code(style=5)
+    type(ansi_code) :: style_blink = ansi_code(style=5)
     !> Identifier for (fast) blink style
-    type(ansi_code), parameter :: style_blink_fast = ansi_code(style=6)
+    type(ansi_code) :: style_blink_fast = ansi_code(style=6)
     !> Identifier for reverse style
-    type(ansi_code), parameter :: style_reverse = ansi_code(style=7)
+    type(ansi_code) :: style_reverse = ansi_code(style=7)
     !> Identifier for hidden style
-    type(ansi_code), parameter :: style_hidden = ansi_code(style=8)
+    type(ansi_code) :: style_hidden = ansi_code(style=8)
     !> Identifier for strikethrough style
-    type(ansi_code), parameter :: style_strikethrough = ansi_code(style=9)
+    type(ansi_code) :: style_strikethrough = ansi_code(style=9)
 
     !> Identifier for black foreground color
-    type(ansi_code), parameter :: fg_color_black = ansi_code(fg=0)
+    type(ansi_code) :: fg_color_black = ansi_code(fg=0)
     !> Identifier for red foreground color
-    type(ansi_code), parameter :: fg_color_red = ansi_code(fg=1)
+    type(ansi_code) :: fg_color_red = ansi_code(fg=1)
     !> Identifier for green foreground color
-    type(ansi_code), parameter :: fg_color_green = ansi_code(fg=2)
+    type(ansi_code) :: fg_color_green = ansi_code(fg=2)
     !> Identifier for yellow foreground color
-    type(ansi_code), parameter :: fg_color_yellow = ansi_code(fg=3)
+    type(ansi_code) :: fg_color_yellow = ansi_code(fg=3)
     !> Identifier for blue foreground color
-    type(ansi_code), parameter :: fg_color_blue = ansi_code(fg=4)
+    type(ansi_code) :: fg_color_blue = ansi_code(fg=4)
     !> Identifier for magenta foreground color
-    type(ansi_code), parameter :: fg_color_magenta = ansi_code(fg=5)
+    type(ansi_code) :: fg_color_magenta = ansi_code(fg=5)
     !> Identifier for cyan foreground color
-    type(ansi_code), parameter :: fg_color_cyan = ansi_code(fg=6)
+    type(ansi_code) :: fg_color_cyan = ansi_code(fg=6)
     !> Identifier for white foreground color
-    type(ansi_code), parameter :: fg_color_white = ansi_code(fg=7)
+    type(ansi_code) :: fg_color_white = ansi_code(fg=7)
     !> Identifier for the default foreground color
-    type(ansi_code), parameter :: fg_color_default = ansi_code(fg=9)
+    type(ansi_code) :: fg_color_default = ansi_code(fg=9)
 
     !> Identifier for black background color
-    type(ansi_code), parameter :: bg_color_black = ansi_code(bg=0)
+    type(ansi_code) :: bg_color_black = ansi_code(bg=0)
     !> Identifier for red background color
-    type(ansi_code), parameter :: bg_color_red = ansi_code(bg=1)
+    type(ansi_code) :: bg_color_red = ansi_code(bg=1)
     !> Identifier for green background color
-    type(ansi_code), parameter :: bg_color_green = ansi_code(bg=2)
+    type(ansi_code) :: bg_color_green = ansi_code(bg=2)
     !> Identifier for yellow background color
-    type(ansi_code), parameter :: bg_color_yellow = ansi_code(bg=3)
+    type(ansi_code) :: bg_color_yellow = ansi_code(bg=3)
     !> Identifier for blue background color
-    type(ansi_code), parameter :: bg_color_blue = ansi_code(bg=4)
+    type(ansi_code) :: bg_color_blue = ansi_code(bg=4)
     !> Identifier for magenta background color
-    type(ansi_code), parameter :: bg_color_magenta = ansi_code(bg=5)
+    type(ansi_code) :: bg_color_magenta = ansi_code(bg=5)
     !> Identifier for cyan background color
-    type(ansi_code), parameter :: bg_color_cyan = ansi_code(bg=6)
+    type(ansi_code) :: bg_color_cyan = ansi_code(bg=6)
     !> Identifier for white background color
-    type(ansi_code), parameter :: bg_color_white = ansi_code(bg=7)
+    type(ansi_code) :: bg_color_white = ansi_code(bg=7)
     !> Identifier for the default background color
-    type(ansi_code), parameter :: bg_color_default = ansi_code(bg=9)
+    type(ansi_code) :: bg_color_default = ansi_code(bg=9)
 
 
     interface to_string
         !> Transform a color code into an actual ANSI escape sequence
-        pure module function to_string_ansi_code(code) result(str)
-            !> Color code to be used
-            type(ansi_code), intent(in) :: code
-            !> ANSI escape sequence representing the color code
-            character(len=:), allocatable :: str
-        end function to_string_ansi_code
+        procedure :: to_string_ansi_code
     end interface to_string
 
 
@@ -169,9 +164,9 @@ contains
 
         if (anycolor(code)) then
             str = esc // "[0"  ! Always reset the style
-            if (code%style > 0 .and. code%style < 10) str = str // ";" // chars(code%style)
-            if (code%fg >= 0 .and. code%fg < 10) str = str // ";3" // chars(code%fg)
-            if (code%bg >= 0 .and. code%bg < 10) str = str // ";4" // chars(code%bg)
+            if (code%style > 0 .and. code%style < 10) str = str // ";" // chars(code%style+1)
+            if (code%fg >= 0 .and. code%fg < 10) str = str // ";3" // chars(code%fg+1)
+            if (code%bg >= 0 .and. code%bg < 10) str = str // ";4" // chars(code%bg+1)
             str = str // "m"
         else
             str = ""
