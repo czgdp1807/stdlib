@@ -287,8 +287,8 @@ contains
         type(key_type), intent(out) :: key
         character(*), intent(in)    :: value
 
-        !key % value = transfer( value, key % value, &
-        !                        bytes_char * len( value ) )
+        key % value = transfer( value, key % value, &
+                                bytes_char * len( value ) )
 
     end subroutine set_char_key
 
