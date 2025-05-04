@@ -287,6 +287,7 @@ contains
         type(key_type), intent(out) :: key
         character(*), intent(in)    :: value
 
+        allocate(key % value(bytes_char * len(value)))
         key % value = transfer( value, key % value, &
                                 bytes_char * len( value ) )
 
