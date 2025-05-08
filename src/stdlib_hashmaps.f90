@@ -27,6 +27,8 @@ module stdlib_hashmaps
         hashmap_type,          &
         open_hashmap_type
 
+    public :: hasher_fun_temp 
+
 !! Values that parameterize David Chase's empirical SLOT expansion code
     integer, parameter ::        &
         inmap_probe_factor = 10, &
@@ -65,6 +67,14 @@ module stdlib_hashmaps
 
     character(*), parameter, private :: module_name = 'STDLIB_HASHMAPS'
 
+    abstract interface
+        pure function hasher_fun_temp( key )  result(hash_value)
+            import key_type, int_hash
+            type(key_type), intent(in)    :: key
+            integer(int_hash)             :: hash_value
+        end function hasher_fun_temp
+    end interface
+
     type, abstract :: hashmap_type
 !! Version: Experimental
 !!
@@ -83,7 +93,7 @@ module stdlib_hashmaps
 !! Number of elements in the free_list
         integer(int32)     :: nbits = default_bits
 !! Number of bits used to address the slots
-        procedure(hasher_fun), pointer, nopass :: hasher => fnv_1_hasher
+        procedure(hasher_fun_temp), pointer, nopass :: hasher => fnv_1_hasher
 !! Hash function
 
     contains
@@ -163,9 +173,9 @@ module stdlib_hashmaps
 !!         real_value_error - load_factor is less than 0.375 or greater than
 !!             0.875
 !
-            import hashmap_type, hasher_fun, int32
+            import hashmap_type, hasher_fun_temp, int32
             class(hashmap_type), intent(out)     :: map
-            procedure(hasher_fun)                 :: hasher
+            procedure(hasher_fun_temp)                 :: hasher
             integer, intent(in), optional         :: slots_bits
             integer(int32), intent(out), optional :: status
         end subroutine init_map
@@ -221,9 +231,9 @@ module stdlib_hashmaps
 !!     map      the table to be rehashed
 !!     hasher the hasher function to be used for the table
 !
-            import hashmap_type, hasher_fun
+            import hashmap_type, hasher_fun_temp
             class(hashmap_type), intent(inout) :: map
-            procedure(hasher_fun)              :: hasher
+            procedure(hasher_fun_temp)              :: hasher
         end subroutine rehash_map
 
         subroutine remove_entry(map, key, existed) ! Chase's delent
@@ -411,7 +421,7 @@ module stdlib_hashmaps
 !!             greater than max_bits
 !
             class(chaining_hashmap_type), intent(out)  :: map
-            procedure(hasher_fun)                      :: hasher
+            procedure(hasher_fun_temp)                      :: hasher
             integer, intent(in), optional              :: slots_bits
             integer(int32), intent(out), optional      :: status
         end subroutine init_chaining_map
@@ -469,7 +479,7 @@ module stdlib_hashmaps
 !!     hasher the hasher function to be used for the table
 !
             class(chaining_hashmap_type), intent(inout) :: map
-            procedure(hasher_fun)                       :: hasher
+            procedure(hasher_fun_temp)                       :: hasher
         end subroutine rehash_chaining_map
 
 
@@ -661,7 +671,7 @@ module stdlib_hashmaps
 !!             greater than max_bits
 
             class(open_hashmap_type), intent(out)      :: map
-            procedure(hasher_fun)                      :: hasher
+            procedure(hasher_fun_temp)                      :: hasher
             integer, intent(in), optional              :: slots_bits
             integer(int32), intent(out), optional      :: status
         end subroutine init_open_map
@@ -720,7 +730,7 @@ module stdlib_hashmaps
 !!     hasher the hasher function to be used for the table
 !
             class(open_hashmap_type), intent(inout) :: map
-            procedure(hasher_fun)                   :: hasher
+            procedure(hasher_fun_temp)                   :: hasher
         end subroutine rehash_open_map
 
 
