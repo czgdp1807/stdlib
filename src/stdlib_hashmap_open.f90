@@ -11,7 +11,7 @@ submodule(stdlib_hashmaps) stdlib_hashmap_open
 
     use, intrinsic :: iso_fortran_env, only: error_unit
 
-    use stdlib_hashmap_wrappers
+    !use stdlib_hashmap_wrappers
 
     implicit none
 
