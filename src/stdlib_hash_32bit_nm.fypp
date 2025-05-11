@@ -246,7 +246,7 @@ contains
     pure function nmhash32_0to8( x, seed ) result( vx32 )
         integer(int32), intent(in) :: x
         integer(int32), intent(in) :: seed
-        integer(int32) :: vx32
+        integer(int32) :: vx32, temp
         ! base mixer: [-6 -12 776bf593 -19 11 3fb39c65 -15 -9 e9139917 -11 16]
         ! = 0.027071104091278835
         integer(int32), parameter :: m1 = int(z'776BF593', int32)
@@ -257,24 +257,43 @@ contains
 
         vx32 = x
         vx32 = ieor( vx32, ieor( ishft( vx32, -12 ), ishft( vx32, -6 ) ) )
-        vx16 = transfer( vx32, 0_int16, 2 )
-        vx16 = vx16 * transfer( m1, 0_int16, 2 )
+        ! vx16 = transfer( vx32, 0_int16, 2 )
+        temp = iand(vx32, z'FFFF')
+        vx16(1) = int(temp, 2)
+        vx16(2) = int(ishft(vx32, -16), 2)
+        ! vx16 = vx16 * transfer( m1, 0_int16, 2 )
+        temp = iand(m1, z'FFFF')
+        vx16(1) = vx16(1)*int(temp, 2)
+        vx16(2) = vx16(2)*int(ishft(m1, -16), 2)
         vx32 = transfer( vx16, 0_int32 )
         vx32 = ieor( vx32, ieor( ishft( vx32, 11 ), ishft( vx32, -19 ) ) )
-        vx16 = transfer( vx32, 0_int16, 2 )
-        vx16 = vx16 * transfer( m2, 0_int16, 2 )
+        ! vx16 = transfer( vx32, 0_int16, 2 )
+        temp = iand(vx32, z'FFFF')
+        vx16(1) = int(temp, 2)
+        vx16(2) = int(ishft(vx32, -16), 2)
+        ! vx16 = vx16 * transfer( m2, 0_int16, 2 )
+        temp = iand(m2, z'FFFF')
+        vx16(1) = vx16(1)*int(temp, 2)
+        vx16(2) = vx16(2)*int(ishft(m2, -16), 2)
         vx32 = transfer( vx16, 0_int32 )
         vx32 = ieor( vx32, seed )
         vx32 = ieor( vx32, ieor( ishft( vx32, -15 ), ishft( vx32, -9 ) ) )
-        vx16 = transfer( vx32, 0_int16, 2 )
-        vx16 = vx16 * transfer( m3, 0_int16, 2 )
+        ! vx16 = transfer( vx32, 0_int16, 2 )
+        temp = iand(vx32, z'FFFF')
+        vx16(1) = int(temp, 2)
+        vx16(2) = int(ishft(vx32, -16), 2)
+        ! vx16 = vx16 * transfer( m3, 0_int16, 2 )
+        temp = iand(m3, z'FFFF')
+        vx16(1) = vx16(1)*int(temp, 2)
+        temp = ishft(m3, -16)
+        vx16(2) = vx16(2)*int(temp, 2)
         vx32 = transfer( vx16, 0_int32 )
         vx32 = ieor( vx32, ieor( ishft(vx32, 16), ishft(vx32, -11) ) )
 
     end function nmhash32_0to8
 
     pure function nmhash32_9to255( p, seed, full_avalanche ) result( result )
-        integer(int8), intent(in)  :: p(0:)
+        integer(int8), intent(in)  :: p(:)
         integer(int32), intent(in) :: seed
         logical, intent(in)        :: full_avalanche
         integer(int32) :: result
@@ -291,19 +310,33 @@ contains
         integer(int16) :: nmh_m1_16(0:1), nmh_m2_16(0:1), nmh_m3_16(0:1)
         integer(int32) :: s1
         integer(int64) :: length
-        integer(int32) :: length32(0:1)
+        integer(int32) :: length32(0:1), lower, upper
         integer(int64) :: i, j, r
 
-        nmh_m1_16(0:1) = transfer( nmh_m1, 0_int16, 2 )
-        nmh_m2_16(0:1) = transfer( nmh_m2, 0_int16, 2 )
-        nmh_m3_16(0:1) = transfer( nmh_m3, 0_int16, 2 )
+        ! nmh_m1_16(0:1) = transfer( nmh_m1, 0_int16, 2 )
+        lower = iand(nmh_m1, z'FFFF')
+        upper = iand(ishft(nmh_m1, -16), z'FFFF')  ! Ensure only 16 bits remain
+        nmh_m1_16(0) = int(lower, int16)
+        nmh_m1_16(1) = int(upper, int16)
+        ! nmh_m2_16(0:1) = transfer( nmh_m2, 0_int16, 2 )
+        lower = iand(nmh_m2, z'FFFF')
+        upper = iand(ishft(nmh_m2, -16), z'FFFF')  ! Ensure only 16 bits remain
+        nmh_m2_16(0) = int(lower, int16)
+        nmh_m2_16(1) = int(upper, int16)
+        ! nmh_m3_16(0:1) = transfer( nmh_m3, 0_int16, 2 )
+        lower = iand(nmh_m3, z'FFFF')
+        upper = iand(ishft(nmh_m3, -16), z'FFFF')  ! Ensure only 16 bits remain
+        nmh_m3_16(0) = int(lower, int16)
+        nmh_m3_16(1) = int(upper, int16)
 
         ! base mixer: [f0d9649b  5 -13 29a7935d -9 11 55d35831 -20 -10 ] =
         ! 0.93495901789135362
 
         result = 0
         length = size( p, kind=int64 )
-        length32 = transfer(length, 0_int32, 2)
+        ! length32 = transfer(length, 0_int32, 2)
+        length32(0) = iand(length, int(z'FFFFFFFF', int64))
+        length32(1) = iand(ishft(length, -32), int(z'FFFFFFFF', int64))  ! Ensure only 16 bits remain
         if (little_endian) then
             s1 = seed + length32(0)
         else
@@ -320,24 +353,36 @@ contains
             r = (length - 1 ) /32
             do i=0, r-1
                 do j=0, 3
-                    xu32(j) = ieor( xu32(j), nmh_readle32( p(i*32 + j*4: ) ) )
+                    xu32(j) = ieor( xu32(j), nmh_readle32( p(i*32 + j*4 + 1: ) ) )
                     yu32(j) = ieor( yu32(j), &
-                                    nmh_readle32( p(i*32 + j*4 + 16: ) ) )
+                                    nmh_readle32( p(i*32 + j*4 + 17: ) ) )
                     xu32(j) = xu32(j) + yu32(j)
-                    xu16 = transfer( xu32(j), 0_int16, 2 )
+                    ! xu16 = transfer( xu32(j), 0_int16, 2 )
+                    lower = iand(xu32(j), z'FFFF')
+                    upper = iand(ishft(xu32(j), -16), z'FFFF')  ! Ensure only 16 bits remain
+                    xu16(0) = int(lower, int16)
+                    xu16(1) = int(upper, int16)
                     xu16 = xu16 * nmh_m1_16
                     xu32(j) = transfer( xu16, 0_int32 )
                     xu32(j) = ieor( xu32(j), &
                                     ieor( ishft(xu32(j), 5), &
                                           ishft(xu32(j), -13)) )
-                    xu16 = transfer( xu32(j), 0_int16, 2 )
+                    ! xu16 = transfer( xu32(j), 0_int16, 2 )
+                    lower = iand(xu32(j), z'FFFF')
+                    upper = iand(ishft(xu32(j), -16), z'FFFF')  ! Ensure only 16 bits remain
+                    xu16(0) = int(lower, int16)
+                    xu16(1) = int(upper, int16)
                     xu16 = xu16 * nmh_m2_16
                     xu32(j) = transfer( xu16, 0_int32 )
                     xu32(j) = ieor( xu32(j), yu32(j) )
                     xu32(j) = ieor( xu32(j), &
                                     ieor( ishft(xu32(j), 11), &
                                           ishft(xu32(j), -9) ) )
-                    xu16 = transfer( xu32(j), 0_int16, 2 )
+                    ! xu16 = transfer( xu32(j), 0_int16, 2 )
+                    lower = iand(xu32(j), z'FFFF')
+                    upper = iand(ishft(xu32(j), -16), z'FFFF')  ! Ensure only 16 bits remain
+                    xu16(0) = int(lower, int16)
+                    xu16(1) = int(upper, int16)
                     xu16 = xu16 * nmh_m3_16
                     xu32(j) = transfer( xu16, 0_int32 )
                     xu32(j) = ieor( xu32(j), &
@@ -347,41 +392,53 @@ contains
             end do
             do j=0, 3
                 xu32(j) = ieor( xu32(j), &
-                                nmh_readle32( p(length - 32 + j*4: ) ) )
+                                nmh_readle32( p(length - 32 + j*4 + 1: ) ) )
                 yu32(j) = ieor( yu32(j), &
-                                nmh_readle32( p(length - 16 + j*4: ) ) )
+                                nmh_readle32( p(length - 16 + j*4 + 1: ) ) )
             end do
         else
             ! 9 to 32 bytes
-            xu32(0) = ieor(xu32(0), nmh_readle32(p(0:)))
-            xu32(1) = ieor(xu32(1), nmh_readle32(p(ishft(ishft(length,-4),3):)))
-            xu32(2) = ieor(xu32(2), nmh_readle32(p(length-8:)))
+            xu32(0) = ieor(xu32(0), nmh_readle32(p(1:)))
+            xu32(1) = ieor(xu32(1), nmh_readle32(p(ishft(ishft(length,-4),3) + 1:)))
+            xu32(2) = ieor(xu32(2), nmh_readle32(p(length-8 + 1:)))
             xu32(3) = ieor(xu32(3), &
-                           nmh_readle32(p(length-8-ishft(ishft(length,-4),3):)))
-            yu32(0) = ieor(yu32(0), nmh_readle32(p(4:)))
+                           nmh_readle32(p(length-8-ishft(ishft(length,-4),3) + 1:)))
+            yu32(0) = ieor(yu32(0), nmh_readle32(p(5:)))
             yu32(1) = ieor(yu32(1), &
-                      nmh_readle32(p(ishft(ishft(length,-4),3)+4:)))
-            yu32(2) = ieor(yu32(2), nmh_readle32(p(length-8+4:)))
+                      nmh_readle32(p(ishft(ishft(length,-4),3)+5:)))
+            yu32(2) = ieor(yu32(2), nmh_readle32(p(length-8+5:)))
             yu32(3) = ieor(yu32(3), &
                            nmh_readle32(p(length - 8 - &
-                                        ishft(ishft(length,-4),3)+4:)))
+                                        ishft(ishft(length,-4),3)+5:)))
         end if
         do j=0, 3
             xu32(j) = xu32(j) + yu32(j)
             yu32(j) = ieor( yu32(j), ieor(ishft(yu32(j), 17), &
                                           ishft(yu32(j), -6) ) )
-            xu16 = transfer( xu32(j), 0_int16, 2 )
+            ! xu16 = transfer( xu32(j), 0_int16, 2 )
+            lower = iand(xu32(j), z'FFFF')
+            upper = iand(ishft(xu32(j), -16), z'FFFF')  ! Ensure only 16 bits remain
+            xu16(0) = int(lower, int16)
+            xu16(1) = int(upper, int16)
             xu16 = xu16 * nmh_m1_16
             xu32(j) = transfer( xu16, 0_int32 )
             xu32(j) = ieor( xu32(j), ieor(ishft(xu32(j), 5), &
                                           ishft(xu32(j), -13) ) )
-            xu16 = transfer( xu32(j), 0_int16, 2 )
+            ! xu16 = transfer( xu32(j), 0_int16, 2 )
+            lower = iand(xu32(j), z'FFFF')
+            upper = iand(ishft(xu32(j), -16), z'FFFF')  ! Ensure only 16 bits remain
+            xu16(0) = int(lower, int16)
+            xu16(1) = int(upper, int16)
             xu16 = xu16 * nmh_m2_16
             xu32(j) = transfer( xu16, 0_int32 )
             xu32(j) = ieor( xu32(j), yu32(j) )
             xu32(j) = ieor( xu32(j), ieor(ishft(xu32(j), 11), &
                                           ishft(xu32(j), -9) ) )
-            xu16 = transfer( xu32(j), 0_int16, 2 )
+            ! xu16 = transfer( xu32(j), 0_int16, 2 )
+            lower = iand(xu32(j), z'FFFF')
+            upper = iand(ishft(xu32(j), -16), z'FFFF')  ! Ensure only 16 bits remain
+            xu16(0) = int(lower, int16)
+            xu16(1) = int(upper, int16)
             xu16 = xu16 * nmh_m3_16
             xu32(j) = transfer( xu16, 0_int32 )
             xu32(j) = ieor( xu32(j), ieor(ishft(xu32(j), -10), &
@@ -395,7 +452,11 @@ contains
             xu32(0) = xu32(0) + xu32(j)
         end do
         xu32(0) = ieor(xu32(0), s1 + ishft(s1, -5) )
-        xu16 = transfer( xu32(0), 0_int16, 2 )
+        ! xu16 = transfer( xu32(0), 0_int16, 2 )
+        lower = iand(xu32(0), z'FFFF')
+        upper = iand(ishft(xu32(0), -16), z'FFFF')  ! Ensure only 16 bits remain
+        xu16(0) = int(lower, int16)
+        xu16(1) = int(upper, int16)
         xu16 = xu16 * nmh_m3_16
         xu32(0) = transfer( xu16, 0_int32 )
         xu32(0) = ieor(xu32(0), &
@@ -405,7 +466,7 @@ contains
     end function nmhash32_9to255
 
     pure function nmhash32_9to32( p, seed ) result( result )
-        integer(int8), intent(in)  :: p(0:)
+        integer(int8), intent(in)  :: p(:)
         integer(int32), intent(in) :: seed
         integer(int32) :: result
 
@@ -414,7 +475,7 @@ contains
     end function nmhash32_9to32
 
     pure function nmhash32_33to255( p, seed ) result( result )
-        integer(int8), intent(in)  :: p(0:)
+        integer(int8), intent(in)  :: p(:)
         integer(int32), intent(in) :: seed
         integer(int32) :: result
 
@@ -423,46 +484,74 @@ contains
     end function nmhash32_33to255
 
     pure subroutine nmhash32_long_round( accx, accy, p )
-        integer(int32), intent(inout) :: accx(0:)
-        integer(int32), intent(inout) :: accy(0:)
-        integer(int8), intent(in)     :: p(0:)
+        integer(int32), intent(inout) :: accx(:)
+        integer(int32), intent(inout) :: accy(:)
+        integer(int8), intent(in)     :: p(:)
 
         integer(int64), parameter :: nbgroups = init_size
         integer(int64) :: i
         integer(int16) :: dummy1(0:1)
         integer(int16) :: dummy2(0:1)
+        integer(int32) :: lower, upper
 
         do i = 0, nbgroups-1
-            accx(i) = ieor( accx(i), nmh_readle32( p(i*4:) ) )
-            accy(i) = ieor( accy(i), nmh_readle32( p(i*4+nbgroups*4:) ) )
-            accx(i) = accx(i) + accy(i)
-            accy(i) = ieor( accy(i), ishft(accx(i),  -1) )
-            dummy1 = transfer( accx(i), 0_int16, 2 )
-            dummy2 = transfer( nmh_m1_v(i), 0_int16, 2 )
-            dummy1 = dummy1 * dummy2
-            accx(i) = transfer( dummy1, 0_int32 )
-            accx(i) = ieor( accx(i), ieor( ishft(accx(i), 5), &
-                                           ishft(accx(i),-13) ) )
-            dummy1 = transfer( accx(i), 0_int16, 2 )
-            dummy2 = transfer( nmh_m2_v(i), 0_int16, 2 )
-            dummy1 = dummy1 * dummy2
-            accx(i) = transfer( dummy1, 0_int32 )
-            accx(i) = ieor( accx(i), accy(i) )
-            accx(i) = ieor( accx(i), ieor( ishft(accx(i), 11), &
-                                           ishft(accx(i),-9) ) )
-            dummy1 = transfer( accx(i), 0_int16, 2 )
-            dummy2 = transfer( nmh_m3_v(i), 0_int16, 2 )
-            dummy1 = dummy1 * dummy2
-            accx(i) = transfer( dummy1, 0_int32 )
-            accx(i) = ieor( accx(i), ieor( ishft(accx(i),-10), &
-                                           ishft(accx(i),-20) ) )
+            accx(i+1) = ieor( accx(i+1), nmh_readle32( p(i*4+1:) ) )
+            accy(i+1) = ieor( accy(i+1), nmh_readle32( p(i*4+nbgroups*4+1:) ) )
+            accx(i+1) = accx(i+1) + accy(i+1)
+            accy(i+1) = ieor( accy(i+1), ishft(accx(i+1), -1) )
+
+            lower     = iand(accx(i+1), z'FFFF')
+            upper     = iand(ishft(accx(i+1), -16), z'FFFF')
+            dummy1(0) = int(lower, int16)
+            dummy1(1) = int(upper, int16)
+
+            lower = iand(nmh_m1_v(i), z'FFFF')
+            upper = iand(ishft(nmh_m1_v(i), -16), z'FFFF')
+            dummy2(0) = int(lower, int16)
+            dummy2(1) = int(upper, int16)
+
+            dummy1    = dummy1 * dummy2
+            accx(i+1) = transfer( dummy1, 0_int32 )
+            accx(i+1) = ieor( accx(i+1), ieor( ishft(accx(i+1), 5), &
+                                            ishft(accx(i+1), -13) ) )
+
+            ! dummy1    = transfer( accx(i+1), 0_int16, 2 )
+            lower = iand(accx(i+1), z'FFFF')
+            upper = iand(ishft(accx(i+1), -16), z'FFFF')  ! Ensure only 16 bits remain
+            dummy1(0) = int(lower, int16)
+            dummy1(1) = int(upper, int16)
+            ! dummy2    = transfer( nmh_m2_v(i), 0_int16, 2 )
+            lower = iand(nmh_m2_v(i), z'FFFF')
+            upper = iand(ishft(nmh_m2_v(i), -16), z'FFFF')  ! Ensure only 16 bits remain
+            dummy2(0) = int(lower, int16)
+            dummy2(1) = int(upper, int16)
+            dummy1    = dummy1 * dummy2
+            accx(i+1) = transfer( dummy1, 0_int32 )
+            accx(i+1) = ieor( accx(i+1), accy(i+1) )
+            accx(i+1) = ieor( accx(i+1), ieor( ishft(accx(i+1), 11), &
+                                            ishft(accx(i+1), -9) ) )
+
+            lower     = iand(accx(i+1), z'FFFF')
+            upper     = iand(ishft(accx(i+1), -16), z'FFFF')
+            dummy1(0) = int(lower, int16)
+            dummy1(1) = int(upper, int16)
+
+            lower     = iand(nmh_m3_v(i), z'FFFF')
+            upper     = iand(ishft(nmh_m3_v(i), -16), z'FFFF')
+            dummy2(0) = int(lower, int16)
+            dummy2(1) = int(upper, int16)
+
+            dummy1    = dummy1 * dummy2
+            accx(i+1) = transfer( dummy1, 0_int32 )
+            accx(i+1) = ieor( accx(i+1), ieor( ishft(accx(i+1), -10), &
+                                            ishft(accx(i+1), -20) ) )
         end do
 
     end subroutine nmhash32_long_round
 
     pure function nmhash32_long( p, seed ) result( sum )
         integer(int32) :: sum
-        integer(int8), intent(in) :: p(0:)
+        integer(int8), intent(in) :: p(:)
         integer(int32), intent(in) :: seed
 
         integer(int32) :: accx(0:size(nmh_acc_init)-1)
@@ -485,10 +574,10 @@ contains
         ! init
         do i=0_int64, nbrounds-1
             call nmhash32_long_round( accx, accy, &
-                                      p(i*8*size(accx, kind=int64):) )
+                                      p(i*8*size(accx, kind=int64) + 1:) )
         end do
         call nmhash32_long_round( accx, accy, &
-                                  p(len-8*size(accx, kind=int64):) )
+                                  p(len-8*size(accx, kind=int64) + 1:) )
 
         ! merge acc
         do i=0, size( accx, kind=int64 )-1
@@ -496,7 +585,9 @@ contains
             sum = sum + accx(i)
         end do
 
-        len32 = transfer(len, 0_int32, 2)
+        ! len32 = transfer(len, 0_int32, 2)
+        len32(0) = int(iand(len, int(z'FFFFFFFF', int64)), int32)
+        len32(1) = int(ishft(len, -32), int32)
         if ( little_endian ) then
             sum = sum + len32(1)
             sum = ieor(sum, len32(0))
@@ -508,7 +599,7 @@ contains
     end function nmhash32_long
 
     pure function nmhash32_avalanche32( x ) result( u32 )
-        integer(int32) :: u32
+        integer(int32) :: u32, lower, upper
         integer(int32), intent(in) :: x
 
         integer(int16) :: u16(0:1)
@@ -522,17 +613,33 @@ contains
         integer(int16) :: m1_16(0:1), m2_16(0:1)
         ! [-21 -8 cce5196d 12 -7 464be229 -21 -8] = 3.2267098842182733
 
-        m1_16(0:1) = transfer(m1, 0_int16, 2)
-        m2_16(0:1) = transfer(m2, 0_int16, 2)
+        ! m1_16(0:1) = transfer(m1, 0_int16, 2)
+        lower = iand(m1, z'FFFF')
+        upper = iand(ishft(m1, -16), z'FFFF')  ! Ensure only 16 bits remain
+        m1_16(0) = int(lower, int16)
+        m1_16(1) = int(upper, int16)
+        lower = iand(m2, z'FFFF')
+        upper = iand(ishft(m2, -16), z'FFFF')
+        m2_16(0) = int(lower, int16)
+        m2_16(1) = int(upper, int16)
+        ! m2_16(0:1) = transfer(m2, 0_int16, 2)
 
         u32 = x
         u32 = ieor( u32, ieor( ishft( u32, -8 ), ishft( u32, -21 ) ) )
-        u16 = transfer( u32, 0_int16, 2 )
+        ! u16 = transfer( u32, 0_int16, 2 )
+        lower = iand(u32, z'FFFF')
+        upper = iand(ishft(u32, -16), z'FFFF')  ! Ensure only 16 bits remain
+        u16(0) = int(lower, int16)
+        u16(1) = int(upper, int16)
         u16(0) = u16(0) * m1_16(0)
         u16(1) = u16(1) * m1_16(1)
         u32 = transfer( u16, 0_int32 )
         u32 = ieor( u32, ieor( ishft( u32, 12 ), ishft( u32, -7 ) ) )
-        u16 = transfer( u32, 0_int16, 2 )
+        ! u16 = transfer( u32, 0_int16, 2 )
+        lower = iand(u32, z'FFFF')
+        upper = iand(ishft(u32, -16), z'FFFF')  ! Ensure only 16 bits remain
+        u16(0) = int(lower, int16)
+        u16(1) = int(upper, int16)
         u16(0) = u16(0) * m2_16(0)
         u16(1) = u16(1) * m2_16(1)
         u32 = transfer( u16, 0_int32 )
@@ -543,7 +650,7 @@ contains
     pure module function int8_nmhash32( key, seed ) result( hash )
 !! NMHASH32 hash function for rank 1 array keys of kind INT8
         integer(int32) :: hash
-        integer(int8), intent(in) :: key(0:)
+        integer(int8), intent(in) :: key(:)
         integer(int32), intent(in) :: seed
         integer(int64) :: len
         integer(int32) :: u32
@@ -558,7 +665,7 @@ contains
                 return
             else if ( len > 4 ) then
                 x = nmh_readle32(key)
-                y = ieor( nmh_readle32(key(len-4:)), nmh_prime32_4 + 2 + seed )
+                y = ieor( nmh_readle32(key(len-3:)), nmh_prime32_4 + 2 + seed )
                 x = x + y
                 x = ieor( x, ishft(x, len + 7 ) )
                 hash = nmhash32_0to8( x, ishftc(y, 5) )
@@ -572,10 +679,10 @@ contains
                     new_seed = seed + nmh_prime32_2 + ishft(1_int32, 24) + &
                                2_int32
                     if ( little_endian ) then
-                        u32 = transfer( [key(0), 0_int8, 0_int8, 0_int8], &
+                        u32 = transfer( [key(1), 0_int8, 0_int8, 0_int8], &
                                         0_int32 )
                     else
-                        u32 = transfer( [0_int8, 0_int8, 0_int8, key(0)], &
+                        u32 = transfer( [0_int8, 0_int8, 0_int8, key(1)], &
                                         0_int32 )
                     end if
                 case(2)
@@ -590,10 +697,10 @@ contains
                     new_seed = seed + nmh_prime32_2 + ishft(3_int32, 24) + &
                                6_int32
                     if ( little_endian ) then
-                        u16(1) = transfer( [key(2), 0_int8], 0_int16 )
+                        u16(1) = transfer( [key(3), 0_int8], 0_int16 )
                         u16(0) = nmh_readle16( key )
                     else
-                        u16(0) = transfer( [0_int8, key(2)], 0_int16 )
+                        u16(0) = transfer( [0_int8, key(3)], 0_int16 )
                         u16(1) = nmh_readle16( key )
                     end if
                     u32 = transfer( u16, 0_int32 )
@@ -637,7 +744,7 @@ contains
     end function nmhash32x_0to4
 
     pure function nmhash32x_5to8( p, seed ) result( x )
-        integer(int8), intent(in) :: p(0:)
+        integer(int8), intent(in) :: p(:)
         integer(int32), intent(in) :: seed
         integer(int32) :: x
 
@@ -649,7 +756,7 @@ contains
 
         len = size(p, kind=int64)
         x = ieor( nmh_readle32(p), nmh_prime32_3 )
-        y = ieor( nmh_readle32(p(len-4:)), seed )
+        y = ieor( nmh_readle32(p(len-3:)), seed )
         x  = x + y
         x = ieor( x, ishft(x, -len) )
         x = x * int(z'11049A7D', int32)
@@ -663,7 +770,7 @@ contains
     end function nmhash32x_5to8
 
     pure function nmhash32x_9to255( p, seed ) result( x )
-        integer(int8), intent(in) :: p(0:)
+        integer(int8), intent(in) :: p(:)
         integer(int32), intent(in) :: seed
         integer(int32) :: x
 
@@ -678,7 +785,9 @@ contains
         ! - tail mixer: [16 a52fb2cd 15 551e4d49 16] = 0.17162579707098322
 
         len = size(p, kind=int64)
-        len32 = transfer(len, 0_int32, 2)
+        ! len32 = transfer(len, 0_int32, 2)
+        len32(0) = int(iand(len, int(z'FFFFFFFF', int64)), int32)
+        len32(1) = int(ishft(len, -32), int32)
         if (little_endian) then
             len_base = len32(0)
         else
@@ -691,8 +800,8 @@ contains
         r = (len - 1)/16
 
         do i=0, r-1
-            x = ieor(x, nmh_readle32( p(i*16 + 0:) ) )
-            y = ieor(y, nmh_readle32( p(i*16 + 4:) ) )
+            x = ieor(x, nmh_readle32( p(i*16 + 1:) ) )
+            y = ieor(y, nmh_readle32( p(i*16 + 5:) ) )
             x = ieor(x, y)
             x = x * int(z'11049A7D', int32)
             x = ieor(x, ishft(x, -23) )
@@ -703,8 +812,8 @@ contains
             x = x * int(z'065E9DAD', int32)
             x = ieor(x, ishft(x, -12) )
 
-            a = ieor(a, nmh_readle32(p(i*16 + 8:)))
-            b = ieor(b, nmh_readle32(p(i*16 + 12:)))
+            a = ieor(a, nmh_readle32(p(i*16 + 9:)))
+            b = ieor(b, nmh_readle32(p(i*16 + 13:)))
             a = ieor(a, b)
             a = a * int(z'11049A7D', int32)
             a = ieor(a, ishft(a, -23) )
@@ -718,8 +827,8 @@ contains
 
         if ( iand(len_base-1_int32, 8_int32) /= 0 ) then
             if ( iand(len_base-1_int32, 4_int32) /= 0 ) then
-                a = ieor( a, nmh_readle32( p(r*16 + 0:) ) )
-                b = ieor( b, nmh_readle32( p(r*16 + 4:) ) )
+                a = ieor( a, nmh_readle32( p(r*16 + 1:) ) )
+                b = ieor( b, nmh_readle32( p(r*16 + 5:) ) )
                 a = ieor(a, b)
                 a = a * int(z'11049A7D', int32)
                 a = ieor(a, ishft(a, -23) )
@@ -728,14 +837,14 @@ contains
                 a = ieor(a, ishft(a, -12))
                 a = a * int(z'065E9DAD', int32)
             else
-                a = ieor( a, nmh_readle32( p(r*16:) ) + b )
+                a = ieor( a, nmh_readle32( p(r*16 + 1:) ) + b )
                 a = ieor( a, ishft(a, -16) )
                 a = a * int(z'A52FB2CD', int32)
                 a = ieor( a, ishft(a, -15) )
                 a = a * int(z'551E4D49', int32)
             end if
-            x = ieor( x, nmh_readle32( p(len - 8:) ) )
-            y = ieor( y, nmh_readle32( p(len - 4:) ) )
+            x = ieor( x, nmh_readle32( p(len - 7:) ) )
+            y = ieor( y, nmh_readle32( p(len - 3:) ) )
             x = ieor( x, y )
             x = x * int(z'11049A7D', int32)
             x = ieor( x, ishft(x, -23) )
@@ -745,13 +854,13 @@ contains
             x = x * int(z'065E9DAD', int32)
         else
             if ( iand(len_base-1_int32, 4_int32) /= 0) then
-                a = ieor(a, nmh_readle32(p( r * 16:) ) + b )
+                a = ieor(a, nmh_readle32(p( r * 16 + 1:) ) + b )
                 a = ieor( a, ishft(a,-16) )
                 a = a * int(z'A52FB2CD', int32)
                 a = ieor( a, ishft(a,-15) )
                 a = a * int(z'551E4D49', int32)
             end if
-            x = ieor( x, nmh_readle32(p( len - 4:) ) + y )
+            x = ieor( x, nmh_readle32(p( len - 3:) ) + y )
             x = ieor( x, ishft(x,-16) )
             x = x * int(z'A52FB2CD', int32)
             x = ieor( x, ishft(x,-15) )
@@ -783,7 +892,7 @@ contains
     pure module function int8_nmhash32x( key, seed ) result(hash)
 !! NMHASH32x hash function for rank 1 array keys of kind INT8
         integer(int32) :: hash
-        integer(int8), intent(in) :: key(0:)
+        integer(int8), intent(in) :: key(:)
         integer(int32), intent(in) :: seed
 
         integer(int64) :: len
@@ -805,10 +914,10 @@ contains
                     seed2 = seed + nmh_prime32_2 + ishft(1_int32, 24) + &
                         ishft(1_int32, 1)
                     if (little_endian) then
-                        u32 = transfer( [key(0), 0_int8, 0_int8, 0_int8], &
+                        u32 = transfer( [key(1), 0_int8, 0_int8, 0_int8], &
                                         0_int32 )
                     else
-                        u32 = transfer( [0_int8, 0_int8, 0_int8, key(0)], &
+                        u32 = transfer( [0_int8, 0_int8, 0_int8, key(1)], &
                                         0_int32 )
                     end if
                 case(2)
@@ -823,10 +932,10 @@ contains
                     seed2 = seed + nmh_prime32_2 + ishft(3_int32, 24) + &
                         ishft(3_int32, 1)
                     if (little_endian ) then
-                        u16(1) = transfer( [ key(2), 0_int8 ], 0_int16 )
+                        u16(1) = transfer( [ key(3), 0_int8 ], 0_int16 )
                         u16(0) = nmh_readle16(key)
                     else
-                        u16(0) = transfer( [ 0_int8, key(2) ], 0_int16 )
+                        u16(0) = transfer( [ 0_int8, key(3) ], 0_int16 )
                         u16(1) = nmh_readle16(key)
                     end if
                     u32 = transfer( u16, 0_int32 )
@@ -856,8 +965,26 @@ contains
         integer(int32), intent(in)  :: seed
         integer(int32)           :: hash_code
 
-        hash_code = int8_nmhash32( transfer( key, 0_int8, &
-                     bytes_${k1}$*size(key, kind=int64) ), seed)
+        ! hash_code = int8_nmhash32( transfer( key, 0_int8, &
+        !              bytes_${k1}$*size(key, kind=int64) ), seed)
+         integer(int8), allocatable :: key_bytes(:)
+        integer(int32) :: temp_val
+        integer(int8)  :: temp_bytes(4)
+        equivalence (temp_val, temp_bytes)
+
+        integer :: i, j, k
+        allocate(key_bytes(4 * size(key)))
+        k = 1
+
+        do i = 1, size(key)
+            temp_val = key(i)
+            do j = 1, 4
+            key_bytes(k) = temp_bytes(j)
+            k = k + 1
+            end do
+        end do
+
+        hash_code = int8_nmhash32(key_bytes, seed)
 
     end function ${k1}$_nmhash32
 
@@ -869,8 +996,15 @@ contains
         integer(int32), intent(in) :: seed
         integer(int32)             :: hash_code
 
-        hash_code = int8_nmhash32( transfer( key, 0_int8, &
-                     bytes_char*len(key, kind=int64) ), seed)
+        ! hash_code = int8_nmhash32( transfer( key, 0_int8, &
+        !             bytes_char*len(key, kind=int64) ), seed)
+        integer(int8), allocatable :: key_bytes(:)
+        integer :: i
+        allocate(key_bytes(len(key)))
+        do i = 1, len(key)
+            key_bytes(i) = iachar(key(i:i))  ! Convert char to ASCII int8
+        end do
+        hash_code = int8_nmhash32(key_bytes, seed)
 
     end function character_nmhash32
 
@@ -881,8 +1015,26 @@ contains
         integer(int32), intent(in)  :: seed
         integer(int32)           :: hash_code
 
-        hash_code = int8_nmhash32x( transfer( key, 0_int8, &
-                     bytes_${k1}$*size(key, kind=int64) ), seed)
+        !hash_code = int8_nmhash32x( transfer( key, 0_int8, &
+        !             bytes_${k1}$*size(key, kind=int64) ), seed)
+         integer(int8), allocatable :: key_bytes(:)
+        integer(int32) :: temp_val
+        integer(int8)  :: temp_bytes(4)
+        equivalence (temp_val, temp_bytes)
+
+        integer :: i, j, k
+        allocate(key_bytes(4 * size(key)))
+        k = 1
+
+        do i = 1, size(key)
+            temp_val = key(i)
+            do j = 1, 4
+            key_bytes(k) = temp_bytes(j)
+            k = k + 1
+            end do
+        end do
+
+        hash_code = int8_nmhash32x(key_bytes, seed)
 
     end function ${k1}$_nmhash32x
 
@@ -894,8 +1046,15 @@ contains
         integer(int32), intent(in) :: seed
         integer(int32)             :: hash_code
 
-        hash_code = int8_nmhash32x( transfer( key, 0_int8, &
-                     bytes_char*len(key, kind=int64) ), seed)
+        ! hash_code = int8_nmhash32x( transfer( key, 0_int8, &
+        !              bytes_char*len(key, kind=int64) ), seed)
+        integer(int8), allocatable :: key_bytes(:)
+        integer :: i
+        allocate(key_bytes(len(key)))
+        do i = 1, len(key)
+            key_bytes(i) = iachar(key(i:i))  ! Convert char to ASCII int8
+        end do
+        hash_code = int8_nmhash32x(key_bytes, seed)
 
     end function character_nmhash32x
 

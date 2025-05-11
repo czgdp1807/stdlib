@@ -173,7 +173,7 @@ contains
         integer(int8), intent(in), target :: key(0:)
         integer(int64), intent(inout)     :: hash_inout(2)
 
-        integer(int64) :: a, b, c, d
+        integer(int64) :: a, b, c, d, i, j, temp, byte_val
         integer(int64) :: length, p8, remainder
 
         p8 = 0
@@ -191,7 +191,14 @@ contains
                 integer(int64) :: bend, step
                 integer(int64) :: buf(0:2*sc_numVars-1)
                 bend = ishft(length, -4) ! The number of complete INT128s
-                buf(0:2*bend-1) = transfer( key(0:16*bend-1), 0_int64, 2*bend )
+                ! buf(0:2*bend-1) = transfer( key(0:16*bend-1), 0_int64, 2*bend )
+                 do i = 0, 2*bend - 1
+                    temp = 0_int64
+                    do j = 0, 7
+                        temp = temp + shiftl(iand(ior(int(key(8*i + j), int64), 0_int64), 255_int64), 8 * j)
+                    end do
+                    buf(i) = temp
+                end do
                 ! Number of Int64's in number of complete INT256s
                 bend = ishft(ishft(length, -5), 2)
 
@@ -259,33 +266,64 @@ contains
 115     d = d + shiftl( map_to_64( key(p8+14) ), 48_int64 )
 114     d = d + shiftl( map_to_64( key(p8+13) ), 40_int64 )
 113     d = d + shiftl( map_to_64( key(p8+12) ), 32_int64 )
-112     if ( little_endian) then
-            d = d + transfer( [ transfer(key(p8+8:p8+11), 0_int32), &
-                                0_int32 ], 0_int64)
+112    if (little_endian) then
+            ! Build int32 from key(p8+8:p8+11), in little-endian order
+            temp = 0_int64
+            do i = 0, 3
+                byte_val = iand(int(key(p8 + 8 + i), int64), 255_int64)
+                temp = temp + shiftl(byte_val, 8 * i)
+            end do
+            ! Append 0_int32 in upper 4 bytes (already zeroed)
+            d = d + temp
         else
-            d = d + transfer( [ 0_int32, &
-                                transfer(key(p8+8:p8+11), 0_int32) ], &
-                                0_int64)
+            ! Build int32 from key(p8+8:p8+11), in little-endian
+            temp = 0_int64
+            do i = 0, 3
+                byte_val = iand(int(key(p8 + 8 + i), int64), 255_int64)
+                temp = temp + shiftl(byte_val, 8 * i)
+            end do
+            ! Shift int32 to upper 32 bits and leave lower 32 as 0_int32
+            d = d + shiftl(temp, 32)
         end if
-        c = c + transfer( key(p8+0:p8+7), 0_int64 )
+
+        ! ---- Compute c ----
+        temp = 0_int64
+        do i = 0, 7
+            byte_val = iand(int(key(p8 + i), int64), 255_int64)
+            temp = temp + shiftl(byte_val, 8 * i)
+        end do
+        c = c + temp
         go to 888
 
 111     d = d + shiftl( map_to_64( key(p8+10) ), 16_int32 )
 110     d = d + shiftl( map_to_64( key(p8+9) ), 8_int32 )
 109     d = d + map_to_64( key(p8+8) )
-108     c = c + transfer( key(p8+0:p8+7), 0_int64 )
+108     temp = 0_int64
+        do i = 0, 7
+            byte_val = iand(int(key(p8 + i), int64), 255_int64)
+            temp = temp + shiftl(byte_val, 8 * i)
+        end do
+        c = c + temp
         go to 888
 
 107     c = c + shiftl( map_to_64( key(p8+6) ), 48_int64 )
 106     c = c + shiftl( map_to_64( key(p8+5) ), 40_int64 )
 105     c = c + shiftl( map_to_64( key(p8+4) ), 32_int64 )
-104     if ( little_endian) then
-            c = c + transfer( [ transfer( key(p8+0:p8+3), 0_int32 ), &
-                                0_int32 ], 0_int64 )
+104     temp = 0
+        if (little_endian) then
+            ! Place key(p8+0:p8+3) in lower 4 bytes, upper 4 bytes zero
+            do i = 0, 3
+                byte_val = iand(int(key(p8 + i), int64), 255_int64)
+                temp = temp + shiftl(byte_val, 8 * i)
+            end do
         else
-            c = c + transfer( [ 0_int32, &
-                                transfer( key(p8+0:p8+3), 0_int32 ) ], 0_int64 )
+            ! Place key(p8+0:p8+3) in upper 4 bytes, lower 4 bytes zero
+            do i = 0, 3
+                byte_val = iand(int(key(p8 + i), int64), 255_int64)
+                temp = temp + shiftl(byte_val, 8 * (i + 4))  ! shift by 32, 40, 48, 56
+            end do
         end if
+        c = c + temp
 
         go to 888
 
@@ -441,6 +479,8 @@ contains
         integer(int64) :: h(0:11)
         integer(int64) :: bend, i, length, p8, remain, remainder, tail
         integer(int8)  :: buf8(8)
+        integer(int64) :: byte_val
+        integer :: j, k, bidx
 
         length = size(key, kind=int64)
 
@@ -457,15 +497,29 @@ contains
         bend = (length/sc_blocksize)*sc_blocksize
 
         ! Handle all SC_BLOCKSIZE blocks of bytes
-        do i=0, bend-1, sc_blocksize
-            buf(:) = transfer( key(i:i+sc_blocksize-1), 0_int64, sc_numVars )
-            call spookyhash_mix( buf, h )
-        end do ! all complete internal states processed
+        do i = 0, bend - 1, sc_blocksize
+            do j = 0, sc_numVars - 1
+                buf(j + 1) = 0_int64
+                do k = 0, 7
+                    bidx = i + j * 8 + k
+                    byte_val = iand(int(key(bidx), int64), 255_int64)
+                    buf(j + 1) = buf(j + 1) + shiftl(byte_val, 8 * k)
+                end do
+            end do
+            call spookyhash_mix(buf, h)
+        end do
 
-    ! handle the last partial block of sc_blocksize bytes
-        remainder = ( length - bend ) ! 0 <= remainder < sc_blocksize == 96
-        remain    = remainder / 8 ! Number of INT64's in partial block
-        buf(1:remain) = transfer( key(bend:bend+remain*8-1), 0_int64, remain )
+        ! Handle remaining tail bytes (partial block)
+        remainder = length - bend
+        remain = remainder / 8
+        do j = 0, remain - 1
+            buf(j + 1) = 0_int64
+            do k = 0, 7
+                bidx = bend + j * 8 + k
+                byte_val = iand(int(key(bidx), int64), 255_int64)
+                buf(j + 1) = buf(j + 1) + shiftl(byte_val, 8 * k)
+            end do
+        end do
         buf(remain+1:sc_numvars) = 0_int64
         tail = remainder - 8 * remain ! Number of INT8s after INT64s
         p8 = bend + remain * 8 ! # of bytes until tail start
@@ -649,6 +703,9 @@ contains
      module subroutine spookyhash_update( spooky, key )
         type(spooky_subhash), intent(inout) :: spooky
         integer(int8), intent(in)           :: key(0:)
+        integer(int64) :: byte_val
+        integer :: i, j, k
+        integer(int64) :: buf(sc_numvars)
 
         integer(int8)  :: dummy(0:7)
         integer(int64) :: h(0:11)
@@ -693,11 +750,26 @@ contains
                 prefix = sc_buffsize - spooky % remainder
                 remainder = spooky % remainder
                 spooky % data(remainder:remainder+prefix-1) = key(0:prefix-1)
-                call spookyhash_mix( transfer(spooky % data(0:sc_blocksize-1), &
-                                              0_int64, sc_numvars), h )
-                call spookyhash_mix(                                       &
-                    transfer(spooky % data(sc_blocksize:2*sc_blocksize-1), &
-                             0_int64, sc_numvars), h )
+                do i = 0, sc_numvars - 1
+                    buf(i + 1) = 0_int64
+                    do j = 0, 7
+                        k = i * 8 + j
+                        byte_val = iand(int(spooky%data(k), int64), 255_int64)
+                        buf(i + 1) = buf(i + 1) + shiftl(byte_val, 8 * j)
+                    end do
+                end do
+                call spookyhash_mix(buf, h)
+
+                ! Second block: data(sc_blocksize:2*sc_blocksize-1)
+                do i = 0, sc_numvars - 1
+                    buf(i + 1) = 0_int64
+                    do j = 0, 7
+                        k = sc_blocksize + i * 8 + j
+                        byte_val = iand(int(spooky%data(k), int64), 255_int64)
+                        buf(i + 1) = buf(i + 1) + shiftl(byte_val, 8 * j)
+                    end do
+                end do
+                call spookyhash_mix(buf, h)
                 p8 = prefix
                 length = length - prefix
             end block
@@ -710,8 +782,17 @@ contains
         remainder = length - ( bend - p8 )
         do while( p8 < bend )
             spooky % data(0:sc_blocksize-1) = key( p8:p8+sc_blocksize-1 )
-            call spookyhash_mix( transfer( spooky % data(0:sc_blocksize-1), &
-                                 0_int64, sc_numvars), h )
+            do i = 0, sc_numvars - 1
+                buf(i + 1) = 0_int64
+                do j = 0, 7
+                    k = i * 8 + j
+                    byte_val = int(spooky%data(k), int64)
+                    byte_val = iand(byte_val, 255_int64)  ! Mask to keep just 1 byte
+                    buf(i + 1) = buf(i + 1) + shiftl(byte_val, 8 * j)
+                end do
+            end do
+
+            call spookyhash_mix(buf, h)
             p8 = p8 + sc_blocksize
         end do
 
@@ -737,12 +818,23 @@ contains
         integer(int64) :: h(0:11)
         integer(int64) :: index, remainder
         integer(int8)  :: dummy(2)
+        integer(int64) :: buf(2 * sc_numvars)
+        integer(int64) :: byte_val
+        integer :: i, j, idx
 
     ! init the variables
         if ( spooky % length < sc_buffsize ) then
             hash_code = spooky % state(0:1)
-            call spookyhash_short( spooky % data(0:spooky % length-1), &
-                                   hash_code )
+            do i = 0, 2 * sc_numvars - 1
+                buf(i + 1) = 0_int64
+                do j = 0, 7
+                    idx = i * 8 + j
+                    byte_val = int(spooky%data(idx), int64)
+                    byte_val = iand(byte_val, 255_int64)  ! Ensure only 8 bits
+                    buf(i + 1) = ibset(buf(i + 1), 0) + shiftl(byte_val, 8 * j)
+                end do
+            end do
+            call spookyhash_mix(buf, h)
             return
         end if
 
@@ -752,8 +844,16 @@ contains
 
         if ( remainder >= sc_blocksize ) then
           ! m_data can contain two blocks; handle any whole first block
-            call spookyhash_mix( transfer( spooky % data, 0_int64, &
-                                           2*sc_numvars), h )
+            do i = 0, 2 * sc_numvars - 1
+                buf(i + 1) = 0_int64
+                do j = 0, 7
+                    idx = i * 8 + j
+                    byte_val = int(spooky%data(idx), int64)
+                    byte_val = iand(byte_val, 255_int64)  ! Ensure only 8 bits
+                    buf(i + 1) = ibset(buf(i + 1), 0) + shiftl(byte_val, 8 * j)
+                end do
+            end do
+            call spookyhash_mix(buf, h)
             index = sc_blocksize
             remainder = remainder - sc_blocksize
         else
@@ -771,7 +871,16 @@ contains
         end if
 
     ! do some final mixing
-        call spookyhash_end( transfer(spooky % data, 0_int64, 2*sc_numvars), h )
+        do i = 0, 2 * sc_numvars - 1
+            buf(i + 1) = 0_int64
+            do j = 0, 7
+                idx = i * 8 + j
+                byte_val = int(spooky%data(idx), int64)
+                byte_val = iand(byte_val, 255_int64)
+                buf(i + 1) = ibset(buf(i + 1), 0) + shiftl(byte_val, 8 * j)
+            end do
+        end do
+        call spookyhash_end(buf, h)
 
         hash_code(1:2) = h(0:1)
 

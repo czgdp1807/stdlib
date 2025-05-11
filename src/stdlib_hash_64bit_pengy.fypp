@@ -154,16 +154,17 @@ contains
 
     pure module function int8_pengy_hash( key, seed ) result(hash_code)
         integer(int64) :: hash_code
-        integer(int8), intent(in) :: key(0:)
+        integer(int8), intent(in) :: key(:)
         integer(int32), intent(in) :: seed
 
         integer(int64) :: b(0:3)
-        integer(int64) :: i
+        integer(int64) :: i, j, temp
         integer(int64) :: index
         integer(int64) :: len
         integer(int64) :: s(0:3)
         integer(int64) :: seed2
         integer(int8)  :: dummy(0:31)
+        integer :: byte_val
 
         b(0:3) = 0_int64
         len = size( key, kind=int64 )
@@ -171,7 +172,14 @@ contains
 
         index = 0_int64
         do while ( len >= 32 )
-            b(0:3) = transfer( key( index:index+31 ), 0_int64, 4 )
+            ! b(0:3) = transfer( key( index + 1:index+32 ), 0_int64, 4 )           
+            do i = 0, 3
+            b(i) = 0_8
+                do j = 0, 7
+                    ! Load byte, convert to 64-bit integer, mask to 8 bits, shift, then OR into b(i)
+                    b(i) = ior(b(i), shiftl( int(iachar(char(key(index + 1 + i*8 + j))), kind=8), 8*j ))
+                end do
+            end do
 
             s(0) = s(0) + s(1) + b(3)
             s(1) = s(0) + ishftc( s(1), 14 )
@@ -186,15 +194,29 @@ contains
             index = index + 32
         end do
 
-        dummy(0:31) = transfer( b, 0_int8, 32 )
-        dummy(0:len-1) = key(index:index+len-1)
-        b(0:3) = transfer( dummy, 0_int64, 4)
+        ! dummy(0:31) = transfer( b, 0_int8, 32 )
+        do i = 0, 3
+            do j = 0, 7
+                ! Extract j-th byte of b(i+1)
+                byte_val = iand(int(ishft(b(i), -8*j), kind=1), int(z'FF', kind=1))
+                dummy(i * 8 + j) = int(byte_val, kind=1)
+            end do
+        end do
+        dummy(0:len-1) = key(index + 1:index+len)
+        ! b(0:3) = transfer( dummy, 0_int64, 4)
+        do i = 0, 3
+            temp = 0_8
+            do j = 0, 7
+                ! Convert to unsigned 64-bit and shift by 8*j
+                temp = ior(temp, shiftl(iand(int(dummy(i*8 + j), kind=8), int(Z'FF', kind=8)), 8*j))
+            end do
+            b(i) = temp
+        end do
         if ( little_endian ) then
             seed2 = transfer( [ seed, 0_int32 ], 0_int64 )
         else
             seed2 = transfer( [ 0_int32, seed ], 0_int64 )
         end if
-
         do i = 0, 5
             s(0) = s(0) + s(1) + b(3)
             s(1) = s(0) + ishftc( s(1), 14 ) + seed2
@@ -205,7 +227,6 @@ contains
             s(2) = s(2) + s(1) + b(0)
             s(1) = ieor( s(2), ishftc( s(1), 40 ) )
         end do
-
         hash_code = s(0) + s(1) + s(2) + s(3)
 
     end function int8_pengy_hash
