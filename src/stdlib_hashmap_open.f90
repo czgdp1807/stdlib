@@ -52,13 +52,13 @@ submodule(stdlib_hashmaps) stdlib_hashmap_open
         module procedure free_open_map
     end interface free_map
 
-    interface free_map_entry_pool
+    interface free_map_entry_pool_temp
 !! Version: Experimental
 !!
 !! Interface to internal procedure that finalizes an open hash map
 !! entry pool.
         module procedure free_map_entry_pool
-    end interface free_map_entry_pool
+    end interface free_map_entry_pool_temp
 
     interface get_other_data
 !! Version: Experimental
