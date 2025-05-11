@@ -14,6 +14,22 @@ target_sources(
   waterhash.c
   generate_hash_arrays.cpp
 )
+
+# Link LFortran runtime library
+find_library(
+  LFORTRAN_RUNTIME
+  NAMES lfortran_runtime
+  PATHS /home/jinang_shah/Desktop/lfortran/src/runtime
+  NO_DEFAULT_PATH
+)
+
+if (LFORTRAN_RUNTIME)
+  target_link_libraries(test_hash_functions ${LFORTRAN_RUNTIME})
+else()
+  message(FATAL_ERROR "LFortran runtime not found.")
+endif()
+
+
 if(CMAKE_Fortran_COMPILER_ID MATCHES "^Intel")
   set_target_properties(test_hash_functions PROPERTIES LINKER_LANGUAGE Fortran)
 endif()
