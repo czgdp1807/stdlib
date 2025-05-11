@@ -163,8 +163,10 @@ contains
         integer(int64) :: len
         integer(int64) :: s(0:3)
         integer(int64) :: seed2
-        integer(int8)  :: dummy(0:31)
+        integer(int8)  :: dummy(0:31), byte_val2
         integer :: byte_val
+        integer(8) :: shifted_val
+        character :: ch
 
         b(0:3) = 0_int64
         len = size( key, kind=int64 )
@@ -174,10 +176,18 @@ contains
         do while ( len >= 32 )
             ! b(0:3) = transfer( key( index + 1:index+32 ), 0_int64, 4 )           
             do i = 0, 3
-            b(i) = 0_8
+                b(i) = 0_8
                 do j = 0, 7
                     ! Load byte, convert to 64-bit integer, mask to 8 bits, shift, then OR into b(i)
-                    b(i) = ior(b(i), shiftl( int(iachar(char(key(index + 1 + i*8 + j))), kind=8), 8*j ))
+                    byte_val2 = key(index + 1 + i*8 + j)
+                    if (byte_val2 < 0) then
+                        ch = char(byte_val2)
+                        shifted_val = iachar(ch)
+                    else 
+                        shifted_val = byte_val2
+                    end if
+                    shifted_val = shiftl( int(shifted_val, 8), 8*j )
+                    b(i) = ior(b(i), shifted_val)
                 end do
             end do
 
