@@ -164,7 +164,7 @@ contains
 
     subroutine generate_key_array()
     
-        integer        :: i, lun
+        integer        :: i, j, lun
         integer(int8)  :: key_array(size_key_array)
         integer(int32) :: dummy(size_key_array/4)
         real(dp)   :: rand(size_key_array/4)
@@ -172,9 +172,16 @@ contains
         ! Create key array
         call random_number( rand )
         do i=1, size_key_array/4
-            dummy(i) = floor( rand(i) * 2_int64**32 - 2_int64**31, kind=int32 )
+            dummy(i) = i * 121082
         end do
-        key_array = transfer( dummy, 0_int8, size_key_array )
+        ! key_array = transfer( dummy, 0_int8, size_key_array )
+        do i = 1, size_key_array/4
+            j = (i - 1) * 4 + 1
+            key_array(j)     = int(ibits(dummy(i), 0, 8), kind=int8)
+            key_array(j + 1) = int(ibits(dummy(i), 8, 8), kind=int8)
+            key_array(j + 2) = int(ibits(dummy(i), 16, 8), kind=int8)
+            key_array(j + 3) = int(ibits(dummy(i), 24, 8), kind=int8)
+        end do
     
         open(newunit=lun, file="key_array.bin", form="unformatted", &
             access="stream", status="replace", action="write")
