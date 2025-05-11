@@ -166,12 +166,12 @@ contains
 
     pure module function int8_water_hash( key, seed ) result(hash_code)
         integer(int32)             :: hash_code
-        integer(int8), intent(in)  :: key(0:)
+        integer(int8), intent(in)  :: key(:)
         integer(int64), intent(in) :: seed
 
         integer(int32) :: dummy(2)
         integer(int64) :: h
-        integer(int64) :: i
+        integer(int64) :: i, j, k
         integer(int64) :: len
         integer(int64), parameter ::                &
             waterp0 = int(z'a0761d65', kind=int64), &
@@ -183,14 +183,22 @@ contains
 
         len = size(key, kind=int64)
         h = seed
-        do i = 0_int64, len-16, 16
+        do i = 1_int64, len-15, 16
             h = watermum(watermum(ieor(waterr32(key(i:)),waterp1),        &
                                   ieor(waterr32(key(i+4:)),waterp2)) + h, &
                          watermum(ieor(waterr32(key(i+8:)),waterp3),      &
                                   ieor(waterr32(key(i+12:)),waterp4)))
         end do
         h = h + waterp5
-
+        j = (len - 15)
+        if (j < 1) then
+            i = 1
+        else 
+            k = mod(j, 16)
+            j = j / 16
+            if (k /= 0) j = j + 1
+            i = 1_int64 + (j*16_int64)
+        end if
         select case( iand(len, 15_int64) )
         case(1)
             h = watermum(ieor(waterp2, h),               &
@@ -259,7 +267,9 @@ contains
 
         h = ieor( h, ishft(h,16) ) * ieor( len, waterp0 )
         h = h - ishft( h, -32 )
-        dummy(1:2) = transfer(h, dummy, 2)
+        ! dummy(1:2) = transfer(h, dummy, 2)
+        dummy(1) = int(ibits(h, 0, 32), kind=int32)                    ! low
+        dummy(2) = int(ibits(ishft(h, -32), 0, 32), kind=int32)        ! high
         if (little_endian) then
             hash_code = dummy(1)
         else
