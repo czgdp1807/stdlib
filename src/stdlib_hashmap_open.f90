@@ -30,6 +30,13 @@ submodule(stdlib_hashmaps) stdlib_hashmap_open
 
     character(*), parameter :: submodule_name = 'STDLIB_HASHMAP_OPEN'
 
+    abstract interface
+        pure function hasher_fun_temporary( key )  result(hash_value)
+            import key_type, int_hash
+            type(key_type), intent(in)    :: key
+            integer(int_hash)             :: hash_value
+        end function hasher_fun_temporary
+    end interface
 
     interface expand_slots
 !! Version: Experimental
@@ -408,7 +415,7 @@ contains
 !!             greater than max_bits
 
         class(open_hashmap_type), intent(out)      :: map
-        procedure(hasher_fun)                      :: hasher
+        procedure(hasher_fun_temporary)                      :: hasher
         integer, intent(in), optional              :: slots_bits
         integer(int32), intent(out), optional      :: status
 
@@ -662,7 +669,7 @@ contains
 !!     hasher the hasher function to be used for the table
 !
         class(open_hashmap_type), intent(inout) :: map
-        procedure(hasher_fun)                   :: hasher
+        procedure(hasher_fun_temporary)                   :: hasher
 
         integer(int_hash)       :: base_slot
         integer(int_hash)       :: hash_val
