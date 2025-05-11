@@ -14,9 +14,8 @@ target_sources(
   waterhash.c
   generate_hash_arrays.cpp
 )
-if(CMAKE_Fortran_COMPILER_ID MATCHES "^Intel")
-  set_target_properties(test_hash_functions PROPERTIES LINKER_LANGUAGE Fortran)
-endif()
+
+set_target_properties(test_hash_functions PROPERTIES LINKER_LANGUAGE Fortran)
 if(CMAKE_Fortran_COMPILER_ID STREQUAL GNU AND CMAKE_Fortran_COMPILER_VERSION VERSION_LESS 10.0)
   target_compile_options(
     test_hash_functions
