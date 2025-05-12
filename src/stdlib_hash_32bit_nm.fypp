@@ -198,7 +198,7 @@ interface new_nmhash32_seed
     integer, parameter :: init_size = 32
 
 ! Pseudorandom secrets taken directly from FARSH.
-    integer(int32), parameter :: nmh_acc_init(0:init_size-1) = [ &
+    integer(int32), parameter :: nmh_acc_init(1:init_size) = [ &
         int( z'B8FE6C39', int32 ), int( z'23A44BBE', int32 ), &
         int( z'7C01812C', int32 ), int( z'F721AD1C', int32 ), &
         int( z'DED46DE9', int32 ), int( z'839097DB', int32 ), &
@@ -554,8 +554,8 @@ contains
         integer(int8), intent(in) :: p(:)
         integer(int32), intent(in) :: seed
 
-        integer(int32) :: accx(0:size(nmh_acc_init)-1)
-        integer(int32) :: accy(0:size(nmh_acc_init)-1)
+        integer(int32) :: accx(size(nmh_acc_init))
+        integer(int32) :: accy(size(nmh_acc_init))
         integer(int64) :: nbrounds
         integer(int64) :: len
         integer(int32) :: len32(0:1)
@@ -566,7 +566,7 @@ contains
         sum = 0
 
 !  Init
-        do i=0_int64, size(nmh_acc_init, kind=int64)-1
+        do i=1_int64, size(nmh_acc_init, kind=int64)
             accx(i) = nmh_acc_init(i)
             accy(i) = seed
         end do
@@ -580,7 +580,7 @@ contains
                                   p(len-8*size(accx, kind=int64) + 1:) )
 
         ! merge acc
-        do i=0, size( accx, kind=int64 )-1
+        do i=1, size( accx, kind=int64 )
             accx(i) = ieor( accx(i), nmh_acc_init(i) )
             sum = sum + accx(i)
         end do
