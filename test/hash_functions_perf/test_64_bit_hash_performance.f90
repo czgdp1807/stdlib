@@ -20,7 +20,7 @@ program test_64_bit_hash_performance
     integer, parameter :: rand_size = 2**rand_power
     integer, parameter :: test_size = rand_size * 4
     integer, parameter :: repeat = 4
-    integer :: index, k
+    integer :: index, k, i, j, shifted
     integer :: lun
     real(dp) :: rand(2)
     integer(int32) :: rand_object(rand_size)
@@ -40,7 +40,14 @@ program test_64_bit_hash_performance
         end if
     end do
 
-    test_object(:) = transfer( rand_object, 0_int8, test_size )
+    ! test_object(:) = transfer( rand_object, 0_int8, test_size )
+
+    do i = 0, rand_size - 1
+        do j = 0, 3
+            shifted = ishft(rand_object(i + 1), -8*j)
+            test_object(4*i + j + 1) = int(shifted, int8)
+        end do
+    end do
 
     write(lun, '("| Algorithm  | Key Size  | Key #      | Time (s) |")')
     write(lun, '("|            | Bytes     |            |          |")')
