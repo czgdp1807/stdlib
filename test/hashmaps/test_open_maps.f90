@@ -32,6 +32,13 @@ program test_open_maps
     integer(int32)            :: rand_object(rand_size)
     integer(int8)             :: test_8_bits(test_size)
 
+    abstract interface
+        pure function hasher_fun_test_open_maps( key )  result(hash_value)
+            import key_type, int_hash
+            type(key_type), intent(in)    :: key
+            integer(int_hash)             :: hash_value
+        end function hasher_fun_test_open_maps
+    end interface
 
     open( newunit=lun, file="test_open_maps.txt", access="sequential", &
         action="write", form="formatted", position="rewind" )
@@ -271,7 +278,7 @@ contains
 
     subroutine report_rehash_times( map, hasher, hash_name, size_name )
         type(open_hashmap_type), intent(inout) :: map
-        procedure(hasher_fun)                   :: hasher
+        procedure(hasher_fun_test_open_maps)                   :: hasher
         character(*), intent(in)                :: hash_name, size_name
         real :: t1, t2, tdiff
 
