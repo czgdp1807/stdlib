@@ -7,9 +7,10 @@
 ! entries. This did not cause stat to be non-zero, but did cause system errors,
 ! on my Mac. I therefore decided to remove all deallocation error reporting.
 
-submodule(stdlib_hashmaps) stdlib_hashmap_open
+module stdlib_hashmap_open
 
     use, intrinsic :: iso_fortran_env, only: error_unit
+    use stdlib_hashmaps
 
     !use stdlib_hashmap_wrappers
 
@@ -30,11 +31,15 @@ submodule(stdlib_hashmaps) stdlib_hashmap_open
 
     character(*), parameter :: submodule_name = 'STDLIB_HASHMAP_OPEN'
 
+    integer(4) :: int32_2 = 2
+    integer(8) :: int64_0 = 0
+    integer(8) :: int64_1 = 1
+
     abstract interface
         pure function hasher_fun_temporary( key )  result(hash_value)
-            import key_type, int_hash
+            import key_type
             type(key_type), intent(in)    :: key
-            integer(int_hash)             :: hash_value
+            integer(4)             :: hash_value
         end function hasher_fun_temporary
     end interface
 
@@ -116,14 +121,14 @@ contains
 !
         type(open_hashmap_type), intent(inout) :: map
 
-        integer(int_hash)               :: base_slot
+        integer(4)               :: base_slot
         integer(int_index), allocatable :: dummy_slots(:)
         integer(int_index)              :: inv_index,  &
                                            new_size,   &
                                            offset,     &
                                            old_size,   &
                                            test_slot
-        integer(int32)                  :: bits,      &
+        integer(4)                  :: bits,      &
                                            stat
 
         character(256) :: errmsg
@@ -161,7 +166,7 @@ contains
                                               map % nbits )
                   offset = 0
                   FIND_EMPTY_SLOT: do
-                      test_slot = iand( int( base_slot + offset, int_hash), &
+                      test_slot = iand( int( base_slot + offset, 4), &
                                         map % index_mask )
                       if ( dummy_slots(test_slot) == 0 ) then
                           dummy_slots(test_slot) = inv_index
@@ -270,7 +275,7 @@ contains
         class(open_hashmap_type), intent(in) :: map
         type(key_type), allocatable, intent(out) :: all_keys(:)
         
-        integer(int32) :: num_keys
+        integer(4) :: num_keys
         integer(int_index) :: i, key_idx
 
         num_keys = map % entries()
@@ -348,7 +353,7 @@ contains
         type(key_type), intent(in)              :: key
 
         character(*), parameter :: procedure = 'IN_MAP'
-        integer(int_hash) :: &
+        integer(4) :: &
             base_slot,       &
             hash_val,        &
             test_slot
@@ -417,13 +422,13 @@ contains
         class(open_hashmap_type), intent(out)      :: map
         procedure(hasher_fun_temporary)                      :: hasher
         integer, intent(in), optional              :: slots_bits
-        integer(int32), intent(out), optional      :: status
+        integer(4), intent(out), optional      :: status
 
         character(256)          :: errmsg
         integer(int_index)      :: i
         character(*), parameter :: procedure = 'INIT'
         integer(int_index)      :: slots
-        integer(int32)          :: stat
+        integer(4)          :: stat
         type(open_map_entry_pool), pointer :: map_entry_pool_head
 
         map % call_count = 0
@@ -448,7 +453,7 @@ contains
             map % nbits = min( default_bits, max_bits )
         end if
 
-        slots = 2_int32**map % nbits
+        slots = int32_2**map % nbits
         map % index_mask = slots - 1
 
         allocate( map % slots(0:slots-1), stat=stat, errmsg=errmsg )
@@ -534,8 +539,8 @@ contains
         logical, intent(out), optional          :: conflict
 
         type(open_map_entry_type), pointer :: new_ent
-        integer(int_hash)  :: base_slot
-        integer(int_hash)  :: hash_val
+        integer(4)  :: base_slot
+        integer(4)  :: hash_val
         integer(int_index) :: inmap, offset, test_slot
         character(*), parameter :: procedure = 'MAP_ENTRY'
 
@@ -640,7 +645,7 @@ contains
             type(open_hashmap_type), intent(inout) :: map
             type(open_map_entry_ptr), allocatable   :: dummy_inverse(:)
 
-            integer(int32) :: stat
+            integer(4) :: stat
             character(256) :: errmsg
 
             allocate( dummy_inverse(1:2*size(map % inverse, kind=int_index)), &
@@ -671,8 +676,8 @@ contains
         class(open_hashmap_type), intent(inout) :: map
         procedure(hasher_fun_temporary)                   :: hasher
 
-        integer(int_hash)       :: base_slot
-        integer(int_hash)       :: hash_val
+        integer(4)       :: base_slot
+        integer(4)       :: hash_val
         integer(int_index)      :: i, test_slot, offset
 
         map % hasher => hasher
@@ -686,7 +691,7 @@ contains
             base_slot = fibonaccI_hash( hash_val, map % nbits )
             offset = 0
             FIND_EMPTY_SLOT: do
-                test_slot = iand( int( base_slot + offset, int_hash ), &
+                test_slot = iand( int( base_slot + offset, 4 ), &
                                   map % index_mask )
                 if ( map % slots(test_slot) == 0 ) then
                     map % slots(test_slot) = i
@@ -866,12 +871,12 @@ contains
 !! Arguments:
 !!     map - an open hash map
         class(open_hashmap_type), intent(in) :: map
-        integer(int64) :: total_depth
+        integer(8) :: total_depth
 
         integer(int_index) :: inv_index, slot, slots
-        integer(int_hash)  :: index
+        integer(4)  :: index
 
-        total_depth = 0_int64
+        total_depth = int64_0
         slots = size( map % slots, kind=int_index )
         do slot=0, slots-1
             if ( map % slots( slot ) == 0 ) cycle
@@ -882,7 +887,7 @@ contains
                                       map % nbits )
             end associate
             total_depth = total_depth + &
-                iand( slot - index, map % index_mask ) + 1_int64
+                iand( slot - index, map % index_mask ) + int64_1
         end do
 
     end function total_open_depth
@@ -912,4 +917,4 @@ contains
 
     end subroutine open_key_test
 
-end submodule stdlib_hashmap_open
+end module stdlib_hashmap_open

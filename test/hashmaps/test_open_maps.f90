@@ -10,6 +10,7 @@ program test_open_maps
 
     use stdlib_hashmaps, only : open_hashmap_type, int_depth, int_index
     use stdlib_hashmap_wrappers
+    use stdlib_hashmap_open
 
     implicit none
 
@@ -56,7 +57,7 @@ program test_open_maps
 
     test_8_bits(:) = transfer( rand_object, 0_int8, test_size )
 
-    call map % init( fnv_1_hasher, slots_bits=10 )
+    call init(map, fnv_1_hasher, slots_bits=10 )
     call input_random_data( map, test_16, 'FNV-1', "16 byte words" )
     call test_inquire_data( map, test_16, 'FNV-1', "16 byte words" )
     call test_get_data( map, test_16, 'FNV-1', '16 byte words' )
@@ -65,7 +66,7 @@ program test_open_maps
     call report_hash_statistics( map, 'FNV-1', '16 byte words' )
     call report_removal_times( map, test_16, 'FNV-1', '16 byte words' )
 
-    call map % init( fnv_1_hasher, slots_bits=10 )
+    call init(map, fnv_1_hasher, slots_bits=10 )
     call input_random_data( map, test_256, 'FNV-1', "256 byte words" )
     call test_inquire_data( map, test_256, 'FNV-1', "256 byte words" )
     call test_get_data( map, test_256, 'FNV-1', '256 byte words' )
@@ -74,7 +75,7 @@ program test_open_maps
     call report_hash_statistics( map, 'FNV-1', '256 byte words' )
     call report_removal_times( map, test_256, 'FNV-1', '256 byte words' )
 
-    call map % init( fnv_1a_hasher, slots_bits=10 )
+    call init(map, fnv_1a_hasher, slots_bits=10 )
     call input_random_data( map, test_16, 'FNV-1A', "16 byte words" )
     call test_inquire_data( map, test_16, 'FNV-1A', "16 byte words" )
     call test_get_data( map, test_16, 'FNV-1A', '16 byte words' )
@@ -83,7 +84,7 @@ program test_open_maps
     call report_hash_statistics( map, 'FNV-1A', '16 byte words' )
     call report_removal_times( map, test_16, 'FNV-1a', '16 byte words' )
 
-    call map % init( fnv_1a_hasher, slots_bits=10 )
+    call init(map, fnv_1a_hasher, slots_bits=10 )
     call input_random_data( map, test_256, 'FNV-1A', "256 byte words" )
     call test_inquire_data( map, test_256, 'FNV-1A', "256 byte words" )
     call test_get_data( map, test_256, 'FNV-1A', '256 byte words' )
@@ -92,7 +93,7 @@ program test_open_maps
     call report_hash_statistics( map, 'FNV-1A', '256 byte words' )
     call report_removal_times( map, test_256, 'FNV-1A', '256 byte words' )
 
-    call map % init( seeded_nmhash32_hasher, slots_bits=10 )
+    call init(map, seeded_nmhash32_hasher, slots_bits=10 )
     call input_random_data( map, test_16, 'Seeded_Nmhash32', "16 byte words" )
     call test_inquire_data( map, test_16, 'Seeded_Nmhash32', "16 byte words" )
     call test_get_data( map, test_16, 'Seeded_Nmhash32', '16 byte words' )
@@ -103,7 +104,7 @@ program test_open_maps
     call report_removal_times( map, test_16, 'Seeded_Nmhash32', &
         '16 byte words' )
 
-    call map % init( seeded_nmhash32_hasher, slots_bits=10 )
+    call init(map, seeded_nmhash32_hasher, slots_bits=10 )
     call input_random_data( map, test_256, 'Seeded_Nmhash32', "256 byte words" )
     call test_inquire_data( map, test_256, 'Seeded_Nmhash32', "256 byte words" )
     call test_get_data( map, test_256, 'Seeded_Nmhash32', '256 byte words' )
@@ -114,7 +115,7 @@ program test_open_maps
     call report_removal_times( map, test_256, 'Seeded_Nmhash32', &
         '256 byte words' )
 
-    call map % init( seeded_nmhash32x_hasher, slots_bits=10 )
+    call init(map, seeded_nmhash32x_hasher, slots_bits=10 )
     call input_random_data( map, test_16, 'Seeded_Nmhash32x', "16 byte words" )
     call test_inquire_data( map, test_16, 'Seeded_Nmhash32x', "16 byte words" )
     call test_get_data( map, test_16, 'Seeded_Nmhash32x', '16 byte words' )
@@ -125,7 +126,7 @@ program test_open_maps
     call report_removal_times( map, test_16, 'Seeded_Nmhash32x', &
         '16 byte words' )
 
-    call map % init( seeded_nmhash32x_hasher, slots_bits=10 )
+    call init(map, seeded_nmhash32x_hasher, slots_bits=10 )
     call input_random_data( map, test_256, 'Seeded_Nmhash32x', &
         "256 byte words" )
     call test_inquire_data( map, test_256, 'Seeded_Nmhash32x', &
@@ -138,7 +139,7 @@ program test_open_maps
     call report_removal_times( map, test_256, 'Seeded_Nmhash32x', &
         '256 byte words' )
 
-    call map % init( seeded_water_hasher, slots_bits=10 )
+    call init(map, seeded_water_hasher, slots_bits=10 )
     call input_random_data( map, test_16, 'Seeded_Water', "16 byte words" )
     call test_inquire_data( map, test_16, 'Seeded_Water', "16 byte words" )
     call test_get_data( map, test_16, 'Seeded_Water', '16 byte words' )
@@ -149,7 +150,7 @@ program test_open_maps
     call report_removal_times( map, test_16, 'Seeded_Water', &
         '16 byte words' )
 
-    call map % init( seeded_water_hasher, slots_bits=10 )
+    call init(map, seeded_water_hasher, slots_bits=10 )
     call input_random_data( map, test_256, 'Seeded_Water', &
         "256 byte words" )
     call test_inquire_data( map, test_256, 'Seeded_Water', &
@@ -184,7 +185,7 @@ contains
             dummy_val % value = test_8_bits( index2:index2+test_block-1 )
             allocate( dummy, source=dummy_val )
             call set ( other, dummy )
-            call map % map_entry( key, other, conflict )
+            call map_open_entry( map, key, other, conflict )
             if (conflict) &
                 error stop "Unable to map entry because of a key conflict."
         end do
@@ -208,7 +209,7 @@ contains
         call cpu_time(t1)
         do index2=1, size(test_8_bits), test_block
             call set( key, test_8_bits( index2:index2+test_block-1 ) )
-            call map % key_test( key, present )
+            call open_key_test(map, key, present )
             if (.not. present) &
                 error stop "KEY not found in map KEY_TEST."
         end do
@@ -233,7 +234,7 @@ contains
         call cpu_time(t1)
         do index2=1, size(test_8_bits), test_block
             call set( key, test_8_bits( index2:index2+test_block-1 ) )
-            call map % get_other_data( key, other, exists )
+            call get_other_data(map, key, other, exists )
             if (.not. exists) &
                 error stop "Unable to get data because key not found in map."
         end do
@@ -255,7 +256,7 @@ contains
         real :: t1, t2, tdiff
 
         call cpu_time(t1)
-        call map % get_all_keys(all_keys)
+        call get_all_open_keys(map, all_keys)
         call cpu_time(t2)
         tdiff = t2-t1
 
@@ -283,7 +284,7 @@ contains
         real :: t1, t2, tdiff
 
         call cpu_time(t1)
-        call map % rehash( hasher )
+        call rehash(map, hasher )
         call cpu_time(t2)
         tdiff = t2-t1
 
@@ -305,7 +306,7 @@ contains
         call cpu_time(t1)
         do index2=1, size(test_8_bits), test_block
             call set( key, test_8_bits( index2:index2+test_block-1 ) )
-            call map % remove(key, existed)
+            call remove(map, key, existed)
             if ( .not. existed ) &
                 error stop "Key not found in entry removal."
         end do
@@ -331,8 +332,8 @@ contains
         write(lun, '("Calls = ", I0)' ) map % calls()
         write(lun, '("Entries = ", I0)' ) map % entries()
         write(lun, '("Total probes = ", I0)' ) map % map_probes()
-        write(lun, '("Loading = ", ES10.3)' ) map % loading()
-        depth = map % total_depth()
+        write(lun, '("Loading = ", ES10.3)' ) open_loading(map)
+        depth = total_open_depth(map)
         write(lun, '("Total depth = ", I0)' ) depth
         write(lun, '("Relative depth = ", ES10.3)') &
             real( depth ) / real( map % entries() )
