@@ -510,7 +510,7 @@ contains
             map_entry_pool_head => map % cache
             map % cache => map_entry_pool_head % lastpool
             map_entry_pool_head % lastpool => null()
-            deallocate( map_entry_pool_head % more_map_entries )
+            ! deallocate( map_entry_pool_head % more_map_entries )
             deallocate( map_entry_pool_head )
         end do
 
