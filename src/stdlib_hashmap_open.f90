@@ -337,7 +337,7 @@ contains
         else if ( associated( map % inverse(inmap) % target ) ) then
             if ( present(exists) ) exists = .true.
             target_get_other_open_data => map % inverse(inmap) % target
-            call copy_other( target_get_other_open_data % other, other )
+            ! call copy_other( target_get_other_open_data % other, other )
         else
             if ( present(exists) ) then
                 exists = .false.
@@ -578,7 +578,7 @@ contains
                 new_ent % hash_val = hash_val
                 call copy_key( key, new_ent % key )
                 if ( present( other ) ) &
-                    call copy_other( other, new_ent % other )
+                    ! call copy_other( other, new_ent % other )
                 inmap = new_ent % inmap
                 map % inverse( inmap ) % target => new_ent
                 map % slots( test_slot ) = inmap
