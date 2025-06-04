@@ -38,6 +38,10 @@ module stdlib_hashmap_wrappers
         seeded_water_hasher,     &
         set
 
+    integer(4), parameter ::                  &
+        offset_basis = int( z'811C9DC5', 4 ), &
+        prime        = int( z'01000193', 4 )
+
 !! Public types
     public ::      &
         key_type,  &
@@ -105,7 +109,81 @@ module stdlib_hashmap_wrappers
 
     end interface set
 
+    interface fnv_1_hash_wrappers
+        module procedure int8_fnv_1_wrappers,    &
+                         int16_fnv_1_wrappers,   &
+                         int32_fnv_1_wrappers,   &
+                         int64_fnv_1_wrappers,   &
+                         character_fnv_1_wrappers
+    end interface fnv_1_hash_wrappers
+
 contains
+
+    pure module function int8_fnv_1_wrappers( key ) result(hash_code)
+        integer(int8), intent(in)     :: key(:)
+        integer(int_hash)             :: hash_code
+
+        integer(int64) :: i
+
+        hash_code = offset_basis
+        do i=1_int64, size(key, kind=int64)
+            hash_code = hash_code * prime
+            if ( little_endian ) then
+                hash_code = ieor( hash_code, &
+                                  transfer( [key(i), 0_int8, 0_int8, 0_int8], &
+                                            0_int_hash ) )
+            else
+                hash_code = ieor( hash_code, &
+                                  transfer( [0_int8, 0_int8, 0_int8, key(i)], &
+                                            0_int_hash ) )
+            end if
+        end do
+
+    end function int8_fnv_1_wrappers
+
+
+    pure module function int16_fnv_1_wrappers( key ) result(hash_code)
+        integer(int16), intent(in) :: key(:)
+        integer(int_hash)           :: hash_code
+
+        hash_code = int8_fnv_1_wrappers( transfer( key, 0_int8,                      &
+                                          2*                     &
+                                          size( key, kind=int64 ) ) )
+
+    end function int16_fnv_1_wrappers
+
+    pure module function int32_fnv_1_wrappers( key ) result(hash_code)
+        integer(int32), intent(in) :: key(:)
+        integer(int_hash)           :: hash_code
+
+        hash_code = int8_fnv_1_wrappers( transfer( key, 0_int8,                      &
+                                          4*                     &
+                                          size( key, kind=int64 ) ) )
+
+    end function int32_fnv_1_wrappers
+
+    pure module function int64_fnv_1_wrappers( key ) result(hash_code)
+        integer(int64), intent(in) :: key(:)
+        integer(int_hash)           :: hash_code
+
+        hash_code = int8_fnv_1_wrappers( transfer( key, 0_int8,                      &
+                                          8*                     &
+                                          size( key, kind=int64 ) ) )
+
+    end function int64_fnv_1_wrappers
+
+
+
+    elemental module function character_fnv_1_wrappers( key ) result(hash_code)
+        character(*), intent(in)      :: key
+        integer(int_hash)             :: hash_code
+
+        hash_code = int8_fnv_1_wrappers( transfer( key,                           &
+                                          0_int8,                        &
+                                          1*                    &
+                                          len(key, kind=int64) ) )
+
+    end function character_fnv_1_wrappers
 
 
     pure subroutine copy_key( old_key, new_key )
@@ -333,7 +411,7 @@ contains
         type(key_type), intent(in)    :: key
         integer(int_hash)             :: fnv_1_hasher
 
-        fnv_1_hasher = fnv_1_hash( key % value )
+        fnv_1_hasher = fnv_1_hash_wrappers( key % value )
 
     end function fnv_1_hasher
 
@@ -349,7 +427,7 @@ contains
         type(key_type), intent(in)    :: key
         integer(int_hash)             :: fnv_1a_hasher
 
-        fnv_1a_hasher = fnv_1a_hash( key % value )
+        ! fnv_1a_hasher = fnv_1a_hash( key % value )
 
     end function fnv_1a_hasher
 
@@ -366,8 +444,8 @@ contains
         type(key_type), intent(in)    :: key
         integer(int_hash)             :: seeded_nmhash32_hasher
 
-        seeded_nmhash32_hasher = nmhash32( key % value, &
-            int( z'DEADBEEF', int32 ) )
+        ! seeded_nmhash32_hasher = nmhash32( key % value, &
+        !     int( z'DEADBEEF', int32 ) )
 
     end function seeded_nmhash32_hasher
 
@@ -383,8 +461,8 @@ contains
         type(key_type), intent(in)    :: key
         integer(int_hash)             :: seeded_nmhash32x_hasher
 
-        seeded_nmhash32x_hasher = nmhash32x( key % value, &
-            int( z'DEADBEEF', int32 ) )
+        ! seeded_nmhash32x_hasher = nmhash32x( key % value, &
+        !     int( z'DEADBEEF', int32 ) )
 
     end function seeded_nmhash32x_hasher
 
@@ -400,8 +478,8 @@ contains
         type(key_type), intent(in)  :: key
         integer(int_hash)           :: seeded_water_hasher
 
-        seeded_water_hasher = water_hash( key % value, &
-            int( z'DEADBEEF1EADBEEF', int64 ) )
+        ! seeded_water_hasher = water_hash( key % value, &
+        !     int( z'DEADBEEF1EADBEEF', int64 ) )
 
     end function seeded_water_hasher
 
