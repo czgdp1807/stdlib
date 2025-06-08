@@ -444,6 +444,7 @@ contains
         integer(int_index)      :: slots
         integer(4)          :: stat
         type(open_map_entry_pool), pointer :: map_entry_pool_head
+        type(open_map_entry_pool), pointer :: map_entry_pool_head_2
 
         map % call_count = 0
         map % probe_count = 0
@@ -514,7 +515,11 @@ contains
             deallocate( map_entry_pool_head )
         end do
 
-        call extend_map_entry_pool(map % cache)
+        ! call extend_map_entry_pool(map % cache)
+        allocate(map_entry_pool_head_2)
+        allocate(map_entry_pool_head_2 % more_map_entries(0:pool_size-1))
+        map_entry_pool_head_2 % lastpool => map % cache
+        map % cache => map_entry_pool_head_2
 
         if (present(status) ) status = success
 
@@ -618,8 +623,13 @@ contains
             type(open_map_entry_type), pointer, intent(out) :: bucket
             type(open_map_entry_list), pointer :: free_list
             type(open_map_entry_pool), pointer :: pool
+            type(open_map_entry_pool), pointer :: map_entry_pool_head
             character(*), parameter :: procedure_name = "ALLOCATE_MAP_ENTRY"
 
+            allocate(map_entry_pool_head)
+            allocate(map_entry_pool_head % more_map_entries(0:pool_size-1))
+            map_entry_pool_head % lastpool => map % cache
+            map % cache => map_entry_pool_head
             pool => map % cache
             map % num_entries = map % num_entries + 1
             if ( associated(map % free_list) ) then
