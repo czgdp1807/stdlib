@@ -35,6 +35,8 @@ module stdlib_hashmap_open
     integer(8) :: int64_0 = 0
     integer(8) :: int64_1 = 1
 
+    type(key_type)            :: prev_keys(576)
+
     abstract interface
         pure function hasher_fun_temporary( key )  result(hash_value)
             import key_type
@@ -296,7 +298,7 @@ contains
             do i=1_int_index, size( map % inverse, kind=int_index )
                 if ( associated( map % inverse(i) % target ) ) then
                     target_get_all_open_keys => map % inverse(i) % target
-                    all_keys(key_idx) = target_get_all_open_keys % key
+                    all_keys(key_idx) = prev_keys(i)
                     key_idx = key_idx + 1_int_index
                 end if
             end do 
@@ -402,7 +404,7 @@ contains
                 associate( inverse => map % inverse(inmap) )
                   target_in_open_map => inverse % target
                   if ( hash_val == target_in_open_map % hash_val ) then
-                      if ( key == target_in_open_map % key ) then
+                      if ( key == prev_keys(inmap) ) then
                           return
                       end if
                   end if
@@ -585,6 +587,7 @@ contains
                 if ( present( other ) ) &
                     call copy_other( other, new_ent % other )
                 inmap = new_ent % inmap
+                prev_keys(inmap) % value = key % value
                 map % inverse( inmap ) % target => new_ent
                 map % slots( test_slot ) = inmap
                 if ( present(conflict) ) conflict = .false.
@@ -599,7 +602,7 @@ contains
             else
                 associate( target => map % inverse(inmap) % target )
                   if ( hash_val == target % hash_val ) then
-                      if ( key == target % key ) then
+                      if ( key == prev_keys(inmap) ) then
                           ! entry already exists
                           if ( present(conflict) ) then
                               conflict = .true.
@@ -722,7 +725,7 @@ contains
         do i=1, map % num_entries + map % num_free
             if ( .not. associated( map % inverse(i) % target ) ) cycle
             target_rehash_open_map => map % inverse(i) % target
-            hash_val = fnv_1_hasher( target_rehash_open_map % key )
+            hash_val = fnv_1_hasher( prev_keys(i) )
             target_rehash_open_map % hash_val = hash_val
             base_slot = fibonaccI_hash( hash_val, map % nbits )
             offset = 0
