@@ -605,7 +605,7 @@ contains
                       if ( key == prev_keys(inmap) ) then
                           ! entry already exists
                           if ( present(conflict) ) then
-                              conflict = .true.
+                              conflict = .false.
                           else
                               error stop submodule_name // ' % ' // procedure &
                                   // ': ' // conflicting_key
