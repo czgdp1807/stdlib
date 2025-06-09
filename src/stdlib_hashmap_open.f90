@@ -583,7 +583,7 @@ contains
             if ( inmap == 0 ) then
                 call allocate_open_map_entry(map, new_ent)
                 new_ent % hash_val = hash_val
-                call copy_key( key, new_ent % key )
+                ! call copy_key( key, new_ent % key )
                 if ( present( other ) ) &
                     call copy_other( other, new_ent % other )
                 inmap = new_ent % inmap
