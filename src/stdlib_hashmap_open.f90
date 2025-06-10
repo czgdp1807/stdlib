@@ -35,6 +35,8 @@ module stdlib_hashmap_open
     integer(8) :: int64_0 = 0
     integer(8) :: int64_1 = 1
 
+    integer(4) :: duplicate_key_entries_index = 1
+    integer(4), allocatable :: duplicate_key_entries(:)
     type(key_type)            :: prev_keys(576)
 
     abstract interface
@@ -606,6 +608,9 @@ contains
                           ! entry already exists
                           if ( present(conflict) ) then
                               conflict = .false.
+                              map % num_entries = map % num_entries + 1
+                              duplicate_key_entries(duplicate_key_entries_index) = map % num_entries
+                              duplicate_key_entries_index = duplicate_key_entries_index + 1
                           else
                               error stop submodule_name // ' % ' // procedure &
                                   // ': ' // conflicting_key
