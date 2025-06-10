@@ -319,7 +319,7 @@ contains
 !!     other - the other data associated with the key
 !!     exists - a logical flag indicating whether an entry with that key exists
 !
-        type(open_hashmap_type), intent(inout) :: map
+        class(open_hashmap_type), intent(inout) :: map
         type(key_type), intent(in)              :: key
         type(other_type), intent(out)           :: other
         logical, intent(out), optional          :: exists
@@ -364,7 +364,7 @@ contains
 !!     inmap - the returned index into the INVERSE array of entry pointers
 !!     key   - the key identifying the entry of interest
 !
-        type(open_hashmap_type), intent(inout) :: map
+        class(open_hashmap_type), intent(inout) :: map
         integer(int_index), intent(out)         :: inmap
         type(key_type), intent(in)              :: key
 
@@ -556,7 +556,7 @@ contains
 !!      conflict - logical flag indicating whether the entry key conflicts
 !!                 with an existing key
 !
-        type(open_hashmap_type), intent(inout) :: map
+        class(open_hashmap_type), intent(inout) :: map
         type(key_type), intent(in)              :: key
         type(other_type), intent(in), optional  :: other
         logical, intent(out), optional          :: conflict
@@ -756,7 +756,7 @@ contains
 !!    existed - a logical flag indicating whether an entry with the key
 !!              was present in the original map
 !
-        type(open_hashmap_type), intent(inout) :: map
+        class(open_hashmap_type), intent(inout) :: map
         type(key_type), intent(in)              :: key
         logical, intent(out), optional          :: existed
 
@@ -876,7 +876,7 @@ contains
 !!     exists - a logical flag indicating whether the key is already entered
 !!              in the map
 !
-        type(open_hashmap_type), intent(inout) :: map
+        class(open_hashmap_type), intent(inout) :: map
         type(key_type), intent(in)              :: key
         type(other_type), intent(in)            :: other
         logical, intent(out),optional           :: exists
@@ -949,7 +949,7 @@ contains
 !!     map - the hash map of interest
 !!     key - the key of interest
 !
-        type(open_hashmap_type), intent(inout) :: map
+        class(open_hashmap_type), intent(inout) :: map
         type(key_type), intent(in)              :: key
         logical, intent(out)                    :: present
 
