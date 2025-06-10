@@ -5,8 +5,8 @@
 
 module stdlib_hashmap_wrappers
 
-    !use, intrinsic :: iso_fortran_env, only : &
-    !    character_storage_size
+    use, intrinsic :: iso_fortran_env, only : &
+        character_storage_size
 
     use stdlib_hash_32bit
 
@@ -56,7 +56,7 @@ module stdlib_hashmap_wrappers
         bits_int8  = bit_size(0_int8)
 
     integer, parameter ::                   &
-        bits_char = 8, &
+        bits_char = character_storage_size, &
         bytes_char = bits_char/bits_int8
 
     character(*), parameter :: module_name = "STDLIB_HASHMAP_WRAPPERS"
