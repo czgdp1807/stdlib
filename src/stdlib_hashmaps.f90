@@ -111,7 +111,7 @@ module stdlib_hashmaps
 !!
 !! Chaining hash map entry type
 !! ([Specifications](../page/specs/stdlib_hashmaps.html#the-chaining_map_entry_type-derived-type))
-        private
+        !private
         integer(int_hash)  :: hash_val
 !! Full hash value
         type(key_type)     :: key
@@ -139,7 +139,7 @@ module stdlib_hashmaps
 !!
 !! Type implementing a pool of allocated `chaining_map_entry_type`
 !! ([Specifications](../page/specs/stdlib_hashmaps.html#the-chaining_map_entry_pool-derived-type))
-        private
+        !private
 ! Index of next bucket
         integer(int_index)                         :: next = 0
         type(chaining_map_entry_type), allocatable :: more_map_entries(:)
@@ -152,7 +152,7 @@ module stdlib_hashmaps
 !!
 !! Type implementing the `chaining_hashmap_type` types
 !! ([Specifications](../page/specs/stdlib_hashmaps.html#the-chaining_hashmap_type-derived-type))
-        private
+        !private
         type(chaining_map_entry_pool), pointer    :: cache => null()
 !! Pool of allocated chaining_map_entry_type objects
         type(chaining_map_entry_type), pointer    :: free_list => null()
@@ -163,178 +163,6 @@ module stdlib_hashmaps
 !! Array of bucket lists Note # slots=size(slots)
     end type chaining_hashmap_type
 
-
-    interface
-
-        module subroutine free_chaining_map( map )
-!! Version: Experimental
-!!
-!! Frees internal memory of an chaining map
-!! Arguments:
-!!     map - the chaining hash map whose memory is to be freed
-!
-            type(chaining_hashmap_type), intent(inout) :: map
-        end subroutine free_chaining_map
-
-
-        module subroutine get_all_chaining_keys(map, all_keys)
-!! Version: Experimental
-!!
-!! Returns all the keys contained in a hashmap
-!! Arguments:
-!!     map - an chaining hash map
-!!     all_keys - all the keys contained in a hash map
-!
-            class(chaining_hashmap_type), intent(in) :: map
-            type(key_type), allocatable, intent(out) :: all_keys(:)
-        end subroutine get_all_chaining_keys
-
-
-        module subroutine get_other_chaining_data( map, key, other, exists )
-!! Version: Experimental
-!!
-!! Returns the other data associated with the inverse table index
-!! Arguments:
-!!     map   - a chaining hash table
-!!     key   - the key associated with a map entry
-!!     other - the other data associated with the key
-!!     exists - a logical flag indicating whether an entry with that key exists
-!
-            class(chaining_hashmap_type), intent(inout) :: map
-            type(key_type), intent(in)                  :: key
-            type(other_type), intent(out)               :: other
-            logical, intent(out), optional              :: exists
-        end subroutine get_other_chaining_data
-
-
-        module subroutine init_chaining_map( map,       &
-                                             hasher,    &
-                                             slots_bits, &
-                                             status )
-!! Version: Experimental
-!!
-!! Routine to allocate an empty map with HASHER as the hash function,
-!! 2**SLOTS_BITS initial SIZE(map % slots), and SIZE(map % slots) limited
-!! to a maximum of 2**MAX_BITS. All fields are initialized.
-!! Arguments:
-!!     map       - the chaining hash map to be initialized
-!!     hasher    - the hash function to be used to map keys to slots
-!!     slots_bits - the bits of two used to initialize the number of slots
-!!     status    - an integer error status flag with the allowed values:
-!!         success - no problems were found
-!!         alloc_fault - map % slots or map % inverse could not be allocated
-!!         array_size_error - slots_bits is less than default_bits or
-!!             greater than max_bits
-!
-            class(chaining_hashmap_type), intent(out)  :: map
-            procedure(hasher_fun_temp)                      :: hasher
-            integer, intent(in), optional              :: slots_bits
-            integer(int32), intent(out), optional      :: status
-        end subroutine init_chaining_map
-
-
-        module subroutine chaining_key_test(map, key, present)
-!! Version: Experimental
-!!
-!! Returns a logical flag indicating whether KEY is present in the hash map
-!! Arguments:
-!!     map     - the hash map of interest
-!!     key     - the key of interest
-!!     present - a logical flag indicating whether key is present in map
-!
-            class(chaining_hashmap_type), intent(inout) :: map
-            type(key_type), intent(in)                  :: key
-            logical, intent(out)                        :: present
-        end subroutine chaining_key_test
-
-
-        pure module function chaining_loading( map )
-!! Version: Experimental
-!!
-!! Returns the number of entries relative to slots in a hash map
-!! Arguments:
-!!      map - a chaining hash map
-            class(chaining_hashmap_type), intent(in) :: map
-            real :: chaining_loading
-        end function chaining_loading
-
-
-        module subroutine map_chain_entry(map, key, other, conflict)
-!
-!     Inserts an entry innto the hash map
-!     Arguments:
-!!      map      - the hash table of interest
-!!      key      - the key identifying the entry
-!!      other    - other data associated with the key
-!!      conflict - logical flag indicating whether the entry key conflicts
-!!                 with an existing key
-!
-            class(chaining_hashmap_type), intent(inout) :: map
-            type(key_type), intent(in)             :: key
-            type(other_type), intent(in), optional :: other
-            logical, intent(out), optional         :: conflict
-        end subroutine map_chain_entry
-
-
-        module subroutine rehash_chaining_map( map, hasher )
-!! Version: Experimental
-!!
-!! Changes the hashing method of the table entries to that of HASHER.
-!! Arguments:
-!!     map    the table to be rehashed
-!!     hasher the hasher function to be used for the table
-!
-            class(chaining_hashmap_type), intent(inout) :: map
-            procedure(hasher_fun_temp)                       :: hasher
-        end subroutine rehash_chaining_map
-
-
-        module subroutine remove_chaining_entry(map, key, existed)
-!! Version: Experimental
-!!
-!! Remove the entry, if any, that has the key
-!! Arguments:
-!!    map     - the table from which the entry is to be removed
-!!    key     - the key to an entry
-!!    existed - a logical flag indicating whether an entry with the key
-!!              was present in the original map
-!
-            class(chaining_hashmap_type), intent(inout) :: map
-            type(key_type), intent(in)                  :: key
-            logical, intent(out), optional              :: existed
-        end subroutine remove_chaining_entry
-
-
-        module subroutine set_other_chaining_data( map, key, other, exists )
-!! Version: Experimental
-!!
-!! Change the other data associated with the key
-!! Arguments:
-!!     map    - the map with the entry of interest
-!!     key    - the key to the entry inthe map
-!!     other  - the new data to be associated with the key
-!!     exists - a logical flag indicating whether the key is already entered
-!!              in the map
-!
-            class(chaining_hashmap_type), intent(inout) :: map
-            type(key_type), intent(in)                  :: key
-            type(other_type), intent(in)                :: other
-            logical, intent(out), optional              :: exists
-        end subroutine set_other_chaining_data
-
-
-        module function total_chaining_depth( map ) result(total_depth)
-!! Version: Experimental
-!!
-!! Returns the total number of ones based offsets of slot entries from
-!! their slot index for a hash map
-!! Arguments:
-!!     map - an chaining hash map
-            class(chaining_hashmap_type), intent(in) :: map
-            integer(int_depth)                       :: total_depth
-        end function total_chaining_depth
-
-    end interface
 
 !! API for the open_hashmap_type
 

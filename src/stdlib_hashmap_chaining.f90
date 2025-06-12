@@ -7,10 +7,12 @@
 ! entries. This did not cause stat to be non-zero, but did cause system errors,
 ! on my Mac. I therefore decided to remove all deallocation error reporting.
 
-submodule(stdlib_hashmaps) stdlib_hashmap_chaining
+module stdlib_hashmap_chaining
 !! Version: Experimental
 !!
 !! Implements a simple separate chaining hash map.
+
+    use stdlib_hashmaps
 
     implicit none
 
@@ -885,4 +887,4 @@ contains
     end subroutine chaining_key_test
 
 
-end submodule stdlib_hashmap_chaining
+end module stdlib_hashmap_chaining
