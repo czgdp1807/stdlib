@@ -179,7 +179,14 @@ contains
             end do
         end do
 
-        call move_alloc( dummy_slots, map % slots )
+        if (allocated(map % slots)) then
+            deallocate(map % slots)
+        end if
+
+        ! call move_alloc( dummy_slots, map % slots )
+        allocate(map % slots(0:new_size-1))
+        map % slots = dummy_slots
+        deallocate(dummy_slots)
 
     contains
 
@@ -660,7 +667,10 @@ contains
             type(chaining_map_entry_ptr), allocatable  :: dummy_inverse(:)
             integer(int32) :: stat
             character(256) :: errmsg
+            integer(4) :: new_size
             character(*), parameter :: procedure = 'MAP_ENTRY'
+
+            new_size = 2*size(map % inverse, kind=int_index)
 
             allocate( dummy_inverse( 1:2*size(map % inverse,     &
                                               kind=int_index) ), &
@@ -675,7 +685,14 @@ contains
             dummy_inverse(1:size(map % inverse, kind=int_index)) = &
                 map % inverse(:)
 
-            call move_alloc( dummy_inverse, map % inverse )
+            if (allocated(map % inverse)) then
+                deallocate(map % inverse)
+            end if
+
+            ! call move_alloc( dummy_inverse, map % inverse )
+            allocate(map % inverse(1:new_size))
+            map % inverse = dummy_inverse
+            deallocate(dummy_inverse)
 
         end subroutine expand_inverse
 
