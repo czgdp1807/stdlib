@@ -460,6 +460,7 @@ contains
         character(*), parameter :: procedure = 'INIT'
         integer(int_index)      :: slots
         integer(int32)          :: stat
+        type(chaining_map_entry_pool), pointer :: pool_init_chaining_map
 
         map % call_count = 0
         map % probe_count = 0
@@ -517,7 +518,12 @@ contains
             map % inverse(index) % target => null()
         end do
 
-        call extend_map_entry_pool(map)
+        ! call extend_map_entry_pool(map)
+        allocate(pool_init_chaining_map)
+        allocate(pool_init_chaining_map % more_map_entries(0:pool_size-1))
+        pool_init_chaining_map % next = 0
+        pool_init_chaining_map % lastpool => map % cache
+        map % cache => pool_init_chaining_map
 
         if (present(status) ) status = success
 
@@ -631,9 +637,14 @@ contains
 !         allocates a hash bucket
             type(chaining_hashmap_type), intent(inout)         :: map
             type(chaining_map_entry_type), pointer, intent(out) :: bucket
-
+            type(chaining_map_entry_pool), pointer :: pool_allocate_chaining_map_entry
             type(chaining_map_entry_pool), pointer :: pool
 
+            allocate(pool_allocate_chaining_map_entry)
+            allocate(pool_allocate_chaining_map_entry % more_map_entries(0:pool_size-1))
+            pool_allocate_chaining_map_entry % next = 0
+            pool_allocate_chaining_map_entry % lastpool => map % cache
+            map % cache => pool_allocate_chaining_map_entry
             pool => map % cache
             map % num_entries = map % num_entries + 1
             if ( associated(map % free_list) ) then
