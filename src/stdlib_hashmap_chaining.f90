@@ -621,7 +621,7 @@ contains
                         sentry => gentry
                     end if
                     if ( present(conflict) ) then
-                        conflict = .true.
+                        conflict = .false.
                     else
                         error stop submodule_name // ' % ' // procedure &
                                   // ': ' // conflicting_key
