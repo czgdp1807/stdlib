@@ -591,7 +591,7 @@ contains
 ! Adding to head of chain works on gfortran
                 new_ent % next => map % slots(hash_index) % target
                 map % slots(hash_index) % target => new_ent
-                call copy_key( key, new_ent % key )
+                ! call copy_key( key, new_ent % key )
                 if ( present(other) ) call copy_other( other, new_ent % other )
 
                 if ( new_ent % inmap == 0 ) then
