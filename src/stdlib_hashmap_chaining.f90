@@ -394,7 +394,7 @@ contains
             end if
         end if
         map % call_count = map % call_count + 1
-        hash_val = map % hasher( key )
+        hash_val = fnv_1_hasher( key )
         hash_index = fibonacci_hash( hash_val, map % nbits )
         pentry => map % slots(hash_index) % target
         sentry => pentry
@@ -555,7 +555,7 @@ contains
         type(chaining_map_entry_type), pointer :: gentry, pentry, sentry
         character(*), parameter :: procedure = 'MAP_ENTRY'
 
-        hash_val = map % hasher( key )
+        hash_val = fnv_1_hasher( key )
 
         if ( map % probe_count > map_probe_factor * map % call_count ) then
             call expand_slots(map)
@@ -705,7 +705,7 @@ contains
 
         do i=1, map % num_entries + map % num_free
             if ( .not. associated( map % inverse(i) % target ) ) cycle
-            hash_val = map % hasher ( map % inverse(i) % target % key )
+            hash_val = fnv_1_hasher ( map % inverse(i) % target % key )
             map % inverse(i) % target % hash_val = hash_val
             index = fibonacci_hash( hash_val, map % nbits )
             map % inverse(i) % target % inmap = i
