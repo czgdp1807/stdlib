@@ -31,6 +31,7 @@ module stdlib_hashmap_chaining
         map_consist_fault  = "The hash map found a inconsistency."
 
     character(len=*), parameter :: submodule_name = "STDLIB_HASHMAP_CHAINING"
+    type(key_type) :: prev_keys_inverse(1024)
 
     abstract interface
         pure function hasher_fun_temporary( key )  result(hash_value)
@@ -323,7 +324,7 @@ contains
             key_idx = 1_int_index
             do i=1_int_index, size( map % inverse, kind=int_index )
                 if ( associated( map % inverse(i) % target ) ) then
-                    all_keys(key_idx) = map % inverse(i) % target % key
+                    all_keys(key_idx) = prev_keys_inverse(i)
                     key_idx = key_idx + 1_int_index
                 end if
             end do 
@@ -413,7 +414,7 @@ contains
                 inmap = 0
                 return
             else if ( hash_val == gentry % hash_val ) then
-                if ( key == gentry % key ) then
+                if ( key == prev_keys_inverse(gentry % inmap) ) then
 ! The swap to front seems to confuse gfortran's pointers
 !                    if ( .not. associated( pentry, sentry ) ) then
 !                    ! swap to front
@@ -605,12 +606,13 @@ contains
                 end if
                 new_ent % inmap = inmap
                 map % inverse(inmap) % target => new_ent
+                prev_keys_inverse(inmap) % value = key % value
                 if ( present(conflict) ) conflict = .false.
 
                 return
 
             else if ( hash_val == gentry % hash_val ) then
-                if ( key == gentry % key ) then
+                if ( key == prev_keys_inverse(gentry % inmap) ) then
                     inmap = gentry % inmap
                     if ( .not. associated( pentry, sentry ) ) then
                         ! Swap to front
@@ -733,7 +735,7 @@ contains
 
         do i=1, map % num_entries + map % num_free
             if ( .not. associated( map % inverse(i) % target ) ) cycle
-            hash_val = fnv_1_hasher ( map % inverse(i) % target % key )
+            hash_val = fnv_1_hasher ( prev_keys_inverse(i) )
             map % inverse(i) % target % hash_val = hash_val
             index = fibonacci_hash( hash_val, map % nbits )
             map % inverse(i) % target % inmap = i

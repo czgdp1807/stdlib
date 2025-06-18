@@ -26,7 +26,7 @@ program test_chaining_maps
     integer, parameter        :: test_16 = 2**4
     integer, parameter        :: test_256 = 2**8
 
-    integer                     :: index
+    integer                     :: index, i
     integer                     :: lun
     type(chaining_hashmap_type) :: map
     real(dp)                    :: rand2(2)
@@ -57,6 +57,10 @@ program test_chaining_maps
 
     test_8_bits(:) = transfer( rand_object, 0_int8, test_size )
 
+    do i= 1, 1024
+        allocate(prev_keys_inverse(i) % value(16))
+    end do
+
     call init( map, fnv_1_hasher, slots_bits=10 )
     call input_random_data( map, test_16, 'FNV-1', "16 byte words" )
     call test_inquire_data( map, test_16, 'FNV-1', "16 byte words" )
@@ -65,6 +69,11 @@ program test_chaining_maps
     call report_rehash_times( map, fnv_1_hasher, 'FNV-1', '16 byte words' )
     call report_hash_statistics( map, 'FNV-1', '16 byte words' )
     call report_removal_times( map, test_16, 'FNV-1', '16 byte words' )
+
+    do i= 1, 1024
+        deallocate(prev_keys_inverse(i) % value)
+        allocate(prev_keys_inverse(i) % value(256))
+    end do
 
     call init( map, fnv_1_hasher, slots_bits=10 )
     call input_random_data( map, test_256, 'FNV-1', "256 byte words" )
@@ -75,6 +84,11 @@ program test_chaining_maps
     call report_hash_statistics( map, 'FNV-1', '256 byte words' )
     call report_removal_times( map, test_256, 'FNV-1', '256 byte words' )
 
+    do i= 1, 1024
+        deallocate(prev_keys_inverse(i) % value)
+        allocate(prev_keys_inverse(i) % value(16))
+    end do
+
     call init( map, fnv_1a_hasher, slots_bits=10 )
     call input_random_data( map, test_16, 'FNV-1A', "16 byte words" )
     call test_inquire_data( map, test_16, 'FNV-1A', "16 byte words" )
@@ -84,6 +98,11 @@ program test_chaining_maps
     call report_hash_statistics( map, 'FNV-1A', '16 byte words' )
     call report_removal_times( map, test_16, 'FNV-1a', '16 byte words' )
 
+    do i= 1, 1024
+        deallocate(prev_keys_inverse(i) % value)
+        allocate(prev_keys_inverse(i) % value(256))
+    end do
+
     call init(map, fnv_1a_hasher, slots_bits=10 )
     call input_random_data( map, test_256, 'FNV-1A', "256 byte words" )
     call test_inquire_data( map, test_256, 'FNV-1A', "256 byte words" )
@@ -92,6 +111,11 @@ program test_chaining_maps
     call report_rehash_times( map, fnv_1_hasher, 'FNV-1A', '256 byte words' )
     call report_hash_statistics( map, 'FNV-1A', '256 byte words' )
     call report_removal_times( map, test_256, 'FNV-1A', '256 byte words' )
+
+    do i= 1, 1024
+        deallocate(prev_keys_inverse(i) % value)
+        allocate(prev_keys_inverse(i) % value(16))
+    end do
 
     call init(map, seeded_nmhash32_hasher, slots_bits=10 )
     call input_random_data( map, test_16, 'Seeded_Nmhash32', "16 byte words" )
@@ -104,6 +128,11 @@ program test_chaining_maps
     call report_removal_times( map, test_16, 'Seeded_Nmhash32', &
         '16 byte words' )
 
+    do i= 1, 1024
+        deallocate(prev_keys_inverse(i) % value)
+        allocate(prev_keys_inverse(i) % value(256))
+    end do
+
     call init(map, seeded_nmhash32_hasher, slots_bits=10 )
     call input_random_data( map, test_256, 'Seeded_Nmhash32', "256 byte words" )
     call test_inquire_data( map, test_256, 'Seeded_Nmhash32', "256 byte words" )
@@ -115,6 +144,11 @@ program test_chaining_maps
     call report_removal_times( map, test_256, 'Seeded_Nmhash32', &
         '256 byte words' )
 
+    do i= 1, 1024
+        deallocate(prev_keys_inverse(i) % value)
+        allocate(prev_keys_inverse(i) % value(16))
+    end do
+
     call init(map, seeded_nmhash32x_hasher, slots_bits=10 )
     call input_random_data( map, test_16, 'Seeded_Nmhash32x', "16 byte words" )
     call test_inquire_data( map, test_16, 'Seeded_Nmhash32x', "16 byte words" )
@@ -125,6 +159,11 @@ program test_chaining_maps
     call report_hash_statistics( map, 'Seeded_Nmhash32x', '16 byte words' )
     call report_removal_times( map, test_16, 'Seeded_Nmhash32x', &
         '16 byte words' )
+
+    do i= 1, 1024
+        deallocate(prev_keys_inverse(i) % value)
+        allocate(prev_keys_inverse(i) % value(256))
+    end do
 
     call init(map, seeded_nmhash32x_hasher, slots_bits=10 )
     call input_random_data( map, test_256, 'Seeded_Nmhash32x', &
@@ -139,6 +178,11 @@ program test_chaining_maps
     call report_removal_times( map, test_256, 'Seeded_Nmhash32x', &
         '256 byte words' )
 
+    do i= 1, 1024
+        deallocate(prev_keys_inverse(i) % value)
+        allocate(prev_keys_inverse(i) % value(16))
+    end do
+
     call init(map, seeded_water_hasher, slots_bits=10 )
     call input_random_data( map, test_16, 'Seeded_Water', "16 byte words" )
     call test_inquire_data( map, test_16, 'Seeded_Water', "16 byte words" )
@@ -149,6 +193,11 @@ program test_chaining_maps
     call report_hash_statistics( map, 'Seeded_Water', '16 byte words' )
     call report_removal_times( map, test_16, 'Seeded_Water', &
         '16 byte words' )
+
+    do i= 1, 1024
+        deallocate(prev_keys_inverse(i) % value)
+        allocate(prev_keys_inverse(i) % value(256))
+    end do
 
     call init(map, seeded_water_hasher, slots_bits=10 )
     call input_random_data( map, test_256, 'Seeded_Water', &
