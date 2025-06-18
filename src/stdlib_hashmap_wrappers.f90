@@ -345,25 +345,35 @@ contains
         integer(int32), intent(in) :: x
         integer(int32), intent(in) :: seed
         integer(int32) :: vx32
+        integer(int32), dimension(1) :: arr_vx32
         integer(int32), parameter :: m1 = int(z'776BF593', int32)
         integer(int32), parameter :: m2 = int(z'3FB39C65', int32)
         integer(int32), parameter :: m3 = int(z'E9139917', int32)
+        integer(int32), dimension(1) :: arr_m1
+        integer(int32), dimension(1) :: arr_m2
+        integer(int32), dimension(1) :: arr_m3
 
         integer(int16) :: vx16(2)
 
         vx32 = x
         vx32 = ieor( vx32, ieor( ishft( vx32, -12 ), ishft( vx32, -6 ) ) )
-        vx16 = transfer( vx32, 0_int16, 2 )
-        vx16 = vx16 * transfer( m1, 0_int16, 2 )
+        arr_vx32 = [vx32]
+        vx16 = transfer( arr_vx32, 0_int16, 2 )
+        arr_m1 = [m1]
+        vx16 = vx16 * transfer( arr_m1, 0_int16, 2 )
         vx32 = transfer( vx16, 0_int32 )
         vx32 = ieor( vx32, ieor( ishft( vx32, 11 ), ishft( vx32, -19 ) ) )
-        vx16 = transfer( vx32, 0_int16, 2 )
-        vx16 = vx16 * transfer( m2, 0_int16, 2 )
+        arr_vx32 = [vx32]
+        vx16 = transfer( arr_vx32, 0_int16, 2 )
+        arr_m2 = [m2]
+        vx16 = vx16 * transfer( arr_m2, 0_int16, 2 )
         vx32 = transfer( vx16, 0_int32 )
         vx32 = ieor( vx32, seed )
         vx32 = ieor( vx32, ieor( ishft( vx32, -15 ), ishft( vx32, -9 ) ) )
-        vx16 = transfer( vx32, 0_int16, 2 )
-        vx16 = vx16 * transfer( m3, 0_int16, 2 )
+        arr_vx32 = [vx32]
+        vx16 = transfer( arr_vx32, 0_int16, 2 )
+        arr_m3 = [m3]
+        vx16 = vx16 * transfer( arr_m3, 0_int16, 2 )
         vx32 = transfer( vx16, 0_int32 )
         vx32 = ieor( vx32, ieor( ishft(vx32, 16), ishft(vx32, -11) ) )
 
@@ -378,18 +388,27 @@ contains
         integer(int32) :: xu32(0:3), yu32(0:3)
         integer(int16) :: xu16(0:1)
         integer(int16) :: nmh_m1_16(0:1), nmh_m2_16(0:1), nmh_m3_16(0:1)
+        integer(int32), dimension(1) :: arr_nmh_m1
+        integer(int32), dimension(1) :: arr_nmh_m2
+        integer(int32), dimension(1) :: arr_nmh_m3
         integer(int32) :: s1
         integer(int64) :: length
+        integer(int64), dimension(1) :: arr_length
+        integer(int32), dimension(1) :: arr_xu32
         integer(int32) :: length32(0:1)
         integer(int64) :: i, j, r
 
-        nmh_m1_16(0:1) = transfer( nmh_m1, 0_int16, 2 )
-        nmh_m2_16(0:1) = transfer( nmh_m2, 0_int16, 2 )
-        nmh_m3_16(0:1) = transfer( nmh_m3, 0_int16, 2 )
+        arr_nmh_m1 = [nmh_m1]
+        nmh_m1_16(0:1) = transfer( arr_nmh_m1, 0_int16, 2 )
+        arr_nmh_m2 = [nmh_m2]
+        nmh_m2_16(0:1) = transfer( arr_nmh_m2, 0_int16, 2 )
+        arr_nmh_m3 = [nmh_m3]
+        nmh_m3_16(0:1) = transfer( arr_nmh_m3, 0_int16, 2 )
 
         result = 0
         length = size( p, kind=int64 )
-        length32 = transfer(length, 0_int32, 2)
+        arr_length = [length]
+        length32 = transfer(arr_length, 0_int32, 2)
         if (little_endian) then
             s1 = seed + length32(0)
         else
@@ -409,20 +428,23 @@ contains
                     yu32(j) = ieor( yu32(j), &
                                     nmh_readle32_wrappers( p(i*32 + j*4 + 16: ) ) )
                     xu32(j) = xu32(j) + yu32(j)
-                    xu16 = transfer( xu32(j), 0_int16, 2 )
+                    arr_xu32 = [xu32(i)]
+                    xu16 = transfer( arr_xu32, 0_int16, 2 )
                     xu16 = xu16 * nmh_m1_16
                     xu32(j) = transfer( xu16, 0_int32 )
                     xu32(j) = ieor( xu32(j), &
                                     ieor( ishft(xu32(j), 5), &
                                           ishft(xu32(j), -13)) )
-                    xu16 = transfer( xu32(j), 0_int16, 2 )
+                    arr_xu32 = [xu32(j)]
+                    xu16 = transfer( arr_xu32, 0_int16, 2 )
                     xu16 = xu16 * nmh_m2_16
                     xu32(j) = transfer( xu16, 0_int32 )
                     xu32(j) = ieor( xu32(j), yu32(j) )
                     xu32(j) = ieor( xu32(j), &
                                     ieor( ishft(xu32(j), 11), &
                                           ishft(xu32(j), -9) ) )
-                    xu16 = transfer( xu32(j), 0_int16, 2 )
+                    arr_xu32 = [xu32(j)]
+                    xu16 = transfer( arr_xu32, 0_int16, 2 )
                     xu16 = xu16 * nmh_m3_16
                     xu32(j) = transfer( xu16, 0_int32 )
                     xu32(j) = ieor( xu32(j), &
@@ -454,18 +476,21 @@ contains
             xu32(j) = xu32(j) + yu32(j)
             yu32(j) = ieor( yu32(j), ieor(ishft(yu32(j), 17), &
                                           ishft(yu32(j), -6) ) )
-            xu16 = transfer( xu32(j), 0_int16, 2 )
+            arr_xu32 = [xu32(j)]
+            xu16 = transfer( arr_xu32, 0_int16, 2 )
             xu16 = xu16 * nmh_m1_16
             xu32(j) = transfer( xu16, 0_int32 )
             xu32(j) = ieor( xu32(j), ieor(ishft(xu32(j), 5), &
                                           ishft(xu32(j), -13) ) )
-            xu16 = transfer( xu32(j), 0_int16, 2 )
+            arr_xu32 = [xu32(j)]
+            xu16 = transfer( arr_xu32, 0_int16, 2 )
             xu16 = xu16 * nmh_m2_16
             xu32(j) = transfer( xu16, 0_int32 )
             xu32(j) = ieor( xu32(j), yu32(j) )
             xu32(j) = ieor( xu32(j), ieor(ishft(xu32(j), 11), &
                                           ishft(xu32(j), -9) ) )
-            xu16 = transfer( xu32(j), 0_int16, 2 )
+            arr_xu32 = [xu32(j)]
+            xu16 = transfer( arr_xu32, 0_int16, 2 )
             xu16 = xu16 * nmh_m3_16
             xu32(j) = transfer( xu16, 0_int32 )
             xu32(j) = ieor( xu32(j), ieor(ishft(xu32(j), -10), &
@@ -479,7 +504,8 @@ contains
             xu32(0) = xu32(0) + xu32(j)
         end do
         xu32(0) = ieor(xu32(0), s1 + ishft(s1, -5) )
-        xu16 = transfer( xu32(0), 0_int16, 2 )
+        arr_xu32 = [xu32(0)]
+        xu16 = transfer( arr_xu32, 0_int16, 2 )
         xu16 = xu16 * nmh_m3_16
         xu32(0) = transfer( xu16, 0_int32 )
         xu32(0) = ieor(xu32(0), &
@@ -508,6 +534,10 @@ contains
 
     pure subroutine nmhash32_long_round_wrappers( accx, accy, p )
         integer(int32), intent(inout) :: accx(0:)
+        integer(int32), dimension(1) :: arr_accx_i
+        integer(int32), dimension(1) :: arr_nmh_m1_v_i
+        integer(int32), dimension(1) :: arr_nmh_m2_v_i
+        integer(int32), dimension(1) :: arr_nmh_m3_v_i
         integer(int32), intent(inout) :: accy(0:)
         integer(int8), intent(in)     :: p(0:)
 
@@ -521,21 +551,27 @@ contains
             accy(i) = ieor( accy(i), nmh_readle32_wrappers( p(i*4+nbgroups*4:) ) )
             accx(i) = accx(i) + accy(i)
             accy(i) = ieor( accy(i), ishft(accx(i),  -1) )
-            dummy1 = transfer( accx(i), 0_int16, 2 )
-            dummy2 = transfer( nmh_m1_v(i), 0_int16, 2 )
+            arr_accx_i = [accx(i)]
+            dummy1 = transfer( arr_accx_i, 0_int16, 2 )
+            arr_nmh_m1_v_i = [nmh_m1_v(i)]
+            dummy2 = transfer( arr_nmh_m1_v_i, 0_int16, 2 )
             dummy1 = dummy1 * dummy2
             accx(i) = transfer( dummy1, 0_int32 )
             accx(i) = ieor( accx(i), ieor( ishft(accx(i), 5), &
                                            ishft(accx(i),-13) ) )
-            dummy1 = transfer( accx(i), 0_int16, 2 )
-            dummy2 = transfer( nmh_m2_v(i), 0_int16, 2 )
+            arr_accx_i = [accx(i)]
+            dummy1 = transfer( arr_accx_i, 0_int16, 2 )
+            arr_nmh_m2_v_i = [nmh_m2_v(i)]
+            dummy2 = transfer( arr_nmh_m2_v_i, 0_int16, 2 )
             dummy1 = dummy1 * dummy2
             accx(i) = transfer( dummy1, 0_int32 )
             accx(i) = ieor( accx(i), accy(i) )
             accx(i) = ieor( accx(i), ieor( ishft(accx(i), 11), &
                                            ishft(accx(i),-9) ) )
-            dummy1 = transfer( accx(i), 0_int16, 2 )
-            dummy2 = transfer( nmh_m3_v(i), 0_int16, 2 )
+            arr_accx_i = [accx(i)]
+            dummy1 = transfer( arr_accx_i, 0_int16, 2 )
+            arr_nmh_m3_v_i = [nmh_m3_v(i)]
+            dummy2 = transfer( arr_nmh_m3_v_i, 0_int16, 2 )
             dummy1 = dummy1 * dummy2
             accx(i) = transfer( dummy1, 0_int32 )
             accx(i) = ieor( accx(i), ieor( ishft(accx(i),-10), &
@@ -553,6 +589,7 @@ contains
         integer(int32) :: accy(0:size(nmh_acc_init)-1)
         integer(int64) :: nbrounds
         integer(int64) :: len
+        integer(int64), dimension(1) :: arr_len
         integer(int32) :: len32(0:1)
         integer(int64) :: i
 
@@ -579,7 +616,8 @@ contains
             sum = sum + accx(i)
         end do
 
-        len32 = transfer(len, 0_int32, 2)
+        arr_len = [len]
+        len32 = transfer(arr_len, 0_int32, 2)
         if ( little_endian ) then
             sum = sum + len32(1)
             sum = ieor(sum, len32(0))
@@ -597,19 +635,26 @@ contains
         integer(int16) :: u16(0:1)
         integer(int32), parameter:: m1 = int(z'CCE5196D', int32)
         integer(int32), parameter:: m2 = int(z'464BE229', int32)
+        integer(int32), dimension(1) :: arr_m1
+        integer(int32), dimension(1) :: arr_m2
+        integer(int32), dimension(1) :: arr_u32
         integer(int16) :: m1_16(0:1), m2_16(0:1)
 
-        m1_16(0:1) = transfer(m1, 0_int16, 2)
-        m2_16(0:1) = transfer(m2, 0_int16, 2)
+        arr_m1 = [m1]
+        m1_16(0:1) = transfer(arr_m1, 0_int16, 2)
+        arr_m2 = [m2]
+        m2_16(0:1) = transfer(arr_m2, 0_int16, 2)
 
         u32 = x
         u32 = ieor( u32, ieor( ishft( u32, -8 ), ishft( u32, -21 ) ) )
-        u16 = transfer( u32, 0_int16, 2 )
+        arr_u32 = [u32]
+        u16 = transfer( arr_u32, 0_int16, 2 )
         u16(0) = u16(0) * m1_16(0)
         u16(1) = u16(1) * m1_16(1)
         u32 = transfer( u16, 0_int32 )
         u32 = ieor( u32, ieor( ishft( u32, 12 ), ishft( u32, -7 ) ) )
-        u16 = transfer( u32, 0_int16, 2 )
+        arr_u32 = [u32]
+        u16 = transfer( arr_u32, 0_int16, 2 )
         u16(0) = u16(0) * m2_16(0)
         u16(1) = u16(1) * m2_16(1)
         u32 = transfer( u16, 0_int32 )
@@ -780,13 +825,15 @@ contains
         integer(int32) :: x
 
         integer(int64) :: len
+        integer(int64), dimension(1) :: arr_len
         integer(int32) :: len32(0:1), len_base
         integer(int32) :: y
         integer(int32) :: a, b
         integer(int64) :: i, r
 
         len = size(p, kind=int64)
-        len32 = transfer(len, 0_int32, 2)
+        arr_len = [len]
+        len32 = transfer(arr_len, 0_int32, 2)
         if (little_endian) then
             len_base = len32(0)
         else
