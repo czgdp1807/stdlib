@@ -61,6 +61,8 @@ program test_chaining_maps
         allocate(prev_keys_inverse(i) % value(16))
     end do
 
+    allocate(duplicate_key_entries(33))
+
     call init( map, fnv_1_hasher, slots_bits=10 )
     call input_random_data( map, test_16, 'FNV-1', "16 byte words" )
     call test_inquire_data( map, test_16, 'FNV-1', "16 byte words" )
@@ -74,6 +76,11 @@ program test_chaining_maps
         deallocate(prev_keys_inverse(i) % value)
         allocate(prev_keys_inverse(i) % value(256))
     end do
+
+    deallocate(duplicate_key_entries)
+    allocate(duplicate_key_entries(3))
+
+    duplicate_key_entries_index = 1
 
     call init( map, fnv_1_hasher, slots_bits=10 )
     call input_random_data( map, test_256, 'FNV-1', "256 byte words" )
@@ -89,6 +96,11 @@ program test_chaining_maps
         allocate(prev_keys_inverse(i) % value(16))
     end do
 
+    deallocate(duplicate_key_entries)
+    allocate(duplicate_key_entries(33))
+
+    duplicate_key_entries_index = 1
+
     call init( map, fnv_1a_hasher, slots_bits=10 )
     call input_random_data( map, test_16, 'FNV-1A', "16 byte words" )
     call test_inquire_data( map, test_16, 'FNV-1A', "16 byte words" )
@@ -103,6 +115,11 @@ program test_chaining_maps
         allocate(prev_keys_inverse(i) % value(256))
     end do
 
+    deallocate(duplicate_key_entries)
+    allocate(duplicate_key_entries(3))
+
+    duplicate_key_entries_index = 1
+
     call init(map, fnv_1a_hasher, slots_bits=10 )
     call input_random_data( map, test_256, 'FNV-1A', "256 byte words" )
     call test_inquire_data( map, test_256, 'FNV-1A', "256 byte words" )
@@ -116,6 +133,11 @@ program test_chaining_maps
         deallocate(prev_keys_inverse(i) % value)
         allocate(prev_keys_inverse(i) % value(16))
     end do
+
+    deallocate(duplicate_key_entries)
+    allocate(duplicate_key_entries(33))
+
+    duplicate_key_entries_index = 1
 
     call init(map, seeded_nmhash32_hasher, slots_bits=10 )
     call input_random_data( map, test_16, 'Seeded_Nmhash32', "16 byte words" )
@@ -133,6 +155,11 @@ program test_chaining_maps
         allocate(prev_keys_inverse(i) % value(256))
     end do
 
+    deallocate(duplicate_key_entries)
+    allocate(duplicate_key_entries(3))
+
+    duplicate_key_entries_index = 1
+
     call init(map, seeded_nmhash32_hasher, slots_bits=10 )
     call input_random_data( map, test_256, 'Seeded_Nmhash32', "256 byte words" )
     call test_inquire_data( map, test_256, 'Seeded_Nmhash32', "256 byte words" )
@@ -149,6 +176,11 @@ program test_chaining_maps
         allocate(prev_keys_inverse(i) % value(16))
     end do
 
+    deallocate(duplicate_key_entries)
+    allocate(duplicate_key_entries(33))
+
+    duplicate_key_entries_index = 1
+
     call init(map, seeded_nmhash32x_hasher, slots_bits=10 )
     call input_random_data( map, test_16, 'Seeded_Nmhash32x', "16 byte words" )
     call test_inquire_data( map, test_16, 'Seeded_Nmhash32x', "16 byte words" )
@@ -164,6 +196,11 @@ program test_chaining_maps
         deallocate(prev_keys_inverse(i) % value)
         allocate(prev_keys_inverse(i) % value(256))
     end do
+
+    deallocate(duplicate_key_entries)
+    allocate(duplicate_key_entries(3))
+
+    duplicate_key_entries_index = 1
 
     call init(map, seeded_nmhash32x_hasher, slots_bits=10 )
     call input_random_data( map, test_256, 'Seeded_Nmhash32x', &
@@ -183,6 +220,11 @@ program test_chaining_maps
         allocate(prev_keys_inverse(i) % value(16))
     end do
 
+    deallocate(duplicate_key_entries)
+    allocate(duplicate_key_entries(33))
+
+    duplicate_key_entries_index = 1
+
     call init(map, seeded_water_hasher, slots_bits=10 )
     call input_random_data( map, test_16, 'Seeded_Water', "16 byte words" )
     call test_inquire_data( map, test_16, 'Seeded_Water', "16 byte words" )
@@ -198,6 +240,11 @@ program test_chaining_maps
         deallocate(prev_keys_inverse(i) % value)
         allocate(prev_keys_inverse(i) % value(256))
     end do
+
+    deallocate(duplicate_key_entries)
+    allocate(duplicate_key_entries(3))
+
+    duplicate_key_entries_index = 1
 
     call init(map, seeded_water_hasher, slots_bits=10 )
     call input_random_data( map, test_256, 'Seeded_Water', &
@@ -303,6 +350,8 @@ contains
         type(key_type) :: key
         type(key_type), allocatable :: all_keys(:)
         real :: t1, t2, tdiff
+        integer(4) :: index3 = 1
+        integer(4) :: index4 = 1
 
         call cpu_time(t1)
         call get_all_chaining_keys(map, all_keys)
@@ -316,9 +365,17 @@ contains
             call set( key, test_8_bits( index2:index2+test_block-1 ) )
 
             key_idx = ( index2/test_block ) + 1
-            if (.not. ( all_keys(key_idx) == key )) &
-                error stop "Invalid value of a key."
+            if (index3 <= size(duplicate_key_entries) .and. key_idx == duplicate_key_entries(index3)) then
+                index3 = index3 + 1
+            else
+                if (.not. ( all_keys(index4) == key )) &
+                    error stop "Invalid value of a key."
+                    index4 = index4 + 1
+            end if
         end do
+
+        index3 = 1
+        index4 = 1
 
         write(lun, '("|", a18, " | ", a12, " | ", a15, " | ", f10.5, " |")') &
             trim(hash_name), 'Get all keys', size_name, tdiff
@@ -349,18 +406,26 @@ contains
         character(*), intent(in)                :: hash_name, size_name
         real :: t1, t2, tdiff
         type(key_type) :: key
-        integer(int_index) :: index2
+        integer(int_index) :: index2, key_idx
         logical :: existed
+        integer(4) :: index3 = 1
 
         call cpu_time(t1)
         do index2=1, size(test_8_bits), test_block
             call set( key, test_8_bits( index2:index2+test_block-1 ) )
-            call remove_chaining_entry(map, key, existed)
-            if ( .not. existed ) &
-                error stop "Key not found in entry removal."
+            key_idx = ( index2/test_block ) + 1 
+            if (index3 <= size(duplicate_key_entries) .and. key_idx == duplicate_key_entries(index3)) then
+                index3 = index3 + 1
+            else
+                call remove_chaining_entry(map, key, existed)
+                if ( .not. existed ) &
+                    error stop "Key not found in entry removal."
+            end if
         end do
         call cpu_time(t2)
         tdiff = t2-t1
+
+        index3 = 1
 
         write(lun, '("|", a18, " | ", a12, " | ", a15, " | ", f10.5, " |")') &
             trim(hash_name), 'Remove data', size_name, tdiff

@@ -32,6 +32,8 @@ module stdlib_hashmap_chaining
 
     character(len=*), parameter :: submodule_name = "STDLIB_HASHMAP_CHAINING"
     type(key_type) :: prev_keys_inverse(1024)
+    integer(4) :: duplicate_key_entries_index = 1
+    integer(4), allocatable :: duplicate_key_entries(:)
 
     abstract interface
         pure function hasher_fun_temporary( key )  result(hash_value)
@@ -622,6 +624,9 @@ contains
                     end if
                     if ( present(conflict) ) then
                         conflict = .false.
+                        map % num_entries = map % num_entries + 1
+                        duplicate_key_entries(duplicate_key_entries_index) = map % num_entries
+                        duplicate_key_entries_index = duplicate_key_entries_index + 1
                     else
                         error stop submodule_name // ' % ' // procedure &
                                   // ': ' // conflicting_key
