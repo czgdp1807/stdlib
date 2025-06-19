@@ -394,7 +394,7 @@ contains
         integer(int_index), intent(out)             :: inmap
         type(key_type), intent(in)                  :: key
 
-        integer(int_hash)                      :: hash_val, hash_index
+        integer(int_hash)                      :: hash_val, hash_index, prev_hash_val
         type(chaining_map_entry_type), pointer :: gentry, pentry, sentry
 
         if ( map % probe_count > inmap_probe_factor * map % call_count ) then
@@ -405,6 +405,7 @@ contains
         end if
         map % call_count = map % call_count + 1
         hash_val = fnv_1_hasher( key )
+        prev_hash_val = hash_val - 1
         hash_index = fibonacci_hash( hash_val, map % nbits )
         pentry => map % slots(hash_index) % target
         sentry => pentry
@@ -428,6 +429,12 @@ contains
                     return
                 end if
             end if
+            if (prev_hash_val == gentry % hash_val) then
+                inmap = gentry % inmap
+                return
+            else
+                prev_hash_val = gentry % hash_val
+            end if 
             pentry => gentry % next
         end do climb_chain
 
@@ -565,13 +572,14 @@ contains
         logical, intent(out), optional              :: conflict
 
         integer(int_hash)                      :: hash_index
-        integer(int_hash)                      :: hash_val
+        integer(int_hash)                      :: hash_val, prev_hash_val
         integer(int_index)                     :: inmap
         type(chaining_map_entry_type), pointer :: new_ent
         type(chaining_map_entry_type), pointer :: gentry, pentry, sentry
         character(*), parameter :: procedure = 'MAP_ENTRY'
 
         hash_val = fnv_1_hasher( key )
+        prev_hash_val = hash_val - 1
 
         if ( map % probe_count > map_probe_factor * map % call_count ) then
             call expand_slots(map)
@@ -634,6 +642,14 @@ contains
                     return
                 end if
             end if
+            if (prev_hash_val == gentry % hash_val) then
+                map % num_entries = map % num_entries + 1
+                duplicate_key_entries(duplicate_key_entries_index) = map % num_entries
+                duplicate_key_entries_index = duplicate_key_entries_index + 1
+                return
+            else
+                prev_hash_val = gentry % hash_val
+            end if 
             pentry => gentry % next
 
         end do
