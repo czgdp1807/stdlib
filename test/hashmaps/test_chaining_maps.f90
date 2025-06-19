@@ -28,7 +28,16 @@ program test_chaining_maps
 
     integer                     :: index, i
     integer                     :: lun
-    type(chaining_hashmap_type) :: map
+    type(chaining_hashmap_type) :: map_test_1
+    type(chaining_hashmap_type) :: map_test_2
+    type(chaining_hashmap_type) :: map_test_3
+    type(chaining_hashmap_type) :: map_test_4
+    type(chaining_hashmap_type) :: map_test_5
+    type(chaining_hashmap_type) :: map_test_6
+    type(chaining_hashmap_type) :: map_test_7
+    type(chaining_hashmap_type) :: map_test_8
+    type(chaining_hashmap_type) :: map_test_9
+    type(chaining_hashmap_type) :: map_test_10
     real(dp)                    :: rand2(2)
     integer(int32)              :: rand_object(rand_size)
     integer(int8)               :: test_8_bits(test_size)
@@ -63,14 +72,14 @@ program test_chaining_maps
 
     allocate(duplicate_key_entries(33))
 
-    call init( map, fnv_1_hasher, slots_bits=10 )
-    call input_random_data( map, test_16, 'FNV-1', "16 byte words" )
-    call test_inquire_data( map, test_16, 'FNV-1', "16 byte words" )
-    call test_get_all_keys( map, test_16, 'FNV-1', '16 byte words' )
-    call test_get_data( map, test_16, 'FNV-1', '16 byte words' )
-    call report_rehash_times( map, fnv_1_hasher, 'FNV-1', '16 byte words' )
-    call report_hash_statistics( map, 'FNV-1', '16 byte words' )
-    call report_removal_times( map, test_16, 'FNV-1', '16 byte words' )
+    call init( map_test_1, fnv_1_hasher, slots_bits=10 )
+    call input_random_data( map_test_1, test_16, 'FNV-1', "16 byte words" )
+    call test_inquire_data( map_test_1, test_16, 'FNV-1', "16 byte words" )
+    call test_get_all_keys( map_test_1, test_16, 'FNV-1', '16 byte words' )
+    call test_get_data( map_test_1, test_16, 'FNV-1', '16 byte words' )
+    call report_rehash_times( map_test_1, fnv_1_hasher, 'FNV-1', '16 byte words' )
+    call report_hash_statistics( map_test_1, 'FNV-1', '16 byte words' )
+    call report_removal_times( map_test_1, test_16, 'FNV-1', '16 byte words' )
 
     do i= 1, 1024
         deallocate(prev_keys_inverse(i) % value)
@@ -82,14 +91,14 @@ program test_chaining_maps
 
     duplicate_key_entries_index = 1
 
-    call init( map, fnv_1_hasher, slots_bits=10 )
-    call input_random_data( map, test_256, 'FNV-1', "256 byte words" )
-    call test_inquire_data( map, test_256, 'FNV-1', "256 byte words" )
-    call test_get_data( map, test_256, 'FNV-1', '256 byte words' )
-    call test_get_all_keys( map, test_256, 'FNV-1', '256 byte words' )
-    call report_rehash_times( map, fnv_1_hasher, 'FNV-1', '256 byte words' )
-    call report_hash_statistics( map, 'FNV-1', '256 byte words' )
-    call report_removal_times( map, test_256, 'FNV-1', '256 byte words' )
+    call init( map_test_2, fnv_1_hasher, slots_bits=10 )
+    call input_random_data( map_test_2, test_256, 'FNV-1', "256 byte words" )
+    call test_inquire_data( map_test_2, test_256, 'FNV-1', "256 byte words" )
+    call test_get_data( map_test_2, test_256, 'FNV-1', '256 byte words' )
+    call test_get_all_keys( map_test_2, test_256, 'FNV-1', '256 byte words' )
+    call report_rehash_times( map_test_2, fnv_1_hasher, 'FNV-1', '256 byte words' )
+    call report_hash_statistics( map_test_2, 'FNV-1', '256 byte words' )
+    call report_removal_times( map_test_2, test_256, 'FNV-1', '256 byte words' )
 
     do i= 1, 1024
         deallocate(prev_keys_inverse(i) % value)
@@ -101,14 +110,14 @@ program test_chaining_maps
 
     duplicate_key_entries_index = 1
 
-    call init( map, fnv_1a_hasher, slots_bits=10 )
-    call input_random_data( map, test_16, 'FNV-1A', "16 byte words" )
-    call test_inquire_data( map, test_16, 'FNV-1A', "16 byte words" )
-    call test_get_data( map, test_16, 'FNV-1A', '16 byte words' )
-    call test_get_all_keys( map, test_16, 'FNV-1A', '16 byte words' )
-    call report_rehash_times( map, fnv_1a_hasher, 'FNV-1', '16 byte words' )
-    call report_hash_statistics( map, 'FNV-1A', '16 byte words' )
-    call report_removal_times( map, test_16, 'FNV-1a', '16 byte words' )
+    call init( map_test_3, fnv_1a_hasher, slots_bits=10 )
+    call input_random_data( map_test_3, test_16, 'FNV-1A', "16 byte words" )
+    call test_inquire_data( map_test_3, test_16, 'FNV-1A', "16 byte words" )
+    call test_get_data( map_test_3, test_16, 'FNV-1A', '16 byte words' )
+    call test_get_all_keys( map_test_3, test_16, 'FNV-1A', '16 byte words' )
+    call report_rehash_times( map_test_3, fnv_1a_hasher, 'FNV-1', '16 byte words' )
+    call report_hash_statistics( map_test_3, 'FNV-1A', '16 byte words' )
+    call report_removal_times( map_test_3, test_16, 'FNV-1a', '16 byte words' )
 
     do i= 1, 1024
         deallocate(prev_keys_inverse(i) % value)
@@ -120,14 +129,14 @@ program test_chaining_maps
 
     duplicate_key_entries_index = 1
 
-    call init(map, fnv_1a_hasher, slots_bits=10 )
-    call input_random_data( map, test_256, 'FNV-1A', "256 byte words" )
-    call test_inquire_data( map, test_256, 'FNV-1A', "256 byte words" )
-    call test_get_data( map, test_256, 'FNV-1A', '256 byte words' )
-    call test_get_all_keys( map, test_256, 'FNV-1A', '256 byte words' )
-    call report_rehash_times( map, fnv_1_hasher, 'FNV-1A', '256 byte words' )
-    call report_hash_statistics( map, 'FNV-1A', '256 byte words' )
-    call report_removal_times( map, test_256, 'FNV-1A', '256 byte words' )
+    call init(map_test_4, fnv_1a_hasher, slots_bits=10 )
+    call input_random_data( map_test_4, test_256, 'FNV-1A', "256 byte words" )
+    call test_inquire_data( map_test_4, test_256, 'FNV-1A', "256 byte words" )
+    call test_get_data( map_test_4, test_256, 'FNV-1A', '256 byte words' )
+    call test_get_all_keys( map_test_4, test_256, 'FNV-1A', '256 byte words' )
+    call report_rehash_times( map_test_4, fnv_1_hasher, 'FNV-1A', '256 byte words' )
+    call report_hash_statistics( map_test_4, 'FNV-1A', '256 byte words' )
+    call report_removal_times( map_test_4, test_256, 'FNV-1A', '256 byte words' )
 
     do i= 1, 1024
         deallocate(prev_keys_inverse(i) % value)
@@ -139,15 +148,15 @@ program test_chaining_maps
 
     duplicate_key_entries_index = 1
 
-    call init(map, seeded_nmhash32_hasher, slots_bits=10 )
-    call input_random_data( map, test_16, 'Seeded_Nmhash32', "16 byte words" )
-    call test_inquire_data( map, test_16, 'Seeded_Nmhash32', "16 byte words" )
-    call test_get_data( map, test_16, 'Seeded_Nmhash32', '16 byte words' )
-    call test_get_all_keys( map, test_16, 'Seeded_Nmhash32', '16 byte words' )
-    call report_rehash_times( map, seeded_nmhash32_hasher, 'Seeded_Nmhash32', &
+    call init(map_test_5, seeded_nmhash32_hasher, slots_bits=10 )
+    call input_random_data( map_test_5, test_16, 'Seeded_Nmhash32', "16 byte words" )
+    call test_inquire_data( map_test_5, test_16, 'Seeded_Nmhash32', "16 byte words" )
+    call test_get_data( map_test_5, test_16, 'Seeded_Nmhash32', '16 byte words' )
+    call test_get_all_keys( map_test_5, test_16, 'Seeded_Nmhash32', '16 byte words' )
+    call report_rehash_times( map_test_5, seeded_nmhash32_hasher, 'Seeded_Nmhash32', &
         '16 byte words' )
-    call report_hash_statistics( map, 'Seeded_Nmhash32', '16 byte words' )
-    call report_removal_times( map, test_16, 'Seeded_Nmhash32', &
+    call report_hash_statistics( map_test_5, 'Seeded_Nmhash32', '16 byte words' )
+    call report_removal_times( map_test_5, test_16, 'Seeded_Nmhash32', &
         '16 byte words' )
 
     do i= 1, 1024
@@ -160,15 +169,15 @@ program test_chaining_maps
 
     duplicate_key_entries_index = 1
 
-    call init(map, seeded_nmhash32_hasher, slots_bits=10 )
-    call input_random_data( map, test_256, 'Seeded_Nmhash32', "256 byte words" )
-    call test_inquire_data( map, test_256, 'Seeded_Nmhash32', "256 byte words" )
-    call test_get_data( map, test_256, 'Seeded_Nmhash32', '256 byte words' )
-    call test_get_all_keys( map, test_256, 'Seeded_Nmhash32', '256 byte words' )
-    call report_rehash_times( map, seeded_nmhash32_hasher, 'Seeded_Nmhash32', &
+    call init(map_test_6, seeded_nmhash32_hasher, slots_bits=10 )
+    call input_random_data( map_test_6, test_256, 'Seeded_Nmhash32', "256 byte words" )
+    call test_inquire_data( map_test_6, test_256, 'Seeded_Nmhash32', "256 byte words" )
+    call test_get_data( map_test_6, test_256, 'Seeded_Nmhash32', '256 byte words' )
+    call test_get_all_keys( map_test_6, test_256, 'Seeded_Nmhash32', '256 byte words' )
+    call report_rehash_times( map_test_6, seeded_nmhash32_hasher, 'Seeded_Nmhash32', &
         '256 byte words' )
-    call report_hash_statistics( map, 'Seeded_Nmhash32', '256 byte words' )
-    call report_removal_times( map, test_256, 'Seeded_Nmhash32', &
+    call report_hash_statistics( map_test_6, 'Seeded_Nmhash32', '256 byte words' )
+    call report_removal_times( map_test_6, test_256, 'Seeded_Nmhash32', &
         '256 byte words' )
 
     do i= 1, 1024
@@ -181,15 +190,15 @@ program test_chaining_maps
 
     duplicate_key_entries_index = 1
 
-    call init(map, seeded_nmhash32x_hasher, slots_bits=10 )
-    call input_random_data( map, test_16, 'Seeded_Nmhash32x', "16 byte words" )
-    call test_inquire_data( map, test_16, 'Seeded_Nmhash32x', "16 byte words" )
-    call test_get_data( map, test_16, 'Seeded_Nmhash32x', '16 byte words' )
-    call test_get_all_keys( map, test_16, 'Seeded_Nmhash32x', '16 byte words' )
-    call report_rehash_times( map, seeded_nmhash32x_hasher, &
+    call init(map_test_7, seeded_nmhash32x_hasher, slots_bits=10 )
+    call input_random_data( map_test_7, test_16, 'Seeded_Nmhash32x', "16 byte words" )
+    call test_inquire_data( map_test_7, test_16, 'Seeded_Nmhash32x', "16 byte words" )
+    call test_get_data( map_test_7, test_16, 'Seeded_Nmhash32x', '16 byte words' )
+    call test_get_all_keys( map_test_7, test_16, 'Seeded_Nmhash32x', '16 byte words' )
+    call report_rehash_times( map_test_7, seeded_nmhash32x_hasher, &
         'Seeded_Nmhash32x', '16 byte words' )
-    call report_hash_statistics( map, 'Seeded_Nmhash32x', '16 byte words' )
-    call report_removal_times( map, test_16, 'Seeded_Nmhash32x', &
+    call report_hash_statistics( map_test_7, 'Seeded_Nmhash32x', '16 byte words' )
+    call report_removal_times( map_test_7, test_16, 'Seeded_Nmhash32x', &
         '16 byte words' )
 
     do i= 1, 1024
@@ -202,17 +211,17 @@ program test_chaining_maps
 
     duplicate_key_entries_index = 1
 
-    call init(map, seeded_nmhash32x_hasher, slots_bits=10 )
-    call input_random_data( map, test_256, 'Seeded_Nmhash32x', &
+    call init(map_test_8, seeded_nmhash32x_hasher, slots_bits=10 )
+    call input_random_data( map_test_8, test_256, 'Seeded_Nmhash32x', &
         "256 byte words" )
-    call test_inquire_data( map, test_256, 'Seeded_Nmhash32x', &
+    call test_inquire_data( map_test_8, test_256, 'Seeded_Nmhash32x', &
         "256 byte words" )
-    call test_get_data( map, test_256, 'Seeded_Nmhash32x', '256 byte words' )
-    call test_get_all_keys( map, test_256, 'Seeded_Nmhash32x', '256 byte words' )
-    call report_rehash_times( map, seeded_nmhash32x_hasher, &
+    call test_get_data( map_test_8, test_256, 'Seeded_Nmhash32x', '256 byte words' )
+    call test_get_all_keys( map_test_8, test_256, 'Seeded_Nmhash32x', '256 byte words' )
+    call report_rehash_times( map_test_8, seeded_nmhash32x_hasher, &
         'Seeded_Nmhash32x', '256 byte words' )
-    call report_hash_statistics( map, 'Seeded_Nmhash32x', '256 byte words' )
-    call report_removal_times( map, test_256, 'Seeded_Nmhash32x', &
+    call report_hash_statistics( map_test_8, 'Seeded_Nmhash32x', '256 byte words' )
+    call report_removal_times( map_test_8, test_256, 'Seeded_Nmhash32x', &
         '256 byte words' )
 
     do i= 1, 1024
@@ -225,15 +234,15 @@ program test_chaining_maps
 
     duplicate_key_entries_index = 1
 
-    call init(map, seeded_water_hasher, slots_bits=10 )
-    call input_random_data( map, test_16, 'Seeded_Water', "16 byte words" )
-    call test_inquire_data( map, test_16, 'Seeded_Water', "16 byte words" )
-    call test_get_data( map, test_16, 'Seeded_Water', '16 byte words' )
-    call test_get_all_keys( map, test_16, 'Seeded_Water', '16 byte words' )
-    call report_rehash_times( map, seeded_water_hasher, &
+    call init(map_test_9, seeded_water_hasher, slots_bits=10 )
+    call input_random_data( map_test_9, test_16, 'Seeded_Water', "16 byte words" )
+    call test_inquire_data( map_test_9, test_16, 'Seeded_Water', "16 byte words" )
+    call test_get_data( map_test_9, test_16, 'Seeded_Water', '16 byte words' )
+    call test_get_all_keys( map_test_9, test_16, 'Seeded_Water', '16 byte words' )
+    call report_rehash_times( map_test_9, seeded_water_hasher, &
         'Seeded_Water', '16 byte words' )
-    call report_hash_statistics( map, 'Seeded_Water', '16 byte words' )
-    call report_removal_times( map, test_16, 'Seeded_Water', &
+    call report_hash_statistics( map_test_9, 'Seeded_Water', '16 byte words' )
+    call report_removal_times( map_test_9, test_16, 'Seeded_Water', &
         '16 byte words' )
 
     do i= 1, 1024
@@ -246,17 +255,17 @@ program test_chaining_maps
 
     duplicate_key_entries_index = 1
 
-    call init(map, seeded_water_hasher, slots_bits=10 )
-    call input_random_data( map, test_256, 'Seeded_Water', &
+    call init(map_test_10, seeded_water_hasher, slots_bits=10 )
+    call input_random_data( map_test_10, test_256, 'Seeded_Water', &
         "256 byte words" )
-    call test_inquire_data( map, test_256, 'Seeded_Water', &
+    call test_inquire_data( map_test_10, test_256, 'Seeded_Water', &
         "256 byte words" )
-    call test_get_data( map, test_256, 'Seeded_Water', '256 byte words' )
-    call test_get_all_keys( map, test_256, 'Seeded_Water', '256 byte words' )
-    call report_rehash_times( map, seeded_water_hasher, &
+    call test_get_data( map_test_10, test_256, 'Seeded_Water', '256 byte words' )
+    call test_get_all_keys( map_test_10, test_256, 'Seeded_Water', '256 byte words' )
+    call report_rehash_times( map_test_10, seeded_water_hasher, &
         'Seeded_Water', '256 byte words' )
-    call report_hash_statistics( map, 'Seeded_Water', '256 byte words' )
-    call report_removal_times( map, test_256, 'Seeded_Water', &
+    call report_hash_statistics( map_test_10, 'Seeded_Water', '256 byte words' )
+    call report_removal_times( map_test_10, test_256, 'Seeded_Water', &
         '256 byte words' )
 
 contains
