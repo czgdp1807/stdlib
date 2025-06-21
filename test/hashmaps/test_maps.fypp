@@ -7,6 +7,7 @@ module test_stdlib_chaining_maps
     use testdrive, only : new_unittest, unittest_type, error_type, check
     use :: stdlib_kinds, only : dp, int8, int32
     use stdlib_hashmaps, only : chaining_hashmap_type, int_depth, int_index
+    use stdlib_hashmap_chaining
     use stdlib_hashmap_wrappers
 
     implicit none
@@ -55,7 +56,7 @@ contains
 
             call generate_vector(test_8_bits)
 
-            call map % init( ${hash_}$, slots_bits=10 )
+            call init(map, ${hash_}$, slots_bits=10 )
 
             call test_input_random_data(error, map, test_8_bits, test_${size_}$)
             if (allocated(error)) return
@@ -112,7 +113,7 @@ contains
             dummy_val % value = test_8_bits( index2:index2+test_block-1 )
             allocate( dummy, source=dummy_val )
             call set ( other, dummy )
-            call map % map_entry( key, other, conflict )
+            call map_chain_entry(map, key, other, conflict )
             call check(error, .not.conflict, "Unable to map entry because of a key conflict.")
             if (allocated(error)) return
         end do
@@ -130,7 +131,7 @@ contains
 
         do index2=1, size(test_8_bits), test_block
             call set( key, test_8_bits( index2:index2+test_block-1 ) )
-            call map % key_test( key, present )
+            call chaining_key_test(map, key, present )
             call check(error, present, "KEY not found in map KEY_TEST.")
             if (allocated(error)) return
         end do
@@ -149,7 +150,7 @@ contains
 
         do index2=1, size(test_8_bits), test_block
             call set( key, test_8_bits( index2:index2+test_block-1 ) )
-            call map % get_other_data( key, other, exists )
+            call get_other_chaining_data(map, key, other, exists )
             call check(error, exists, "Unable to get data because key not found in map.")
         end do
 
@@ -166,7 +167,7 @@ contains
 
         do index2=1, size(test_8_bits), test_block
             call set( key, test_8_bits( index2:index2+test_block-1 ) )
-            call map % remove(key, existed)
+            call remove_chaining_entry(map, key, existed)
             call check(error, existed,  "Key not found in entry removal.")
         end do
 
@@ -181,6 +182,7 @@ module test_stdlib_open_maps
     use testdrive, only : new_unittest, unittest_type, error_type, check
     use :: stdlib_kinds, only : dp, int8, int32
     use stdlib_hashmaps, only : open_hashmap_type, int_depth, int_index
+    use stdlib_hashmap_open
     use stdlib_hashmap_wrappers
 
     implicit none
@@ -229,7 +231,7 @@ contains
 
             call generate_vector(test_8_bits)
 
-            call map % init( ${hash_}$, slots_bits=10 )
+            call init(map, ${hash_}$, slots_bits=10 )
 
             call test_input_random_data(error, map, test_8_bits, test_${size_}$)
             if (allocated(error)) return
@@ -286,7 +288,7 @@ contains
             dummy_val % value = test_8_bits( index2:index2+test_block-1 )
             allocate( dummy, source=dummy_val )
             call set ( other, dummy )
-            call map % map_entry( key, other, conflict )
+            call map_open_entry(map, key, other, conflict )
             call check(error, .not.conflict, "Unable to map entry because of a key conflict.")
             if (allocated(error)) return
         end do
@@ -304,7 +306,7 @@ contains
 
         do index2=1, size(test_8_bits), test_block
             call set( key, test_8_bits( index2:index2+test_block-1 ) )
-            call map % key_test( key, present )
+            call open_key_test(map, key, present )
             call check(error, present, "KEY not found in map KEY_TEST.")
             if (allocated(error)) return
         end do
@@ -323,7 +325,7 @@ contains
 
         do index2=1, size(test_8_bits), test_block
             call set( key, test_8_bits( index2:index2+test_block-1 ) )
-            call map % get_other_data( key, other, exists )
+            call get_other_open_data(map, key, other, exists )
             call check(error, exists, "Unable to get data because key not found in map.")
         end do
 
@@ -340,7 +342,7 @@ contains
 
         do index2=1, size(test_8_bits), test_block
             call set( key, test_8_bits( index2:index2+test_block-1 ) )
-            call map % remove(key, existed)
+            call remove_open_entry(map, key, existed)
             call check(error, existed,  "Key not found in entry removal.")
         end do
 
