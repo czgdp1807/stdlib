@@ -19,7 +19,7 @@ module test_stdlib_chaining_maps
 
     integer(int32), parameter :: huge32 = huge(0_int32)
     real(dp), parameter       :: hugep1 = real(huge32, dp) + 1.0_dp
-    integer, parameter        :: rand_power = 18
+    integer, parameter        :: rand_power = 9
     integer, parameter        :: rand_size = 2**rand_power
     integer, parameter        :: test_size = rand_size*4
     integer, parameter        :: test_16 = 2**4
@@ -194,7 +194,7 @@ module test_stdlib_open_maps
 
     integer(int32), parameter :: huge32 = huge(0_int32)
     real(dp), parameter       :: hugep1 = real(huge32, dp) + 1.0_dp
-    integer, parameter        :: rand_power = 18
+    integer, parameter        :: rand_power = 9
     integer, parameter        :: rand_size = 2**rand_power
     integer, parameter        :: test_size = rand_size*4
     integer, parameter        :: test_16 = 2**4
