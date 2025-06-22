@@ -35,44 +35,40 @@ contains
         type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
         testsuite = [ &
-            new_unittest("chaining-maps-fnv_1_hasher-16-byte-words", test_fnv_1_hasher_16_byte_words) &
-            #:for hash_ in HASH_NAME
-              #:for size_ in SIZE_NAME
-                , new_unittest("chaining-maps-${hash_}$-${size_}$-byte-words", test_${hash_}$_${size_}$_byte_words) &
-              #:endfor
-            #:endfor
+            new_unittest("chaining-maps", test_chaining_maps) &
             ]
 
     end subroutine collect_stdlib_chaining_maps
 
+    subroutine test_chaining_maps(error)
+        !> Error handling
+        type(error_type), allocatable, intent(out) :: error
+
+        type(chaining_hashmap_type)   :: map
+        integer(int8)             :: test_8_bits(test_size)
+
+        call generate_vector(test_8_bits)
+
     #:for hash_ in HASH_NAME
-      #:for size_ in SIZE_NAME
-        subroutine test_${hash_}$_${size_}$_byte_words(error)
-            !> Error handling
-            type(error_type), allocatable, intent(out) :: error
+        #:for size_ in SIZE_NAME
+        call init(map, ${hash_}$, slots_bits=10 )
 
-            type(chaining_hashmap_type)   :: map
-            integer(int8)             :: test_8_bits(test_size)
+        call test_input_random_data(error, map, test_8_bits, test_${size_}$)
+        if (allocated(error)) return
 
-            call generate_vector(test_8_bits)
+        call test_inquire_data(error, map, test_8_bits, test_${size_}$)
+        if (allocated(error)) return
 
-            call init(map, ${hash_}$, slots_bits=10 )
+        call test_get_data(error, map, test_8_bits, test_${size_}$)
+        if (allocated(error)) return
 
-            call test_input_random_data(error, map, test_8_bits, test_${size_}$)
-            if (allocated(error)) return
-
-            call test_inquire_data(error, map, test_8_bits, test_${size_}$)
-            if (allocated(error)) return
-
-            call test_get_data(error, map, test_8_bits, test_${size_}$)
-            if (allocated(error)) return
-
-            call test_removal(error, map, test_8_bits, test_${size_}$)
-            if (allocated(error)) return
-
-        end subroutine
-      #:endfor
+        call test_removal(error, map, test_8_bits, test_${size_}$)
+        if (allocated(error)) return
+        
+        #:endfor
     #:endfor
+
+    end subroutine
 
 
     subroutine generate_vector(test_8_bits)
@@ -210,44 +206,40 @@ contains
         type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
         testsuite = [ &
-            new_unittest("open-maps-fnv_1_hasher-16-byte-words", test_fnv_1_hasher_16_byte_words) &
-            #:for hash_ in HASH_NAME
-              #:for size_ in SIZE_NAME
-                , new_unittest("open-maps-${hash_}$-${size_}$-byte-words", test_${hash_}$_${size_}$_byte_words) &
-              #:endfor
-            #:endfor
+            new_unittest("open-maps", test_open_maps) &
             ]
 
     end subroutine collect_stdlib_open_maps
 
+    subroutine test_open_maps(error)
+        !> Error handling
+        type(error_type), allocatable, intent(out) :: error
+
+        type(open_hashmap_type)   :: map
+        integer(int8)             :: test_8_bits(test_size)
+
+        call generate_vector(test_8_bits)
+    
     #:for hash_ in HASH_NAME
-      #:for size_ in SIZE_NAME
-        subroutine test_${hash_}$_${size_}$_byte_words(error)
-            !> Error handling
-            type(error_type), allocatable, intent(out) :: error
+        #:for size_ in SIZE_NAME
+        call init(map, ${hash_}$, slots_bits=10 )
 
-            type(open_hashmap_type)   :: map
-            integer(int8)             :: test_8_bits(test_size)
+        call test_input_random_data(error, map, test_8_bits, test_${size_}$)
+        if (allocated(error)) return
 
-            call generate_vector(test_8_bits)
+        call test_inquire_data(error, map, test_8_bits, test_${size_}$)
+        if (allocated(error)) return
 
-            call init(map, ${hash_}$, slots_bits=10 )
+        call test_get_data(error, map, test_8_bits, test_${size_}$)
+        if (allocated(error)) return
 
-            call test_input_random_data(error, map, test_8_bits, test_${size_}$)
-            if (allocated(error)) return
+        call test_removal(error, map, test_8_bits, test_${size_}$)
+        if (allocated(error)) return
 
-            call test_inquire_data(error, map, test_8_bits, test_${size_}$)
-            if (allocated(error)) return
-
-            call test_get_data(error, map, test_8_bits, test_${size_}$)
-            if (allocated(error)) return
-
-            call test_removal(error, map, test_8_bits, test_${size_}$)
-            if (allocated(error)) return
-
-        end subroutine
-      #:endfor
+        #:endfor
     #:endfor
+
+    end subroutine
 
 
     subroutine generate_vector(test_8_bits)
