@@ -44,7 +44,16 @@ contains
         !> Error handling
         type(error_type), allocatable, intent(out) :: error
 
-        type(chaining_hashmap_type)   :: map
+        type(chaining_hashmap_type)   :: map_fnv_1_hasher_16
+        type(chaining_hashmap_type)   :: map_fnv_1_hasher_256
+        type(chaining_hashmap_type)   :: map_fnv_1a_hasher_16
+        type(chaining_hashmap_type)   :: map_fnv_1a_hasher_256
+        type(chaining_hashmap_type)   :: map_seeded_nmhash32_hasher_16
+        type(chaining_hashmap_type)   :: map_seeded_nmhash32_hasher_256
+        type(chaining_hashmap_type)   :: map_seeded_nmhash32x_hasher_16
+        type(chaining_hashmap_type)   :: map_seeded_nmhash32x_hasher_256
+        type(chaining_hashmap_type)   :: map_seeded_water_hasher_16
+        type(chaining_hashmap_type)   :: map_seeded_water_hasher_256
         integer :: i
         integer(int8)             :: test_8_bits(test_size)
 
@@ -80,18 +89,18 @@ contains
 
         duplicate_key_entries_index = 1
 
-        call init(map, ${hash_}$, slots_bits=10 )
+        call init(map_${hash_}$_${size_}$, ${hash_}$, slots_bits=10 )
 
-        call test_input_random_data(error, map, test_8_bits, test_${size_}$)
+        call test_input_random_data(error, map_${hash_}$_${size_}$, test_8_bits, test_${size_}$)
         if (allocated(error)) return
 
-        call test_inquire_data(error, map, test_8_bits, test_${size_}$)
+        call test_inquire_data(error, map_${hash_}$_${size_}$, test_8_bits, test_${size_}$)
         if (allocated(error)) return
 
-        call test_get_data(error, map, test_8_bits, test_${size_}$)
+        call test_get_data(error, map_${hash_}$_${size_}$, test_8_bits, test_${size_}$)
         if (allocated(error)) return
 
-        call test_removal(error, map, test_8_bits, test_${size_}$)
+        call test_removal(error, map_${hash_}$_${size_}$, test_8_bits, test_${size_}$)
         if (allocated(error)) return
         
         #:endfor
@@ -251,7 +260,16 @@ contains
         !> Error handling
         type(error_type), allocatable, intent(out) :: error
 
-        type(open_hashmap_type)   :: map
+        type(open_hashmap_type)   :: map_fnv_1_hasher_16
+        type(open_hashmap_type)   :: map_fnv_1_hasher_256
+        type(open_hashmap_type)   :: map_fnv_1a_hasher_16
+        type(open_hashmap_type)   :: map_fnv_1a_hasher_256
+        type(open_hashmap_type)   :: map_seeded_nmhash32_hasher_16
+        type(open_hashmap_type)   :: map_seeded_nmhash32_hasher_256
+        type(open_hashmap_type)   :: map_seeded_nmhash32x_hasher_16
+        type(open_hashmap_type)   :: map_seeded_nmhash32x_hasher_256
+        type(open_hashmap_type)   :: map_seeded_water_hasher_16
+        type(open_hashmap_type)   :: map_seeded_water_hasher_256
         integer :: i
         integer(int8)             :: test_8_bits(test_size)
 
@@ -287,18 +305,18 @@ contains
 
         duplicate_key_entries_index = 1
 
-        call init(map, ${hash_}$, slots_bits=10 )
+        call init(map_${hash_}$_${size_}$, ${hash_}$, slots_bits=10 )
 
-        call test_input_random_data(error, map, test_8_bits, test_${size_}$)
+        call test_input_random_data(error, map_${hash_}$_${size_}$, test_8_bits, test_${size_}$)
         if (allocated(error)) return
 
-        call test_inquire_data(error, map, test_8_bits, test_${size_}$)
+        call test_inquire_data(error, map_${hash_}$_${size_}$, test_8_bits, test_${size_}$)
         if (allocated(error)) return
 
-        call test_get_data(error, map, test_8_bits, test_${size_}$)
+        call test_get_data(error, map_${hash_}$_${size_}$, test_8_bits, test_${size_}$)
         if (allocated(error)) return
 
-        call test_removal(error, map, test_8_bits, test_${size_}$)
+        call test_removal(error, map_${hash_}$_${size_}$, test_8_bits, test_${size_}$)
         if (allocated(error)) return
 
         #:endfor
