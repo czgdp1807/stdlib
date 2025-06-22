@@ -45,12 +45,31 @@ contains
         type(error_type), allocatable, intent(out) :: error
 
         type(chaining_hashmap_type)   :: map
+        integer :: i
         integer(int8)             :: test_8_bits(test_size)
 
         call generate_vector(test_8_bits)
 
     #:for hash_ in HASH_NAME
         #:for size_ in SIZE_NAME
+        if ("${hash_}$" == "fnv_1_hasher" .and. ${size_}$ == 16) then
+            do i=1, 1024
+                allocate(prev_keys_inverse(i) % value(16))
+            end do
+        else
+            if (${size_}$ == 16) then
+                do i=1, 1024
+                    deallocate(prev_keys_inverse(i) % value)
+                    allocate(prev_keys_inverse(i) % value(16))
+                end do
+            else
+                do i=1, 1024
+                    deallocate(prev_keys_inverse(i) % value)
+                    allocate(prev_keys_inverse(i) % value(256))
+                end do
+            end if
+        end if
+
         call init(map, ${hash_}$, slots_bits=10 )
 
         call test_input_random_data(error, map, test_8_bits, test_${size_}$)
@@ -216,12 +235,31 @@ contains
         type(error_type), allocatable, intent(out) :: error
 
         type(open_hashmap_type)   :: map
+        integer :: i
         integer(int8)             :: test_8_bits(test_size)
 
         call generate_vector(test_8_bits)
     
     #:for hash_ in HASH_NAME
         #:for size_ in SIZE_NAME
+        if ("${hash_}$" == "fnv_1_hasher" .and. ${size_}$ == 16) then
+            do i=1, 576
+                allocate(prev_keys(i) % value(16))
+            end do
+        else
+            if (${size_}$ == 16) then
+                do i=1, 576
+                    deallocate(prev_keys(i) % value)
+                    allocate(prev_keys(i) % value(16))
+                end do
+            else
+                do i=1, 576
+                    deallocate(prev_keys(i) % value)
+                    allocate(prev_keys(i) % value(256))
+                end do
+            end if
+        end if
+
         call init(map, ${hash_}$, slots_bits=10 )
 
         call test_input_random_data(error, map, test_8_bits, test_${size_}$)
