@@ -56,19 +56,29 @@ contains
             do i=1, 1024
                 allocate(prev_keys_inverse(i) % value(16))
             end do
+
+            allocate(duplicate_key_entries(33))
         else
             if (${size_}$ == 16) then
                 do i=1, 1024
                     deallocate(prev_keys_inverse(i) % value)
                     allocate(prev_keys_inverse(i) % value(16))
                 end do
+
+                deallocate(duplicate_key_entries)
+                allocate(duplicate_key_entries(33))
             else
                 do i=1, 1024
                     deallocate(prev_keys_inverse(i) % value)
                     allocate(prev_keys_inverse(i) % value(256))
                 end do
+
+                deallocate(duplicate_key_entries)
+                allocate(duplicate_key_entries(3))
             end if
         end if
+
+        duplicate_key_entries_index = 1
 
         call init(map, ${hash_}$, slots_bits=10 )
 
@@ -177,15 +187,22 @@ contains
         integer(int8), intent(in)               :: test_8_bits(test_size)
         integer(int_index), intent(in)          :: test_block
         type(key_type) :: key
-        integer(int_index) :: index2
+        integer(int_index) :: index2, key_idx
         logical :: existed
+        integer(4) :: index3 = 1
 
         do index2=1, size(test_8_bits), test_block
             call set( key, test_8_bits( index2:index2+test_block-1 ) )
-            call remove_chaining_entry(map, key, existed)
-            call check(error, existed,  "Key not found in entry removal.")
+            key_idx = ( index2/test_block ) + 1 
+            if (index3 <= size(duplicate_key_entries) .and. key_idx == duplicate_key_entries(index3)) then
+                index3 = index3 + 1
+            else
+                call remove_chaining_entry(map, key, existed)
+                call check(error, existed,  "Key not found in entry removal.")
+            end if
         end do
 
+        index3 = 1
     end subroutine
 
 end module
@@ -246,19 +263,29 @@ contains
             do i=1, 576
                 allocate(prev_keys(i) % value(16))
             end do
+
+            allocate(duplicate_key_entries(34))
         else
             if (${size_}$ == 16) then
                 do i=1, 576
                     deallocate(prev_keys(i) % value)
                     allocate(prev_keys(i) % value(16))
                 end do
+
+                deallocate(duplicate_key_entries)
+                allocate(duplicate_key_entries(34))
             else
                 do i=1, 576
                     deallocate(prev_keys(i) % value)
                     allocate(prev_keys(i) % value(256))
                 end do
+
+                deallocate(duplicate_key_entries)
+                allocate(duplicate_key_entries(1))
             end if
         end if
+
+        duplicate_key_entries_index = 1
 
         call init(map, ${hash_}$, slots_bits=10 )
 
@@ -367,15 +394,22 @@ contains
         integer(int8), intent(in)               :: test_8_bits(test_size)
         integer(int_index), intent(in)          :: test_block
         type(key_type) :: key
-        integer(int_index) :: index2
+        integer(int_index) :: index2, key_idx
         logical :: existed
+        integer(4) :: index3 = 1
 
         do index2=1, size(test_8_bits), test_block
             call set( key, test_8_bits( index2:index2+test_block-1 ) )
-            call remove_open_entry(map, key, existed)
-            call check(error, existed,  "Key not found in entry removal.")
+            key_idx = ( index2/test_block ) + 1
+            if (index3 <= size(duplicate_key_entries) .and. key_idx == duplicate_key_entries(index3)) then
+                index3 = index3 + 1
+            else
+                call remove_open_entry(map, key, existed)
+                call check(error, existed,  "Key not found in entry removal.")
+            end if
         end do
 
+        index3 = 1
     end subroutine
 
 end module
